@@ -1,0 +1,83 @@
+# INFORMATION
+# We are not exposing the default ports for the services in this file.
+# This is to avoid conflicts with existing services on your machine.
+# In case you don't have any services running on the default ports, you can expose them by changing the
+# ports section in the services block. Please don't forget to update the ports in the .env file as well.
+
+# The explicit project name keeps this project's containers and volumes distinct from
+# those of other projects, even when this file lives in an identically-named directory
+# (e.g. apps/server in a monorepo). Quoted so that numeric-looking names (e.g. "123")
+# stay YAML strings — Compose rejects a non-string name.
+name: 'visual-search-capstone'
+
+services:
+    # Vendure's database AND the vector store. The pgvector image is stock Postgres 16
+    # plus the `vector` extension, so visual-search vectors live in the same database as
+    # the catalog. That is the point: a similarity query can join against stock level,
+    # price, and channel in one statement instead of post-filtering results from a
+    # separate engine. Port 6543 matches DB_PORT in .env.
+    postgres_db:
+        image: pgvector/pgvector:pg16
+        restart: unless-stopped
+        volumes:
+            - postgres_db_data:/var/lib/postgresql/data
+        ports:
+            - "6543:5432"
+        environment:
+            POSTGRES_DB: vendure
+            POSTGRES_USER: vendure
+            POSTGRES_PASSWORD: 1fPgSSLV999EyE5R2tyHSw
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U vendure -d vendure"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+        labels:
+            - "io.vendure.create.name=visual-search-capstone"
+
+    # Image/text -> vector. The only component that knows anything about a model.
+    # Interface: docs/embedding-service-contract.md
+    # Currently a deterministic stub — structurally correct, semantically meaningless.
+    # See services/embedder/README.md.
+    embedder:
+        build:
+            context: ../../services/embedder
+        restart: unless-stopped
+        ports:
+            - "8100:8000"
+        healthcheck:
+            # /health returns 503 until model weights are loaded and warmed, so nothing
+            # routes traffic to a cold service. start_period covers slow model loads;
+            # raise it when a real encoder replaces the stub.
+            test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 30s
+        labels:
+            - "io.vendure.create.name=visual-search-capstone"
+
+    # OPTIONAL — not started by `docker compose up`.
+    # Start explicitly with: docker compose --profile optional up -d redis
+    # Needed only if you swap DefaultJobQueuePlugin for the BullMQ job queue plugin:
+    # https://docs.vendure.io/reference/core-plugins/job-queue-plugin/bull-mqjob-queue-plugin/
+    redis:
+        image: redis:7-alpine
+        profiles: ["optional"]
+        restart: unless-stopped
+        ports:
+            - "6479:6379"
+        volumes:
+            - redis_data:/data
+        labels:
+            - "io.vendure.create.name=visual-search-capstone"
+
+volumes:
+    postgres_db_data:
+        driver: local
+        labels:
+            - "io.vendure.create.name=visual-search-capstone"
+    redis_data:
+        driver: local
+        labels:
+            - "io.vendure.create.name=visual-search-capstone"

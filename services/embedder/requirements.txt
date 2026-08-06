@@ -1,0 +1,16 @@
+# HTTP layer — owned by the backend side, keep stable.
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+
+# Image decoding and vector maths — needed by the contract layer regardless of model.
+pillow==11.1.0
+numpy==2.2.1
+
+# Tests.
+pytest==8.3.4
+httpx==0.28.1
+
+# --- Model dependencies ------------------------------------------------------
+# The modelling side adds its own here (torch, transformers, open_clip, ...).
+# Pin exact versions: a library upgrade that changes numerics is a REVISION bump.
