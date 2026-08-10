@@ -1,6 +1,6 @@
 'use client';
 
-import {useLocale} from 'next-intl';
+import {useLocale, useTranslations} from 'next-intl';
 import {useRouter, usePathname} from '@/platform/i18n/navigation';
 import {routing, localeNames} from '@/platform/i18n/routing';
 import {Globe} from 'lucide-react';
@@ -14,6 +14,7 @@ import {
 
 export function LanguagePicker() {
     const locale = useLocale();
+    const t = useTranslations('Navigation');
     const router = useRouter();
     const pathname = usePathname();
 
@@ -23,9 +24,11 @@ export function LanguagePicker() {
 
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger render={<Button variant="ghost" size="sm" className="gap-1.5" />}>
+            <DropdownMenuTrigger render={<Button variant="ghost" size="sm" className="gap-1.5" aria-label={t('switchLanguage')} />}>
                 <Globe className="size-4" />
-                <span>{localeNames[locale as keyof typeof localeNames] ?? locale.toUpperCase()}</span>
+                {/* Label is icon-only below sm: "English" and especially "ភាសាខ្មែរ" are wide
+                    enough to overflow the 430px navbar and clip the sign-in button. */}
+                <span className="hidden sm:inline">{localeNames[locale as keyof typeof localeNames] ?? locale.toUpperCase()}</span>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 {routing.locales.map((loc) => (

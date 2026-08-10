@@ -38,7 +38,7 @@ export function CurrencyPicker({availableCurrencyCodes, activeCurrencyCode}: Cur
         <DropdownMenu>
             <DropdownMenuTrigger render={<Button variant="ghost" size="sm" className="gap-1.5" aria-label={t('switchCurrency')} />}>
                 <Coins className="size-4" />
-                <span>{activeCurrencyCode}</span>
+                <span className="hidden sm:inline">{activeCurrencyCode}</span>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 {availableCurrencyCodes.map((code) => (
