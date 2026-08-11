@@ -1,5 +1,8 @@
 {
   "VisualSearch": {
+    "similarTo": "Similar to",
+    "similarProductHint": "These styles are ranked using the catalogue image as the visual reference.",
+    "searchWithOwnImage": "Use your own image",
     "pageTitle": "Search by image",
     "pageSubtitle": "Upload a photo and find products that look like it.",
     "metaDescription": "Find products by uploading a photo on {siteName}.",

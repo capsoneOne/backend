@@ -88,3 +88,35 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({code: 'UNAVAILABLE'}, {status: 503});
     }
 }
+
+export async function GET(request: NextRequest) {
+    const productId = request.nextUrl.searchParams.get('productId');
+    const assetId = request.nextUrl.searchParams.get('assetId');
+    if (!productId) {
+        return NextResponse.json({code: 'EMPTY'}, {status: 400});
+    }
+
+    const take = request.nextUrl.searchParams.get('take') ?? '12';
+    const languageCode = request.nextUrl.searchParams.get('languageCode') ?? 'en';
+    const headers: Record<string, string> = {[CHANNEL_TOKEN_HEADER]: CHANNEL_TOKEN};
+    const authToken = await getAuthToken();
+    if (authToken) headers.Authorization = `Bearer ${authToken}`;
+
+    try {
+        const endpoint = new URL(restEndpoint());
+        endpoint.pathname = '/visual-search/similar';
+        endpoint.searchParams.set('productId', productId);
+        if (assetId) endpoint.searchParams.set('assetId', assetId);
+        endpoint.searchParams.set('take', take);
+        endpoint.searchParams.set('languageCode', languageCode);
+        const res = await fetch(endpoint, {headers});
+        if (!res.ok) {
+            console.error('[visual-search] similar upstream returned', res.status, await res.text());
+            return NextResponse.json({code: 'FAILED'}, {status: 502});
+        }
+        return NextResponse.json(await res.json());
+    } catch (e) {
+        console.error('[visual-search] similar search failed', e);
+        return NextResponse.json({code: 'UNAVAILABLE'}, {status: 503});
+    }
+}

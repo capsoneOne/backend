@@ -64,6 +64,11 @@ export function ProductCard({product: productProp, priority}: ProductCardProps) 
                     ) : null}
                 </p>
             }
+            badge={!product.inStock ? (
+                <span className="rounded-full bg-background/90 px-2.5 py-1 text-xs font-semibold text-foreground elevate-1 backdrop-blur-md">
+                    {t('soldOut')}
+                </span>
+            ) : undefined}
         />
     );
 }

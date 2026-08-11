@@ -1,5 +1,6 @@
 {
   "Sort": {
+    "relevance": "Best match",
     "nameAsc": "Name: A to Z",
     "nameDesc": "Name: Z to A",
     "priceAsc": "Price: Low to High",
@@ -9,7 +10,8 @@
   "Filters": {
     "title": "Filters",
     "clearAll": "Clear all",
-    "filtersButton": "Filters"
+    "filtersButton": "Filters",
+    "inStockOnly": "In-stock styles only"
   },
   "Search": {
     "title": "Search",

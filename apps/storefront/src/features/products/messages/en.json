@@ -2,6 +2,7 @@
   "Product": {
     "inStock": "In Stock",
     "outOfStock": "Out of Stock",
+    "soldOut": "Sold out",
     "addToCart": "Add to Cart",
     "addedToCart": "Added to Cart",
     "adding": "Adding...",
@@ -15,6 +16,7 @@
     "noImage": "No image",
     "featuredProducts": "Featured Products",
     "relatedProducts": "Related Products",
+    "findSimilar": "Find visually similar styles",
     "viewAllProducts": "View All Products",
     "notFound": "Product Not Found",
     "home": "Home",
@@ -46,6 +48,22 @@
         "answer": "Yes! We ship to over 50 countries worldwide. International shipping rates and delivery times vary by location. You can see the exact cost at checkout before completing your purchase."
       }
     },
-    "addToCartNamed": "Add {name} to cart"
+    "addToCartNamed": "Add {name} to cart",
+    "sizeGuide": {
+      "open": "Size guide",
+      "title": "General clothing size guide",
+      "description": "Body measurements in centimetres. Choose the size closest to your measurements.",
+      "size": "Size",
+      "chest": "Chest (cm)",
+      "waist": "Waist (cm)",
+      "hips": "Hips (cm)",
+      "measureChest": "Chest",
+      "measureChestHelp": "Measure around the fullest part, keeping the tape level.",
+      "measureWaist": "Waist",
+      "measureWaistHelp": "Measure around your natural waist without pulling tight.",
+      "measureHips": "Hips",
+      "measureHipsHelp": "Measure around the fullest part of your hips.",
+      "disclaimer": "This is a general guide. Fit can vary by style and fabric; check the product description for item-specific notes."
+    }
   }
 }

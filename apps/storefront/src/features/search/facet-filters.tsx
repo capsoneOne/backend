@@ -20,18 +20,32 @@ interface FacetFiltersProps {
     }>;
 }
 
+const FILTER_COLOURS: Record<string, string> = {
+    black: '#171717', white: '#ffffff', grey: '#9ca3af', gray: '#9ca3af', red: '#dc2626',
+    blue: '#2563eb', green: '#16a34a', yellow: '#eab308', orange: '#ea580c', purple: '#9333ea',
+    pink: '#ec4899', brown: '#7c4a2d', beige: '#d6c4a8', navy: '#172554', cream: '#fff7e6',
+};
+
+function isColourFacet(name: string) {
+    return /colou?r|shade/i.test(name);
+}
+
 function FilterContent({
     facetGroups,
     selectedFacets,
     toggleFacet,
     clearFilters,
     hasActiveFilters,
+    inStockOnly,
+    toggleStock,
 }: {
     facetGroups: Record<string, { id: string; name: string; values: Array<{ id: string; name: string; count: number }> }>;
     selectedFacets: string[];
-    toggleFacet: (facetId: string) => void;
+    toggleFacet: (facetId: string, valueId: string) => void;
     clearFilters: () => void;
     hasActiveFilters: boolean;
+    inStockOnly: boolean;
+    toggleStock: () => void;
 }) {
     const t = useTranslations('Filters');
     return (
@@ -45,6 +59,19 @@ function FilterContent({
                 )}
             </div>
 
+            <div className="rounded-xl border border-border bg-muted/30 p-3">
+                <div className="flex items-center gap-3">
+                    <Checkbox
+                        id="filter-in-stock"
+                        checked={inStockOnly}
+                        onCheckedChange={toggleStock}
+                    />
+                    <Label htmlFor="filter-in-stock" className="cursor-pointer text-sm font-medium">
+                        {t('inStockOnly')}
+                    </Label>
+                </div>
+            </div>
+
             {Object.entries(facetGroups).map(([facetName, facet]) => (
                 <Collapsible key={facet.id} defaultOpen>
                     <div className="space-y-2">
@@ -55,18 +82,26 @@ function FilterContent({
                         <CollapsibleContent>
                             <div className="space-y-2 pb-2">
                                 {facet.values.map((value) => {
-                                    const isChecked = selectedFacets.includes(value.id);
+                                    const token = `${facet.id}:${value.id}`;
+                                    const isChecked = selectedFacets.includes(token) || selectedFacets.includes(value.id);
                                     return (
                                         <div key={value.id} className="flex items-center space-x-2">
                                             <Checkbox
                                                 id={`filter-${value.id}`}
                                                 checked={isChecked}
-                                                onCheckedChange={() => toggleFacet(value.id)}
+                                                onCheckedChange={() => toggleFacet(facet.id, value.id)}
                                             />
                                             <Label
                                                 htmlFor={`filter-${value.id}`}
                                                 className="text-sm font-normal cursor-pointer flex items-center gap-2"
                                             >
+                                                {isColourFacet(facetName) && FILTER_COLOURS[value.name.toLowerCase()] ? (
+                                                    <span
+                                                        className="size-4 rounded-full border border-black/15 shadow-inner"
+                                                        style={{backgroundColor: FILTER_COLOURS[value.name.toLowerCase()]}}
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : null}
                                                 {value.name}
                                                 <span className="text-xs text-muted-foreground">
                                                     ({value.count})
@@ -119,15 +154,16 @@ export function FacetFilters({ productDataPromise }: FacetFiltersProps) {
 
     const selectedFacets = searchParams.getAll('facets');
 
-    const toggleFacet = (facetId: string) => {
+    const toggleFacet = (facetId: string, valueId: string) => {
         const params = new URLSearchParams(searchParams);
         const current = params.getAll('facets');
+        const token = `${facetId}:${valueId}`;
 
-        if (current.includes(facetId)) {
+        if (current.includes(token) || current.includes(valueId)) {
             params.delete('facets');
-            current.filter(id => id !== facetId).forEach(id => params.append('facets', id));
+            current.filter(id => id !== token && id !== valueId).forEach(id => params.append('facets', id));
         } else {
-            params.append('facets', facetId);
+            params.append('facets', token);
         }
 
         // Reset to page 1 when filters change
@@ -141,11 +177,21 @@ export function FacetFilters({ productDataPromise }: FacetFiltersProps) {
         const params = new URLSearchParams(searchParams);
         params.delete('facets');
         params.delete('page');
+        params.delete('inStock');
         router.push(`${pathname}?${params.toString()}`);
         setSheetOpen(false);
     };
 
-    const hasActiveFilters = selectedFacets.length > 0;
+    const inStockOnly = searchParams.get('inStock') === 'true';
+    const toggleStock = () => {
+        const params = new URLSearchParams(searchParams);
+        if (inStockOnly) params.delete('inStock');
+        else params.set('inStock', 'true');
+        params.delete('page');
+        router.push(`${pathname}?${params.toString()}`);
+        setSheetOpen(false);
+    };
+    const hasActiveFilters = selectedFacets.length > 0 || inStockOnly;
 
     if (Object.keys(facetGroups).length === 0) {
         return null;
@@ -157,6 +203,8 @@ export function FacetFilters({ productDataPromise }: FacetFiltersProps) {
         toggleFacet,
         clearFilters,
         hasActiveFilters,
+        inStockOnly,
+        toggleStock,
     };
 
     return (
@@ -171,7 +219,7 @@ export function FacetFilters({ productDataPromise }: FacetFiltersProps) {
                                 {t('filtersButton')}
                                 {hasActiveFilters && (
                                     <span className="ml-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-                                        {selectedFacets.length}
+                                        {selectedFacets.length + (inStockOnly ? 1 : 0)}
                                     </span>
                                 )}
                             </Button>

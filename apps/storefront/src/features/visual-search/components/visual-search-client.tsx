@@ -9,7 +9,7 @@ import {ProductTile, ProductTileSkeleton} from '@/components/product-tile';
 import {Price} from '@/features/pricing/price';
 import {VISUAL_SEARCH_MAX_FILE_BYTES, VISUAL_SEARCH_MAX_FILE_MB} from '../limits';
 import type {VisualSearchErrorCode, VisualSearchHit, VisualSearchState} from '../types';
-import {searchByImageUpload} from '../upload';
+import {searchByImageUpload, searchSimilarProduct} from '../upload';
 import {ImageCropper, cropFile, type CropRect} from './image-cropper';
 
 /** Error codes are stable; the copy for them is translatable. */
@@ -22,7 +22,14 @@ const ERROR_KEYS: Record<VisualSearchErrorCode, string> = {
     FAILED: 'errorFailed',
 };
 
-export function VisualSearchClient() {
+interface InitialProduct {
+    id: string;
+    name: string;
+    imageUrl: string | null;
+    assetId?: string;
+}
+
+export function VisualSearchClient({initialProduct}: {initialProduct?: InitialProduct}) {
     const t = useTranslations('VisualSearch');
     const locale = useLocale();
     const [preview, setPreview] = useState<string | null>(null);
@@ -30,10 +37,12 @@ export function VisualSearchClient() {
     const [pending, startTransition] = useTransition();
     const [dragging, setDragging] = useState(false);
     const [cropping, setCropping] = useState(false);
+    const [showInitialProduct, setShowInitialProduct] = useState(!!initialProduct);
     const inputRef = useRef<HTMLInputElement>(null);
     const previewRef = useRef<string | null>(null);
     /** The chosen file, kept so a crop can be re-derived from the original. */
     const fileRef = useRef<File | null>(null);
+    const initialSearchStarted = useRef(false);
 
     // Revoke the previous object URL whenever it is replaced, and on unmount. Without
     // this every upload leaks the whole image for the lifetime of the page.
@@ -47,6 +56,12 @@ export function VisualSearchClient() {
         },
         [locale],
     );
+
+    useEffect(() => {
+        if (!initialProduct || initialSearchStarted.current) return;
+        initialSearchStarted.current = true;
+        startTransition(async () => setState(await searchSimilarProduct(initialProduct.id, initialProduct.assetId, locale)));
+    }, [initialProduct, locale]);
 
     const handleFile = useCallback(
         (file: File) => {
@@ -67,6 +82,7 @@ export function VisualSearchClient() {
             previewRef.current = objectUrl;
             fileRef.current = file;
             setPreview(objectUrl);
+            setShowInitialProduct(false);
             setCropping(false);
             setState({status: 'idle'});
 
@@ -99,6 +115,7 @@ export function VisualSearchClient() {
         previewRef.current = null;
         fileRef.current = null;
         setPreview(null);
+        setShowInitialProduct(false);
         setCropping(false);
         setState({status: 'idle'});
         // Without this the same file cannot be picked twice in a row: the input still
@@ -169,6 +186,23 @@ export function VisualSearchClient() {
                                     {t('startOver')}
                                 </Button>
                             </div>
+                        </div>
+                    </div>
+                ) : showInitialProduct && initialProduct ? (
+                    <div className="relative flex flex-col items-center gap-7 sm:flex-row sm:justify-center">
+                        <div className="relative size-44 shrink-0 overflow-hidden rounded-2xl bg-muted elevate-2">
+                            {initialProduct.imageUrl ? (
+                                <Image src={initialProduct.imageUrl} alt={initialProduct.name} fill className="object-cover" />
+                            ) : null}
+                        </div>
+                        <div className="max-w-sm space-y-3 text-center sm:text-left">
+                            <p className="text-sm font-medium uppercase tracking-[0.16em] text-primary">{t('similarTo')}</p>
+                            <p className="text-xl font-semibold">{initialProduct.name}</p>
+                            <p className="font-light text-muted-foreground">{t('similarProductHint')}</p>
+                            <Button type="button" variant="outline" size="sm" onClick={openPicker} className="rounded-full">
+                                <ImageUp className="mr-2 size-4" />
+                                {t('searchWithOwnImage')}
+                            </Button>
                         </div>
                     </div>
                 ) : (

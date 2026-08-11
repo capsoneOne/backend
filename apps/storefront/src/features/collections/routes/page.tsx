@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { Suspense } from 'react';
 import { Link } from '@/platform/i18n/navigation';
 import { query } from '@/platform/vendure/api';
@@ -118,7 +119,8 @@ export default async function CollectionPage({params, searchParams}: PageProps<'
 
     const productDataPromise = getCollectionProducts(slug, searchParamsResolved, currencyCode);
     const collectionResult = await getCollectionMetadata(slug);
-    const collectionName = collectionResult.data.collection?.name ?? slug;
+    const collection = collectionResult.data.collection;
+    const collectionName = collection?.name ?? slug;
 
     return (
         <div className="container mx-auto px-4 py-8 mt-16">
@@ -136,8 +138,31 @@ export default async function CollectionPage({params, searchParams}: PageProps<'
             </Breadcrumb>
 
             {/* Collection Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold tracking-tight">{collectionName}</h1>
+            <div className="relative mb-10 overflow-hidden rounded-3xl bg-muted px-6 py-10 md:px-10 md:py-14">
+                {collection?.featuredAsset ? (
+                    <>
+                        <Image
+                            src={collection.featuredAsset.preview}
+                            alt=""
+                            fill
+                            priority
+                            className="object-cover"
+                            sizes="100vw"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/45 to-black/10" />
+                    </>
+                ) : (
+                    <div className="absolute inset-0 bg-dotfield opacity-60" />
+                )}
+                <div className={collection?.featuredAsset ? 'relative max-w-2xl text-white' : 'relative max-w-2xl'}>
+                    <h1 className="text-4xl font-bold tracking-tight md:text-5xl">{collectionName}</h1>
+                    {collection?.description ? (
+                        <div
+                            className={`mt-4 max-w-xl text-base leading-relaxed ${collection.featuredAsset ? 'text-white/80' : 'text-muted-foreground'}`}
+                            dangerouslySetInnerHTML={{__html: collection.description}}
+                        />
+                    ) : null}
+                </div>
             </div>
 
             <div className="flex flex-col gap-8 lg:flex-row">
