@@ -18,23 +18,25 @@ const navItems = [
 export default async function AccountLayout({children}: LayoutProps<'/[locale]/account'>) {
     return (
         <StorefrontPageShell>
-            {/* Mobile: horizontal tab bar */}
-            <div className="md:hidden mb-6">
-                <Suspense>
-                    <AccountNavLinks items={navItems} layout="horizontal" />
-                </Suspense>
-            </div>
-
-            <div className="flex gap-8">
-                {/* Desktop: sidebar */}
-                <aside className="hidden md:block w-64 shrink-0">
+            <div className="mx-auto max-w-6xl">
+                {/* Mobile: horizontal tab bar */}
+                <div className="mb-8 md:hidden">
                     <Suspense>
-                        <AccountNavLinks items={navItems} layout="vertical" />
+                        <AccountNavLinks items={navItems} layout="horizontal" />
                     </Suspense>
-                </aside>
-                <main className="flex-1 min-w-0">
-                    {children}
-                </main>
+                </div>
+
+                <div className="flex gap-8 lg:gap-10">
+                    {/* Desktop: sidebar */}
+                    <aside className="hidden w-60 shrink-0 self-start md:sticky md:top-24 md:block">
+                        <Suspense>
+                            <AccountNavLinks items={navItems} layout="vertical" />
+                        </Suspense>
+                    </aside>
+                    <main className="min-w-0 flex-1">
+                        {children}
+                    </main>
+                </div>
             </div>
         </StorefrontPageShell>
     );

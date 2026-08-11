@@ -82,7 +82,7 @@ export async function Footer() {
                     <div>
                         <p className={headingClass}>{t('categories')}</p>
                         <ul className="mt-4">
-                            <li><NavigationLink href="/collections" className={linkClass}>{t('allCollections')}</NavigationLink></li>
+                            <li><NavigationLink href="/categories" className={linkClass}>{t('allCollections')}</NavigationLink></li>
                             {collections.slice(0, 4).map((collection) => (
                                 <li key={collection.id}>
                                     <NavigationLink href={getCollectionPath(collection.slug)} className={linkClass}>
@@ -98,6 +98,7 @@ export async function Footer() {
                         <ul className="mt-4">
                             <li><NavigationLink href="/search" className={linkClass}>{t('shopAll')}</NavigationLink></li>
                             <li><NavigationLink href="/wishlist" className={linkClass}>{t('savedItems')}</NavigationLink></li>
+                            <li><NavigationLink href="/notifications" className={linkClass}>{t('notifications')}</NavigationLink></li>
                             <li><NavigationLink href="/account/orders" className={linkClass}>{t('orders')}</NavigationLink></li>
                             <li><NavigationLink href="/account/profile" className={linkClass}>{t('account')}</NavigationLink></li>
                         </ul>

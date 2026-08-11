@@ -2,25 +2,26 @@ import {NavigationLink} from '@/site/navigation/navigation-link';
 import {NavbarCollections} from '@/site/navigation/navbar/navbar-collections';
 import {NavbarCart} from '@/site/navigation/navbar/navbar-cart';
 import {NavbarUser} from '@/site/navigation/navbar/navbar-user';
-import {ThemeSwitcher} from '@/site/navigation/navbar/theme-switcher';
 import {LanguagePicker} from '@/site/navigation/navbar/language-picker';
 import {CurrencyPickerWrapper} from '@/site/navigation/navbar/currency-picker-wrapper';
 import {MobileNavWrapper} from '@/site/navigation/navbar/mobile-nav-wrapper';
 import {Suspense} from "react";
-import {SearchInput} from '@/site/navigation/search-input';
+import {SearchInputWrapper} from '@/site/navigation/search-input-wrapper';
 import {SearchLink} from '@/site/navigation/search-link';
 import {WishlistLink} from '@/site/navigation/wishlist-link';
+import {NotificationsLink} from '@/site/navigation/notifications-link';
 import {NavbarUserSkeleton} from '@/site/navigation/skeletons/navbar-user-skeleton';
 import {SearchInputSkeleton} from '@/site/navigation/skeletons/search-input-skeleton';
 import {Brand} from '@/site/brand';
 import {getTranslations} from 'next-intl/server';
 import {getRouteLocale} from '@/platform/i18n/server';
+import {PrimaryNavLink} from '@/site/navigation/primary-nav-link';
 
 /**
  * Three-zone header: identity, a centred search field, and actions.
  *
- * Collections and Shop All establish the fashion catalogue first. Text and
- * text and image search share one discovery control.
+ * Shop and Categories are product navigation. Search owns discovery; wishlist
+ * items, notifications, cart, and profile are compact utilities.
  */
 export async function Navbar() {
     const locale = await getRouteLocale();
@@ -41,12 +42,16 @@ export async function Navbar() {
                             <Brand className="max-w-[11rem] md:max-w-none" />
                         </NavigationLink>
                         <nav className="hidden items-center gap-1 lg:flex">
-                            <NavigationLink
-                                href="/search"
-                                className="inline-flex h-9 items-center rounded-lg px-4 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-                            >
-                                {t('shopAll')}
-                            </NavigationLink>
+                            <Suspense fallback={(
+                                <NavigationLink
+                                    href="/search"
+                                    className="inline-flex h-9 items-center rounded-md px-4 py-2 text-sm font-medium"
+                                >
+                                    {t('shop')}
+                                </NavigationLink>
+                            )}>
+                                <PrimaryNavLink href="/search">{t('shop')}</PrimaryNavLink>
+                            </Suspense>
                             <Suspense>
                                 <NavbarCollections/>
                             </Suspense>
@@ -55,7 +60,7 @@ export async function Navbar() {
 
                     <div className="hidden flex-1 justify-center px-2 lg:flex">
                         <Suspense fallback={<SearchInputSkeleton />}>
-                            <SearchInput/>
+                            <SearchInputWrapper/>
                         </Suspense>
                     </div>
 
@@ -63,19 +68,13 @@ export async function Navbar() {
                         <Suspense>
                             <SearchLink />
                         </Suspense>
-                        <span className="mx-1 hidden h-5 w-px bg-border sm:block" />
-                        <WishlistLink />
-                        <Suspense>
-                            <LanguagePicker />
-                        </Suspense>
-                        <Suspense>
-                            <CurrencyPickerWrapper />
-                        </Suspense>
+                        <span className="mx-1 hidden h-5 w-px bg-border lg:block" />
                         <span className="hidden sm:inline-flex">
-                            <Suspense>
-                                <ThemeSwitcher />
-                            </Suspense>
+                            <Suspense><WishlistLink /></Suspense>
                         </span>
+                        <Suspense>
+                            <NotificationsLink className="hidden md:inline-flex" />
+                        </Suspense>
                         <Suspense>
                             <NavbarCart/>
                         </Suspense>
@@ -83,6 +82,12 @@ export async function Navbar() {
                             <Suspense fallback={<NavbarUserSkeleton />}>
                                 <NavbarUser/>
                             </Suspense>
+                        </span>
+                        <span className="hidden min-[1700px]:inline-flex">
+                            <Suspense><LanguagePicker /></Suspense>
+                        </span>
+                        <span className="hidden min-[1700px]:inline-flex">
+                            <Suspense><CurrencyPickerWrapper /></Suspense>
                         </span>
                     </div>
                 </div>

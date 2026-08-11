@@ -22,11 +22,17 @@ export default async function CartPage() {
 
     return (
         <StorefrontPageShell>
-            <StorefrontPageHeader title={t('title')} variant="compact" />
+            <div className="mx-auto max-w-6xl">
+                <StorefrontPageHeader
+                    eyebrow={t('eyebrow')}
+                    title={t('title')}
+                    description={t('description')}
+                />
 
-            <Suspense fallback={<CartSkeleton />}>
-                <Cart/>
-            </Suspense>
+                <Suspense fallback={<CartSkeleton />}>
+                    <Cart/>
+                </Suspense>
+            </div>
         </StorefrontPageShell>
     );
 }

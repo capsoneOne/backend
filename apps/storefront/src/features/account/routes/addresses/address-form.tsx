@@ -166,11 +166,11 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
         </div>
       </FieldGroup>
 
-      <div className="flex gap-3 justify-end">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+      <div className="flex justify-end gap-3">
+        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting} className="min-h-11 px-4">
           {t('cancel')}
         </Button>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting} className="min-h-11 px-5">
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {address ? t('updateAddress') : t('saveAddress')}
         </Button>

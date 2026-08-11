@@ -22,8 +22,9 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Plus, MoreVertical, Home, CreditCard, Edit2, Trash2 } from 'lucide-react';
+import { Plus, MoreVertical, Home, CreditCard, Edit2, Trash2, MapPin } from 'lucide-react';
 import { AddressForm } from './address-form';
+import {AccountEmptyState} from '@/features/account/components/account-empty-state';
 import { createAddress, updateAddress, deleteAddress, setDefaultShippingAddress, setDefaultBillingAddress } from './actions';
 import { useRouter } from '@/platform/i18n/navigation';
 import {useTranslations} from 'next-intl';
@@ -145,28 +146,29 @@ export function AddressesClient({ addresses, countries }: AddressesClientProps) 
 
     return (
         <>
-            <div className="flex justify-between items-center">
-                <div></div>
-                <Button onClick={handleAddNew}>
+            <div className="flex justify-end">
+                <Button onClick={handleAddNew} className="min-h-11 px-5">
                     <Plus className="mr-2 h-4 w-4" />
                     {t('addNewAddress')}
                 </Button>
             </div>
 
             {addresses.length === 0 ? (
-                <Card>
-                    <CardContent className="py-12 text-center">
-                        <p className="text-muted-foreground mb-4">{t('noAddressesSaved')}</p>
-                        <Button onClick={handleAddNew}>
+                <AccountEmptyState
+                    icon={MapPin}
+                    title={t('noAddressesSaved')}
+                    description={t('noAddressesDescription')}
+                    action={(
+                        <Button onClick={handleAddNew} className="min-h-11 px-5">
                             <Plus className="mr-2 h-4 w-4" />
                             {t('addFirstAddress')}
                         </Button>
-                    </CardContent>
-                </Card>
+                    )}
+                />
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     {addresses.map((address) => (
-                        <Card key={address.id}>
+                        <Card key={address.id} className="gap-5 border-border">
                             <CardHeader>
                                 <div className="flex items-start justify-between">
                                     <div className="space-y-1 flex-1">
@@ -183,7 +185,7 @@ export function AddressesClient({ addresses, countries }: AddressesClientProps) 
                                         )}
                                     </div>
                                     <DropdownMenu>
-                                        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" aria-label="Address actions" />}>
+                                        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="size-10" aria-label={t('addressActions')} />}>
                                                 <MoreVertical className="h-4 w-4" />
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
@@ -225,7 +227,7 @@ export function AddressesClient({ addresses, countries }: AddressesClientProps) 
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-sm text-muted-foreground space-y-1">
+                                <div className="space-y-1 text-sm leading-relaxed text-muted-foreground">
                                     {address.company && <p>{address.company}</p>}
                                     <p>
                                         {address.streetLine1}

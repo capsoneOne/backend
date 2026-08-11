@@ -28,7 +28,7 @@ export async function ShopByCategory() {
                         </p>
                     </div>
                     <Link
-                        href="/collections"
+                        href="/categories"
                         className="hidden items-center gap-2 text-sm font-medium text-primary hover:underline md:flex"
                     >
                         {t('viewAllCategories')}
@@ -72,7 +72,7 @@ export async function ShopByCategory() {
                 </div>
 
                 <Link
-                    href="/collections"
+                    href="/categories"
                     className="mt-8 flex items-center justify-center gap-2 text-sm font-medium text-primary hover:underline md:hidden"
                 >
                     {t('viewAllCategories')}

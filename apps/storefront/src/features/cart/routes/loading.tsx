@@ -4,8 +4,10 @@ import {CataloguePageHeaderSkeleton, StorefrontPageShell} from '@/components/cat
 export default function CartLoading() {
     return (
         <StorefrontPageShell>
-            <CataloguePageHeaderSkeleton variant="compact" />
-            <CartSkeleton />
+            <div className="mx-auto max-w-6xl">
+                <CataloguePageHeaderSkeleton />
+                <CartSkeleton />
+            </div>
         </StorefrontPageShell>
     );
 }

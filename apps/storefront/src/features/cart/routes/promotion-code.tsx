@@ -13,10 +13,10 @@ type ActiveOrder = {
 export async function PromotionCode({activeOrder}: { activeOrder: ActiveOrder }) {
     const t = await getTranslations('Cart');
     return (
-        <Card className="mt-4">
+        <Card className="gap-5 border-border">
             <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                    <Tag className="h-5 w-5"/>
+                <CardTitle className="flex items-center gap-2 text-lg font-medium">
+                    <Tag className="h-5 w-5 text-primary"/>
                     {t('promotionCode')}
                 </CardTitle>
                 <CardDescription>
@@ -53,10 +53,10 @@ export async function PromotionCode({activeOrder}: { activeOrder: ActiveOrder })
                             type="text"
                             name="code"
                             placeholder={t('enterCode')}
-                            className="flex-1"
+                            className="min-h-10 flex-1"
                             required
                         />
-                        <Button type="submit">{t('apply')}</Button>
+                        <Button type="submit" className="min-h-10 px-4">{t('apply')}</Button>
                     </form>
                 )}
             </CardContent>

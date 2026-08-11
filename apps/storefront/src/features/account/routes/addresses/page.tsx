@@ -5,7 +5,7 @@ import {GetCustomerAddressesQuery} from '@/features/account/graphql';
 import {GetAvailableCountriesQuery} from '@/features/checkout/graphql';
 import { AddressesClient } from './addresses-client';
 import {getTranslations} from 'next-intl/server';
-import {StorefrontPageHeader} from '@/components/catalogue-page';
+import {AccountPageHeader} from '@/features/account/components/account-page-header';
 
 export async function generateMetadata(): Promise<Metadata> {
     const locale = await getRouteLocale();
@@ -28,10 +28,9 @@ export default async function AddressesPage() {
 
     return (
         <div>
-            <StorefrontPageHeader
+            <AccountPageHeader
                 title={t('addresses')}
                 description={t('manageAddresses')}
-                variant="compact"
             />
 
             <div className="space-y-6">

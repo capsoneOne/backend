@@ -13,13 +13,14 @@
     "deliveryDescription": "On orders over $50",
     "returnsTitle": "Easy 30-day returns",
     "returnsDescription": "Simple and straightforward",
-    "wishlistTitle": "Save your favourites",
-    "wishlistDescription": "Keep styles for later",
+    "wishlistTitle": "Build your wishlist",
+    "wishlistDescription": "Keep favourite styles together",
     "categories": "Categories",
     "shop": "Shop",
     "support": "Support",
     "shopAll": "Shop All",
-    "savedItems": "Saved items",
+    "savedItems": "Wishlist",
+    "notifications": "Notifications",
     "orders": "Orders",
     "account": "Account",
     "copyright": "{siteName}. All rights reserved.",
@@ -31,6 +32,6 @@
     "shippingReturns": "Shipping & Returns",
     "privacy": "Privacy",
     "terms": "Terms",
-    "allCollections": "All collections"
+    "allCollections": "All categories"
   }
 }

@@ -27,7 +27,7 @@ const MAX_SUGGESTIONS = 6;
  * Deliberately a server action rather than a public route handler: it runs with
  * the storefront's channel token and cannot be scraped as an open endpoint.
  */
-export async function fetchSearchSuggestions(term: string): Promise<SuggestionResult> {
+export async function fetchSearchSuggestions(term: string, collectionSlug?: string): Promise<SuggestionResult> {
     const trimmed = term.trim();
     if (trimmed.length < 2) return {items: [], totalItems: 0};
 
@@ -36,7 +36,14 @@ export async function fetchSearchSuggestions(term: string): Promise<SuggestionRe
         const currencyCode = await getActiveCurrencyCode();
         const result = await query(
             SearchSuggestionsQuery,
-            {input: {term: trimmed, take: MAX_SUGGESTIONS, groupByProduct: true}},
+            {
+                input: {
+                    term: trimmed,
+                    take: MAX_SUGGESTIONS,
+                    groupByProduct: true,
+                    ...(collectionSlug ? {collectionSlug} : {}),
+                },
+            },
             {languageCode: locale, currencyCode},
         );
 

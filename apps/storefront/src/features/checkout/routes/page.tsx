@@ -57,17 +57,23 @@ export default async function CheckoutPage() {
 
     return (
         <StorefrontPageShell>
-            <StorefrontPageHeader title={t('pageTitle')} variant="compact" />
-            <CheckoutProvider
-                order={activeOrder}
-                addresses={addresses}
-                countries={countries}
-                shippingMethods={shippingMethods}
-                paymentMethods={paymentMethods}
-                isGuest={isGuest}
-            >
-                <CheckoutFlow/>
-            </CheckoutProvider>
+            <div className="mx-auto max-w-6xl">
+                <StorefrontPageHeader
+                    eyebrow={t('eyebrow')}
+                    title={t('pageTitle')}
+                    description={t('description')}
+                />
+                <CheckoutProvider
+                    order={activeOrder}
+                    addresses={addresses}
+                    countries={countries}
+                    shippingMethods={shippingMethods}
+                    paymentMethods={paymentMethods}
+                    isGuest={isGuest}
+                >
+                    <CheckoutFlow/>
+                </CheckoutProvider>
+            </div>
         </StorefrontPageShell>
     );
 }

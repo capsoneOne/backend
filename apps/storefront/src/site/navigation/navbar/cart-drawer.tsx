@@ -12,8 +12,9 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/components/ui/sheet';
-import {Link} from '@/platform/i18n/navigation';
+import {Link, usePathname} from '@/platform/i18n/navigation';
 import {Price} from '@/features/pricing/price';
+import {cn} from '@/lib/utils';
 
 export interface CartDrawerLine {
     id: string;
@@ -47,12 +48,20 @@ export function CartDrawer({
     const t = useTranslations('Cart');
     const tNav = useTranslations('Navigation');
     const [open, setOpen] = useState(false);
+    const pathname = usePathname();
+    const active = pathname.startsWith('/cart');
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger
                 render={
-                    <Button variant="ghost" size="icon" className="relative size-11">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn('relative size-11', active && 'bg-primary/10 text-primary')}
+                        aria-current={active ? 'page' : undefined}
+                        title={tNav('cart')}
+                    >
                         <ShoppingCart className="size-5" />
                         {itemCount > 0 && (
                             <span className="absolute -right-0.5 -top-0.5 flex min-w-4.5 items-center justify-center rounded-full bg-primary px-1 text-[0.625rem] font-bold leading-4.5 text-primary-foreground">

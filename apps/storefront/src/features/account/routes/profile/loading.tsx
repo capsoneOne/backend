@@ -8,44 +8,23 @@ export default function ProfileLoading() {
             <CataloguePageHeaderSkeleton variant="compact" />
 
             <div className="space-y-6">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Account Information</CardTitle>
-                    <CardDescription>
-                        Your personal details
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div>
-                        <p className="text-sm font-medium">Email</p>
-                        <Skeleton className="h-4 w-48 mt-1"/>
-                    </div>
-                    <div>
-                        <p className="text-sm font-medium">Name</p>
-                        <Skeleton className="h-4 w-32 mt-1"/>
-                    </div>
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle>Change Password</CardTitle>
-                    <CardDescription>
-                        Update your password
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-32"/>
-                        <Skeleton className="h-10 w-full"/>
-                    </div>
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-32"/>
-                        <Skeleton className="h-10 w-full"/>
-                    </div>
-                    <Skeleton className="h-10 w-32"/>
-                </CardContent>
-            </Card>
+                {[2, 3, 3].map((fieldCount, cardIndex) => (
+                    <Card key={cardIndex} className="gap-5 border-border">
+                        <CardHeader>
+                            <CardTitle><Skeleton className="h-5 w-40" /></CardTitle>
+                            <CardDescription><Skeleton className="h-4 w-64" /></CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {Array.from({length: fieldCount}, (_, index) => (
+                                <div key={index} className="space-y-2">
+                                    <Skeleton className="h-4 w-32"/>
+                                    <Skeleton className="h-10 w-full"/>
+                                </div>
+                            ))}
+                            <Skeleton className="h-11 w-36 rounded-lg"/>
+                        </CardContent>
+                    </Card>
+                ))}
             </div>
         </div>
     );

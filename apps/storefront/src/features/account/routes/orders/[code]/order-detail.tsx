@@ -12,7 +12,8 @@ import {formatDate} from '@/platform/i18n/format';
 import {useLocale, useTranslations} from 'next-intl';
 import type {ResultOf} from '@/platform/vendure/graphql';
 import type {GetOrderDetailQuery} from '@/features/account/graphql';
-import {StorefrontBreadcrumbs, StorefrontPageHeader} from '@/components/catalogue-page';
+import {StorefrontBreadcrumbs} from '@/components/catalogue-page';
+import {AccountPageHeader} from '@/features/account/components/account-page-header';
 
 type OrderByCode = NonNullable<ResultOf<typeof GetOrderDetailQuery>['orderByCode']>;
 type OrderLineItem = OrderByCode['lines'][number];
@@ -36,10 +37,9 @@ export function OrderDetail({orderPromise}: OrderDetailProps) {
 
     return (
         <div>
-            <StorefrontPageHeader
+            <AccountPageHeader
                 title={t('order', {code: order.code})}
                 description={t('placedOn', {date: formatDate(order.createdAt, 'long', locale)})}
-                variant="compact"
                 breadcrumbs={(
                     <StorefrontBreadcrumbs
                         items={[
@@ -51,9 +51,9 @@ export function OrderDetail({orderPromise}: OrderDetailProps) {
                 actions={<OrderStatusBadge state={order.state}/>}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 space-y-6">
-                    <Card>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <div className="space-y-6 lg:col-span-2">
+                    <Card className="gap-5 border-border">
                         <CardHeader>
                             <CardTitle>{t('orderItems')}</CardTitle>
                         </CardHeader>
@@ -61,7 +61,7 @@ export function OrderDetail({orderPromise}: OrderDetailProps) {
                             <div className="space-y-4">
                                 {order.lines.map((line: OrderLineItem) => (
                                     <div key={line.id} className="flex gap-4">
-                                        <div className="relative h-20 w-20 rounded-md overflow-hidden bg-gray-100 flex-shrink-0">
+                                        <div className="relative size-20 flex-shrink-0 overflow-hidden rounded-xl bg-muted">
                                             {line.productVariant.product.featuredAsset && (
                                                 <Image
                                                     src={line.productVariant.product.featuredAsset.preview}
@@ -99,7 +99,7 @@ export function OrderDetail({orderPromise}: OrderDetailProps) {
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="gap-5 border-border">
                         <CardHeader>
                             <CardTitle>{t('orderSummary')}</CardTitle>
                         </CardHeader>
@@ -133,7 +133,7 @@ export function OrderDetail({orderPromise}: OrderDetailProps) {
 
                 <div className="space-y-6">
                     {order.shippingAddress && (
-                        <Card>
+                        <Card className="gap-5 border-border">
                             <CardHeader><CardTitle>{t('shippingAddress')}</CardTitle></CardHeader>
                             <CardContent className="text-sm">
                                 <p className="font-medium">{order.shippingAddress.fullName}</p>
@@ -148,7 +148,7 @@ export function OrderDetail({orderPromise}: OrderDetailProps) {
                     )}
 
                     {order.billingAddress && (
-                        <Card>
+                        <Card className="gap-5 border-border">
                             <CardHeader><CardTitle>{t('billingAddress')}</CardTitle></CardHeader>
                             <CardContent className="text-sm">
                                 <p className="font-medium">{order.billingAddress.fullName}</p>
@@ -163,7 +163,7 @@ export function OrderDetail({orderPromise}: OrderDetailProps) {
                     )}
 
                     {order.payments && order.payments.length > 0 && (
-                        <Card>
+                        <Card className="gap-5 border-border">
                             <CardHeader><CardTitle>{t('payment')}</CardTitle></CardHeader>
                             <CardContent>
                                 {order.payments.map((payment: OrderPayment) => (
@@ -193,7 +193,7 @@ export function OrderDetail({orderPromise}: OrderDetailProps) {
                     )}
 
                     {order.shippingLines?.length > 0 && (
-                        <Card>
+                        <Card className="gap-5 border-border">
                             <CardHeader><CardTitle>{t('shippingMethod')}</CardTitle></CardHeader>
                             <CardContent>
                                 {order.shippingLines.map((line: OrderShippingLine, idx: number) => (

@@ -17,13 +17,13 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
         title: t('indexTitle'),
         description: t('indexDescription', {siteName: SITE_NAME}),
-        alternates: {canonical: buildCanonicalUrl('/collections')},
+        alternates: {canonical: buildCanonicalUrl('/categories')},
         openGraph: {
             title: `${t('indexTitle')} | ${SITE_NAME}`,
             description: t('indexDescription', {siteName: SITE_NAME}),
             type: 'website',
             locale: toOgLocale(locale),
-            url: buildCanonicalUrl('/collections'),
+            url: buildCanonicalUrl('/categories'),
         },
     };
 }
@@ -84,7 +84,10 @@ export default async function CollectionsIndexPage() {
                                 </h2>
                                 <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
                             </div>
-                            <p className="px-1 pt-1 text-sm font-light text-muted-foreground">
+                            <p className="line-clamp-2 min-h-10 px-1 pt-2 text-sm font-light leading-relaxed text-muted-foreground">
+                                {collection.description}
+                            </p>
+                            <p className="px-1 pt-3 text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
                                 {t('productCount', {count: collection.productVariants.totalItems})}
                             </p>
                             {collection.children?.length ? (

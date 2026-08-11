@@ -7,9 +7,9 @@ export default function OrdersLoading() {
         <div>
             <CataloguePageHeaderSkeleton variant="compact" />
 
-            <div className="border rounded-lg">
+            <div className="overflow-hidden rounded-xl border border-border bg-card">
                 <Table>
-                    <TableHeader className="bg-muted">
+                    <TableHeader className="bg-muted/60">
                         <TableRow>
                             <TableHead>Order Number</TableHead>
                             <TableHead>Date</TableHead>

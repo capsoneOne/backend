@@ -5,16 +5,17 @@ import {useTranslations} from 'next-intl';
 import {ArrowRight, Heart, Lock, Trash2} from 'lucide-react';
 import {Link} from '@/platform/i18n/navigation';
 import {Button} from '@/components/ui/button';
+import {Card, CardContent} from '@/components/ui/card';
 import {ProductTile, ProductTileSkeleton} from '@/components/product-tile';
 import {CataloguePageHeader, StorefrontPageShell} from '@/components/catalogue-page';
 import {Price} from '@/features/pricing/price';
 import {useWishlist} from '@/features/wishlist/wishlist-context';
 
 /**
- * The saved-items list.
+ * The wishlist.
  *
  * Client-rendered, because the list lives in localStorage — there is no server
- * state to fetch. `ready` gates the first paint so a shopper with saved items
+ * state to fetch. `ready` gates the first paint so a shopper with wishlist items
  * never sees the empty state flash before hydration finishes.
  */
 export function WishlistList() {
@@ -26,90 +27,93 @@ export function WishlistList() {
 
     return (
         <StorefrontPageShell>
-            <CataloguePageHeader
-                eyebrow={t('eyebrow')}
-                title={t('title')}
-                description={t('description')}
-                actions={(
-                    <div className="flex flex-wrap items-center gap-4">
-                    <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-                        <Heart className="size-4 text-primary" aria-hidden="true" />
-                        {ready ? t('count', {count: items.length}) : t('loading')}
-                    </span>
-                    {ready && items.length > 0 ? (
-                        <Button variant="ghost" size="sm" onClick={clearWishlist} className="min-h-10 px-3 text-muted-foreground">
-                            <Trash2 className="mr-2 size-4" />
-                            {t('clearAll')}
-                        </Button>
-                    ) : null}
-                    </div>
-                )}
-            />
-
-            <div>
-                {!ready ? (
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 md:gap-x-6 xl:grid-cols-4">
-                        {Array.from({length: 4}).map((_, i) => (
-                            <ProductTileSkeleton key={i} />
-                        ))}
-                    </div>
-                ) : items.length === 0 ? (
-                    <div className="mx-auto grid max-w-4xl overflow-hidden rounded-xl border border-border bg-card md:grid-cols-2">
-                        <div className="relative flex min-h-72 items-center justify-center bg-secondary/45 p-8">
-                            <Image
-                                src="/storyset/choosing-clothes-cuate.svg"
-                                alt={t('illustrationAlt')}
-                                width={500}
-                                height={500}
-                                priority
-                                className="max-h-[19rem] w-full object-contain"
-                            />
-                            <p className="absolute bottom-3 left-0 right-0 text-center text-[0.6875rem] text-muted-foreground">
-                                <a
-                                    href="https://storyset.com/illustration/choosing-clothes/cuate"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="underline decoration-border underline-offset-4 transition-colors hover:text-foreground"
-                                >
-                                    {t('illustrationCredit')}
-                                </a>
-                            </p>
-                        </div>
-
-                        <div className="flex flex-col justify-center p-8 sm:p-10">
-                            <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">{t('emptyEyebrow')}</p>
-                            <h2 className="mt-3 text-balance text-2xl font-bold md:text-3xl">{t('emptyTitle')}</h2>
-                            <p className="mt-4 max-w-lg font-light leading-relaxed text-muted-foreground">{t('emptyBody')}</p>
-                            <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
-                                <Button render={<Link href="/search" />} nativeButton={false} className="min-h-11 rounded-lg px-5">
-                                    {t('browse')}
-                                    <ArrowRight className="ml-2 size-4" aria-hidden="true" />
+            <div className="mx-auto max-w-4xl">
+                <CataloguePageHeader
+                    eyebrow={t('eyebrow')}
+                    title={t('title')}
+                    description={t('description')}
+                    actions={(
+                        <div className="flex flex-wrap items-center gap-4">
+                            <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+                                <Heart className="size-4 text-primary" aria-hidden="true" />
+                                {ready ? t('count', {count: items.length}) : t('loading')}
+                            </span>
+                            {ready && items.length > 0 ? (
+                                <Button variant="ghost" size="sm" onClick={clearWishlist} className="min-h-10 px-3 text-muted-foreground">
+                                    <Trash2 className="mr-2 size-4" />
+                                    {t('clearAll')}
                                 </Button>
-                                <Link
-                                    href="/collections"
-                                    className="inline-flex min-h-11 items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                                >
-                                    {t('exploreCategories')}
-                                </Link>
-                            </div>
-                            <p className="mt-6 flex items-center gap-2 text-xs text-muted-foreground">
-                                <Lock className="size-3.5 text-primary" aria-hidden="true" />
-                                {t('deviceNote')}
-                            </p>
+                            ) : null}
                         </div>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 md:gap-x-6 xl:grid-cols-4">
-                        {items.map(item => (
-                            <ProductTile
-                                key={item.productId}
-                                href={`/product/${item.slug}`}
-                                imageUrl={item.imageUrl}
-                                imageAlt={item.name}
-                                title={item.name}
-                                noImageLabel={t('noImage')}
-                                actions={(
-                                    <button
+                    )}
+                />
+
+                <div>
+                    {!ready ? (
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 md:gap-x-6 xl:grid-cols-4">
+                            {Array.from({length: 4}).map((_, i) => (
+                                <ProductTileSkeleton key={i} />
+                            ))}
+                        </div>
+                    ) : items.length === 0 ? (
+                        <Card className="gap-0 overflow-hidden py-0">
+                            <CardContent className="grid p-0 md:grid-cols-2">
+                                <div className="relative flex min-h-72 items-center justify-center bg-secondary/45 p-7 sm:p-9">
+                                    <Image
+                                        src="/storyset/online-wishes-list-cuate.svg"
+                                        alt={t('illustrationAlt')}
+                                        width={500}
+                                        height={500}
+                                        priority
+                                        className="max-h-80 w-full object-contain"
+                                    />
+                                    <p className="absolute inset-x-0 bottom-3 text-center text-[0.6875rem] text-muted-foreground">
+                                        <a
+                                            href="https://storyset.com/illustration/online-wishes-list/cuate"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="underline decoration-border underline-offset-4 transition-colors hover:text-foreground"
+                                        >
+                                            {t('illustrationCredit')}
+                                        </a>
+                                    </p>
+                                </div>
+
+                                <div className="flex flex-col justify-center px-7 py-10 sm:p-10">
+                                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">{t('emptyEyebrow')}</p>
+                                    <h2 className="mt-3 text-balance text-2xl font-bold md:text-3xl">{t('emptyTitle')}</h2>
+                                    <p className="mt-4 max-w-lg font-light leading-relaxed text-muted-foreground">{t('emptyBody')}</p>
+                                    <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
+                                        <Button render={<Link href="/search" />} nativeButton={false} className="min-h-11 rounded-lg px-5">
+                                            {t('browse')}
+                                            <ArrowRight className="ml-2 size-4" aria-hidden="true" />
+                                        </Button>
+                                        <Link
+                                            href="/categories"
+                                            className="inline-flex min-h-11 items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                                        >
+                                            {t('exploreCategories')}
+                                        </Link>
+                                    </div>
+                                    <p className="mt-6 flex items-center gap-2 text-xs text-muted-foreground">
+                                        <Lock className="size-3.5 text-primary" aria-hidden="true" />
+                                        {t('deviceNote')}
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 md:gap-x-6 xl:grid-cols-4">
+                            {items.map(item => (
+                                <ProductTile
+                                    key={item.productId}
+                                    href={`/product/${item.slug}`}
+                                    imageUrl={item.imageUrl}
+                                    imageAlt={item.name}
+                                    title={item.name}
+                                    noImageLabel={t('noImage')}
+                                    actions={(
+                                        <button
                                             type="button"
                                             onClick={(event) => {
                                                 event.preventDefault();
@@ -122,16 +126,17 @@ export function WishlistList() {
                                         >
                                             <Trash2 className="size-4" aria-hidden="true" />
                                         </button>
-                                )}
-                                footer={(
-                                    <p className="text-[0.9375rem] font-bold tracking-tight">
-                                        <Price value={item.price} currencyCode={item.currencyCode} />
-                                    </p>
-                                )}
-                            />
-                        ))}
-                    </div>
-                )}
+                                    )}
+                                    footer={(
+                                        <p className="text-[0.9375rem] font-bold tracking-tight">
+                                            <Price value={item.price} currencyCode={item.currencyCode} />
+                                        </p>
+                                    )}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
         </StorefrontPageShell>
     );

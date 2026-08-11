@@ -106,13 +106,13 @@ export default function OrderSummary() {
     <>
       {/* Mobile: Collapsible summary */}
       <div className="lg:hidden">
-        <Card>
+        <Card className="gap-5 border-border">
           <Collapsible open={isOpen} onOpenChange={setIsOpen}>
             <CollapsibleTrigger className="w-full">
-              <CardHeader className="cursor-pointer">
+              <CardHeader className="cursor-pointer px-5 sm:px-6">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <ShoppingBag className="h-5 w-5" />
+                  <CardTitle className="flex items-center gap-2 text-base font-medium">
+                    <ShoppingBag className="h-5 w-5 text-primary" />
                     {t('orderSummary')} ({order.lines.length} {order.lines.length === 1 ? t('item') : t('items')})
                   </CardTitle>
                   <div className="flex items-center gap-2">
@@ -135,9 +135,9 @@ export default function OrderSummary() {
 
       {/* Desktop: Always visible sticky summary */}
       <div className="hidden lg:block">
-        <Card className="sticky top-24">
+        <Card className="sticky top-24 gap-5 border-border">
           <CardHeader>
-            <CardTitle>{t('orderSummary')}</CardTitle>
+            <CardTitle className="text-lg font-bold">{t('orderSummary')}</CardTitle>
           </CardHeader>
           <CardContent>
             <OrderSummaryContent order={order} t={t} />

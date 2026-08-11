@@ -30,7 +30,10 @@ export function AccountNavLinks({items, layout}: AccountNavLinksProps) {
 
     if (layout === 'horizontal') {
         return (
-            <nav className="flex gap-1 overflow-x-auto border-b border-border pb-px">
+            <nav
+                className="flex gap-1 overflow-x-auto rounded-xl border border-border bg-card p-1.5"
+                aria-label={t('accountNavigation')}
+            >
                 {items.map((item) => {
                     const isActive = pathname.startsWith(item.href);
                     const Icon = iconMap[item.icon];
@@ -38,14 +41,15 @@ export function AccountNavLinks({items, layout}: AccountNavLinksProps) {
                         <Link
                             key={item.href}
                             href={item.href}
+                            aria-current={isActive ? 'page' : undefined}
                             className={cn(
-                                'flex items-center gap-2 px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors',
+                                'flex min-h-11 items-center gap-2 whitespace-nowrap rounded-lg px-4 text-sm font-medium transition-colors',
                                 isActive
-                                    ? 'border-primary text-foreground'
-                                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                                    ? 'bg-primary/10 text-primary'
+                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                             )}
                         >
-                            {Icon && <Icon className="h-4 w-4" />}
+                            {Icon && <Icon className="size-4" aria-hidden="true" />}
                             {t(item.labelKey)}
                         </Link>
                     );
@@ -55,7 +59,10 @@ export function AccountNavLinks({items, layout}: AccountNavLinksProps) {
     }
 
     return (
-        <nav className="space-y-1">
+        <nav
+            className="space-y-1 rounded-xl border border-border bg-card p-2"
+            aria-label={t('accountNavigation')}
+        >
             {items.map((item) => {
                 const isActive = pathname.startsWith(item.href);
                 const Icon = iconMap[item.icon];
@@ -63,14 +70,15 @@ export function AccountNavLinks({items, layout}: AccountNavLinksProps) {
                     <Link
                         key={item.href}
                         href={item.href}
+                        aria-current={isActive ? 'page' : undefined}
                         className={cn(
-                            'flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                            'flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-colors',
                             isActive
-                                ? 'bg-accent text-accent-foreground'
-                                : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                                ? 'bg-primary/10 text-primary'
+                                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                         )}
                     >
-                        {Icon && <Icon className="h-5 w-5" />}
+                        {Icon && <Icon className="size-5" aria-hidden="true" />}
                         {t(item.labelKey)}
                     </Link>
                 );

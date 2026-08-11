@@ -14,7 +14,7 @@
  *   - a country, a zone, a tax category and a zero-rate tax, wired as the channel's
  *     default tax and shipping zone
  *   - eight products, each with one image and one variant
- *   - a "featured" collection containing them (the storefront home carousel reads it)
+ *   - a clothing-store collection hierarchy used by catalogue navigation
  *   - a DefaultSearchPlugin reindex, so keyword search and the home page see them
  *   - a visual-search reindex, so the products become findable by image
  *
@@ -51,6 +51,100 @@ const PRODUCTS = [
      description: '22-litre daypack in burnt orange ripstop.'},
     {slug: 'purple-scarf', name: 'Purple Scarf', file: 'purple-scarf.jpg', price: 3400,
      description: 'Lambswool scarf in heather purple.'},
+];
+
+const COLLECTIONS = [
+    {
+        slug: 'featured',
+        name: 'Featured',
+        description: 'A curated edit of standout layers, shoes, and accessories for the season.',
+        featuredProduct: 'blue-denim-jacket',
+        products: [
+            'red-leather-boot',
+            'blue-denim-jacket',
+            'yellow-rain-coat',
+            'black-sunglasses',
+            'white-sneaker',
+            'orange-backpack',
+            'purple-scarf',
+        ],
+    },
+    {
+        slug: 'clothing',
+        name: 'Clothing',
+        description: 'Easy layers and weather-ready outerwear for an everyday rotation.',
+        featuredProduct: 'yellow-rain-coat',
+        products: ['blue-denim-jacket', 'yellow-rain-coat'],
+        children: [
+            {
+                slug: 'jackets',
+                name: 'Jackets',
+                description: 'Versatile jackets made for effortless layering.',
+                featuredProduct: 'blue-denim-jacket',
+                products: ['blue-denim-jacket'],
+            },
+            {
+                slug: 'rainwear',
+                name: 'Rainwear',
+                description: 'Lightweight, weather-ready layers for grey days.',
+                featuredProduct: 'yellow-rain-coat',
+                products: ['yellow-rain-coat'],
+            },
+        ],
+    },
+    {
+        slug: 'shoes',
+        name: 'Shoes',
+        description: 'Everyday sneakers and statement boots built to go anywhere.',
+        featuredProduct: 'white-sneaker',
+        products: ['red-leather-boot', 'white-sneaker'],
+        children: [
+            {
+                slug: 'sneakers',
+                name: 'Sneakers',
+                description: 'Clean low-tops for comfortable everyday wear.',
+                featuredProduct: 'white-sneaker',
+                products: ['white-sneaker'],
+            },
+            {
+                slug: 'boots',
+                name: 'Boots',
+                description: 'Polished boots with a confident, easy silhouette.',
+                featuredProduct: 'red-leather-boot',
+                products: ['red-leather-boot'],
+            },
+        ],
+    },
+    {
+        slug: 'accessories',
+        name: 'Accessories',
+        description: 'The finishing pieces: bags, eyewear, and soft accessories.',
+        featuredProduct: 'orange-backpack',
+        products: ['black-sunglasses', 'orange-backpack', 'purple-scarf'],
+        children: [
+            {
+                slug: 'bags',
+                name: 'Bags',
+                description: 'Practical carryalls designed for days on the move.',
+                featuredProduct: 'orange-backpack',
+                products: ['orange-backpack'],
+            },
+            {
+                slug: 'eyewear',
+                name: 'Eyewear',
+                description: 'Modern frames that finish the look.',
+                featuredProduct: 'black-sunglasses',
+                products: ['black-sunglasses'],
+            },
+            {
+                slug: 'scarves',
+                name: 'Scarves',
+                description: 'Soft colour and warmth for cooler days.',
+                featuredProduct: 'purple-scarf',
+                products: ['purple-scarf'],
+            },
+        ],
+    },
 ];
 
 let token;
@@ -202,13 +296,14 @@ async function ensureChannelSetup() {
 }
 
 async function ensureProducts() {
-    const {products} = await gql(`query { products { items { id slug } } }`);
-    const existing = new Map(products.items.map(p => [p.slug, p.id]));
-    const ids = [];
+    const {products} = await gql(`query { products(options: {take: 100}) { items { id slug featuredAsset { id } } } }`);
+    const existing = new Map(products.items.map(p => [p.slug, p]));
+    const catalog = new Map();
 
     for (const p of PRODUCTS) {
         if (existing.has(p.slug)) {
-            ids.push(existing.get(p.slug));
+            const product = existing.get(p.slug);
+            catalog.set(p.slug, {id: product.id, assetId: product.featuredAsset?.id});
             continue;
         }
         const assetId = await uploadAsset(p.file);
@@ -247,43 +342,73 @@ async function ensureProducts() {
                 ],
             },
         );
-        ids.push(created.createProduct.id);
+        catalog.set(p.slug, {id: created.createProduct.id, assetId});
         console.log('  product', created.createProduct.name);
     }
-    return ids;
+    return catalog;
 }
 
-async function ensureCollection(productIds) {
-    const {collections} = await gql(`query { collections { items { id slug } } }`);
-    if (collections.items.some(c => c.slug === 'featured')) {
-        return;
-    }
-    await gql(
-        `mutation Create($input: CreateCollectionInput!) { createCollection(input: $input) { id slug } }`,
-        {
-            input: {
-                isPrivate: false,
-                translations: [
-                    {
-                        languageCode: 'en',
-                        name: 'Featured',
-                        slug: 'featured',
-                        description: 'Sample catalog seeded for visual-search development.',
-                    },
-                ],
-                filters: [
-                    {
-                        code: 'product-id-filter',
-                        arguments: [
-                            {name: 'productIds', value: JSON.stringify(productIds)},
-                            {name: 'combineWithAnd', value: 'false'},
-                        ],
-                    },
+function collectionInput(definition, catalog, parentId) {
+    const productIds = definition.products.map(slug => catalog.get(slug)?.id).filter(Boolean);
+    const featuredAssetId = catalog.get(definition.featuredProduct)?.assetId;
+
+    return {
+        isPrivate: false,
+        inheritFilters: false,
+        ...(parentId ? {parentId} : {}),
+        ...(featuredAssetId ? {featuredAssetId, assetIds: [featuredAssetId]} : {}),
+        translations: [
+            {
+                languageCode: 'en',
+                name: definition.name,
+                slug: definition.slug,
+                description: definition.description,
+            },
+        ],
+        filters: [
+            {
+                code: 'product-id-filter',
+                arguments: [
+                    {name: 'productIds', value: JSON.stringify(productIds)},
+                    {name: 'combineWithAnd', value: 'false'},
                 ],
             },
-        },
+        ],
+    };
+}
+
+async function ensureCollection(definition, catalog, existing, parentId) {
+    const current = existing.get(definition.slug);
+    const input = collectionInput(definition, catalog, parentId);
+
+    if (current) {
+        await gql(
+            `mutation Update($input: UpdateCollectionInput!) { updateCollection(input: $input) { id slug } }`,
+            {input: {id: current.id, ...input}},
+        );
+        console.log('  collection', definition.slug, '(updated)');
+        return current.id;
+    }
+
+    const created = await gql(
+        `mutation Create($input: CreateCollectionInput!) { createCollection(input: $input) { id slug } }`,
+        {input},
     );
-    console.log('  collection featured');
+    existing.set(definition.slug, created.createCollection);
+    console.log('  collection', definition.slug);
+    return created.createCollection.id;
+}
+
+async function ensureCollections(catalog) {
+    const {collections} = await gql(`query { collections(options: {take: 100}) { items { id slug } } }`);
+    const existing = new Map(collections.items.map(collection => [collection.slug, collection]));
+
+    for (const definition of COLLECTIONS) {
+        const parentId = await ensureCollection(definition, catalog, existing);
+        for (const child of definition.children ?? []) {
+            await ensureCollection(child, catalog, existing, parentId);
+        }
+    }
 }
 
 // --- run ---------------------------------------------------------------------
@@ -295,10 +420,10 @@ console.log('channel setup:');
 await ensureChannelSetup();
 
 console.log('catalog:');
-const productIds = await ensureProducts();
+const catalog = await ensureProducts();
 
-console.log('collection:');
-await ensureCollection(productIds);
+console.log('collections:');
+await ensureCollections(catalog);
 
 console.log('indexes:');
 const search = await gql(`mutation { reindex { id } }`);

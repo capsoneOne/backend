@@ -20,7 +20,7 @@ export function ChangePasswordForm() {
     }, [state?.success]);
 
     return (
-        <Card>
+        <Card className="gap-5 border-border">
             <CardHeader>
                 <CardTitle>{t('changePassword')}</CardTitle>
                 <CardDescription>
@@ -65,11 +65,11 @@ export function ChangePasswordForm() {
                         </div>
                     )}
                     {state?.success && (
-                        <div className="text-sm text-green-600">
+                        <div className="text-sm text-emerald-700 dark:text-emerald-400">
                             {t('passwordUpdated')}
                         </div>
                     )}
-                    <Button type="submit" disabled={isPending}>
+                    <Button type="submit" disabled={isPending} className="min-h-11 px-5">
                         {isPending ? t('updating') : t('updatePassword')}
                     </Button>
                 </CardContent>

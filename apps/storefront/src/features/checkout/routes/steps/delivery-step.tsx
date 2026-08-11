@@ -55,12 +55,12 @@ export default function DeliveryStep({ onComplete }: DeliveryStepProps) {
 
   return (
     <div className="space-y-6">
-      <h3 className="font-semibold">{t('selectShippingMethod')}</h3>
+      <h3 className="font-medium">{t('selectShippingMethod')}</h3>
 
       <RadioGroup value={selectedMethodId || ''} onValueChange={setSelectedMethodId}>
         {shippingMethods.map((method) => (
           <Label key={method.id} htmlFor={method.id} className="cursor-pointer">
-            <Card className="p-4">
+            <Card className="gap-0 border-border p-4 transition-colors hover:border-primary/30">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 flex-1">
                   <RadioGroupItem value={method.id} id={method.id} />
@@ -75,7 +75,7 @@ export default function DeliveryStep({ onComplete }: DeliveryStepProps) {
                   </div>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="font-semibold">
+                  <p className="font-bold">
                     {method.priceWithTax === 0
                       ? t('free')
                       : (method.priceWithTax / 100).toLocaleString(intlLocale, {
@@ -93,7 +93,7 @@ export default function DeliveryStep({ onComplete }: DeliveryStepProps) {
       <Button
         onClick={handleContinue}
         disabled={!selectedMethodId || submitting}
-        className="w-full"
+        className="min-h-11 w-full px-5"
       >
         {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         {t('continueToPayment')}

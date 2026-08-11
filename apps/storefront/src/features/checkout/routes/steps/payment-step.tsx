@@ -31,12 +31,12 @@ export default function PaymentStep({ onComplete }: PaymentStepProps) {
 
   return (
     <div className="space-y-6">
-      <h3 className="font-semibold">{t('selectPaymentMethod')}</h3>
+      <h3 className="font-medium">{t('selectPaymentMethod')}</h3>
 
       <RadioGroup value={selectedPaymentMethodCode || ''} onValueChange={setSelectedPaymentMethodCode}>
         {paymentMethods.map((method) => (
           <Label key={method.code} htmlFor={method.code} className="cursor-pointer">
-            <Card className="p-4">
+            <Card className="gap-0 border-border p-4 transition-colors hover:border-primary/30">
               <div className="flex items-center gap-3">
                 <RadioGroupItem value={method.code} id={method.code} />
                 <CreditCard className="h-5 w-5 text-muted-foreground" />
@@ -55,7 +55,7 @@ export default function PaymentStep({ onComplete }: PaymentStepProps) {
       <Button
         onClick={handleContinue}
         disabled={!selectedPaymentMethodCode}
-        className="w-full"
+        className="min-h-11 w-full px-5"
       >
         {t('continueToReview')}
       </Button>

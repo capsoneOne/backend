@@ -17,6 +17,26 @@ const nextConfig: NextConfig = {
                 destination: '/:locale/featured',
                 permanent: true,
             },
+            {
+                source: '/collections',
+                destination: '/categories',
+                permanent: true,
+            },
+            {
+                source: '/:locale/collections',
+                destination: '/:locale/categories',
+                permanent: true,
+            },
+            {
+                source: '/account/notifications',
+                destination: '/notifications',
+                permanent: true,
+            },
+            {
+                source: '/:locale/account/notifications',
+                destination: '/:locale/notifications',
+                permanent: true,
+            },
         ];
     },
     images: {

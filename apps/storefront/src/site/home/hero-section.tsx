@@ -38,7 +38,7 @@ export async function HeroSection() {
                             {t('shopNow')}
                         </Button>
                         <Button
-                            render={<Link href="/collections" />}
+                            render={<Link href="/categories" />}
                             nativeButton={false}
                             variant="outline"
                             size="lg"

@@ -5,7 +5,7 @@ import { EditProfileForm } from './edit-profile-form';
 import { EditEmailForm } from './edit-email-form';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {getTranslations} from 'next-intl/server';
-import {StorefrontPageHeader} from '@/components/catalogue-page';
+import {AccountPageHeader} from '@/features/account/components/account-page-header';
 
 export async function generateMetadata(): Promise<Metadata> {
     const locale = await getRouteLocale();
@@ -22,10 +22,9 @@ export default async function ProfilePage() {
 
     return (
         <div>
-            <StorefrontPageHeader
+            <AccountPageHeader
                 title={t('profile')}
                 description={t('manageAccountInfo')}
-                variant="compact"
             />
 
             <div className="space-y-6">

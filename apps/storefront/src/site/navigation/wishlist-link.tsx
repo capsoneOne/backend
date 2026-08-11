@@ -2,11 +2,12 @@
 
 import {Heart} from 'lucide-react';
 import {useTranslations} from 'next-intl';
-import {Link} from '@/platform/i18n/navigation';
+import {Link, usePathname} from '@/platform/i18n/navigation';
 import {useWishlist} from '@/features/wishlist/wishlist-context';
+import {cn} from '@/lib/utils';
 
 /**
- * Header entry point for saved items, with a count badge.
+ * Header entry point for the wishlist, with a count badge.
  *
  * Lives under `site/` rather than in the wishlist feature because the
  * architecture boundaries forbid a feature importing site composition, and this
@@ -17,12 +18,18 @@ import {useWishlist} from '@/features/wishlist/wishlist-context';
 export function WishlistLink() {
     const t = useTranslations('Wishlist');
     const {items, ready} = useWishlist();
+    const pathname = usePathname();
     const count = items.length;
+    const active = pathname.startsWith('/wishlist');
 
     return (
         <Link
             href="/wishlist"
-            className="relative inline-flex size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            aria-current={active ? 'page' : undefined}
+            className={cn(
+                'relative inline-flex size-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground',
+                active && 'bg-primary/10 text-primary',
+            )}
             title={t('navLabel')}
         >
             <Heart className="size-5" />

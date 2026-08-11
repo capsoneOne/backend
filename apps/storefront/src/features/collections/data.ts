@@ -2,13 +2,17 @@ import {cacheLife, cacheTag} from 'next/cache';
 import {query} from '@/platform/vendure/api';
 import {GetAllCollectionsQuery, GetTopCollectionsQuery} from './graphql';
 
+function isCatalogueCategory(collection: {slug: string}) {
+    return collection.slug !== 'featured';
+}
+
 export async function getTopCollections(locale: string) {
     'use cache';
     cacheLife('days');
     cacheTag(`collections-${locale}`);
 
     const result = await query(GetTopCollectionsQuery, undefined, {languageCode: locale});
-    return result.data.collections.items;
+    return result.data.collections.items.filter(isCatalogueCategory);
 }
 
 export async function getAllCollections(locale: string) {
@@ -18,5 +22,5 @@ export async function getAllCollections(locale: string) {
     cacheTag('collection');
 
     const result = await query(GetAllCollectionsQuery, undefined, {languageCode: locale});
-    return result.data.collections.items;
+    return result.data.collections.items.filter(isCatalogueCategory);
 }

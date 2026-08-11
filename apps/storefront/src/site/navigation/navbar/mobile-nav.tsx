@@ -2,9 +2,8 @@
 
 import {useState} from 'react';
 import { Link, useRouter } from '@/platform/i18n/navigation';
-import {Menu, Search, ShoppingBag, User, Package, MapPin, Camera} from 'lucide-react';
+import {Bell, Camera, Grid2X2, Heart, MapPin, Menu, Package, Search, Settings, ShoppingBag, ShoppingCart, User, X} from 'lucide-react';
 import {Button} from '@/components/ui/button';
-import {Input} from '@/components/ui/input';
 import {
     Sheet,
     SheetTrigger,
@@ -16,6 +15,7 @@ import {
 import {useTranslations} from 'next-intl';
 import {VisualSearchQuickUpload} from '@/features/visual-search';
 import {getCollectionPath} from '@/features/collections/paths';
+import {SearchCategoryFilter} from '@/features/search/search-category-filter';
 
 interface Collection {
     id: string;
@@ -36,13 +36,15 @@ export function MobileNav({collections}: MobileNavProps) {
     const t = useTranslations('Navigation');
     const [open, setOpen] = useState(false);
     const [searchValue, setSearchValue] = useState('');
+    const [categorySlug, setCategorySlug] = useState('');
     const [imageOpen, setImageOpen] = useState(false);
     const router = useRouter();
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         if (!searchValue.trim()) return;
-        router.push(`/search?q=${encodeURIComponent(searchValue.trim())}`);
+        const destination = categorySlug ? getCollectionPath(categorySlug) : '/search';
+        router.push(`${destination}?q=${encodeURIComponent(searchValue.trim())}`);
         setImageOpen(false);
         setOpen(false);
     };
@@ -65,54 +67,92 @@ export function MobileNav({collections}: MobileNavProps) {
                 <div className="flex flex-col gap-6 px-4 pb-6">
                     {/* Search */}
                     <div>
-                    <form onSubmit={handleSearch} className="relative">
-                        <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            type="search"
-                            placeholder={t('searchProducts')}
-                            className="h-11 w-full pl-9 pr-11"
-                            value={searchValue}
-                            onChange={(e) => setSearchValue(e.target.value)}
+                    <form onSubmit={handleSearch} className="flex h-11 overflow-hidden rounded-xl border border-border bg-card shadow-xs focus-within:border-primary/45 focus-within:ring-3 focus-within:ring-primary/10">
+                        <SearchCategoryFilter
+                            categories={collections}
+                            value={categorySlug}
+                            onValueChange={value => setCategorySlug(value)}
+                            onOpenChange={isOpen => {
+                                if (isOpen) setImageOpen(false);
+                            }}
+                            className="w-[8.5rem]"
                         />
-                        <button
-                            type="button"
-                            onClick={() => setImageOpen(value => !value)}
-                            className={`absolute right-0 top-0 inline-flex size-11 items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
-                                imageOpen ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent hover:text-primary'
-                            }`}
-                            aria-label={t('searchByImage')}
-                            aria-expanded={imageOpen}
-                        >
-                            <Camera className="size-4.5" aria-hidden="true" />
-                        </button>
+                        <div className="relative min-w-0 flex-1">
+                            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+                            <input
+                                type="text"
+                                inputMode="search"
+                                enterKeyHint="search"
+                                placeholder={t('searchProducts')}
+                                className="h-full w-full bg-transparent pl-9 pr-[4.75rem] text-sm outline-none placeholder:text-muted-foreground"
+                                value={searchValue}
+                                onChange={(event) => setSearchValue(event.target.value)}
+                            />
+                            <div className="absolute inset-y-0 right-1 flex items-center">
+                                {searchValue ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => setSearchValue('')}
+                                        className="inline-flex size-9 items-center justify-center rounded-lg text-muted-foreground outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
+                                        aria-label={t('clearSearch')}
+                                    >
+                                        <X className="size-4" aria-hidden="true" />
+                                    </button>
+                                ) : null}
+                                <button
+                                    type="button"
+                                    onClick={() => setImageOpen(value => !value)}
+                                    className={`inline-flex size-9 items-center justify-center rounded-lg outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
+                                        imageOpen ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent hover:text-primary'
+                                    }`}
+                                    aria-label={t('searchByImage')}
+                                    aria-expanded={imageOpen}
+                                >
+                                    <Camera className="size-4.5" aria-hidden="true" />
+                                </button>
+                            </div>
+                        </div>
                     </form>
                     {imageOpen ? (
                         <VisualSearchQuickUpload className="mt-3 shadow-none" />
                     ) : null}
                     </div>
 
-                    {/* Shop All */}
-                    <div>
-                        <SheetClose
-                            render={
-                                <Link
-                                    href="/search"
-                                    className="flex min-h-11 items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
-                                />
-                            }
-                            nativeButton={false}
-                            onClick={handleLinkClick}
-                        >
-                            <ShoppingBag className="h-5 w-5" />
-                            {t('shopAll')}
-                        </SheetClose>
-                    </div>
+                    {/* Primary destinations */}
+                    <nav className="grid grid-cols-2 gap-2" aria-label={t('menu')}>
+                        {[
+                            {href: '/search', label: t('shop'), icon: ShoppingBag},
+                            {href: '/categories', label: t('categories'), icon: Grid2X2},
+                            {href: '/wishlist', label: t('wishlist'), icon: Heart},
+                            {href: '/cart', label: t('cart'), icon: ShoppingCart},
+                            {href: '/notifications', label: t('notifications'), icon: Bell},
+                            {href: '/account/profile', label: t('profile'), icon: User},
+                        ].map(item => {
+                            const Icon = item.icon;
+                            return (
+                                <SheetClose
+                                    key={item.href}
+                                    render={
+                                        <Link
+                                            href={item.href}
+                                            className="flex min-h-14 items-center gap-3 rounded-xl border border-border bg-background px-3 py-3 text-sm font-medium transition-colors hover:border-primary/30 hover:bg-primary/5 hover:text-primary"
+                                        />
+                                    }
+                                    nativeButton={false}
+                                    onClick={handleLinkClick}
+                                >
+                                    <Icon className="size-5 text-primary" aria-hidden="true" />
+                                    {item.label}
+                                </SheetClose>
+                            );
+                        })}
+                    </nav>
 
                     {/* Collections */}
                     {collections.length > 0 && (
                         <div>
                             <p className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                {t('collections')}
+                                {t('categories')}
                             </p>
                             <nav className="flex flex-col gap-0.5">
                                 {collections.map((collection) => (
@@ -163,15 +203,15 @@ export function MobileNav({collections}: MobileNavProps) {
                             <SheetClose
                                 render={
                                     <Link
-                                        href="/account/profile"
+                                        href="/account/settings"
                                         className="flex min-h-11 items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
                                     />
                                 }
                                 nativeButton={false}
                                 onClick={handleLinkClick}
                             >
-                                <User className="h-5 w-5" />
-                                {t('profile')}
+                                <Settings className="h-5 w-5" />
+                                {t('settings')}
                             </SheetClose>
                             <SheetClose
                                 render={
