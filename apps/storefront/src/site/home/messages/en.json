@@ -1,9 +1,11 @@
 {
   "Hero": {
-    "title": "Discover Quality",
-    "titleHighlight": "Products",
-    "subtitle": "Premium products, exceptional prices. Free shipping on orders over $50.",
-    "shopNow": "Shop Now",
+    "badge": "Search with a photo, not a phrase",
+    "title": "Find it by",
+    "titleHighlight": "looking",
+    "subtitle": "Point a photo at the catalogue and we surface the closest matches in seconds — or browse the collections the usual way.",
+    "shopNow": "Browse the catalogue",
+    "searchByImage": "Search by image",
     "viewCollections": "View Collections"
   },
   "Home": {
@@ -24,6 +26,7 @@
         "title": "Fast Delivery",
         "description": "Quick and reliable shipping worldwide"
       }
-    }
+    },
+    "whyShopEyebrow": "Why shop here"
   }
 }

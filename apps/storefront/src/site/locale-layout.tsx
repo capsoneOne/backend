@@ -1,7 +1,7 @@
 import type {Metadata, Viewport} from "next";
 import {locale as rootLocale} from "next/root-params";
 import {hasLocale, NextIntlClientProvider} from "next-intl";
-import {Geist, Geist_Mono} from "next/font/google";
+import {Ubuntu, Ubuntu_Mono} from "next/font/google";
 import {getMessages, getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 import {routing} from "@/platform/i18n/routing";
@@ -13,14 +13,20 @@ import {Footer} from "@/site/footer";
 import {ThemeProvider} from "@/site/providers/theme-provider";
 import {SITE_NAME, SITE_URL} from "@/config/metadata";
 
-const geistSans = Geist({
-    variable: "--font-geist-sans",
+// Ubuntu has no 600. Loading 300/400/500/700 explicitly keeps the browser from
+// synthesising a semibold, which is what makes Ubuntu look smeared in headings.
+const ubuntu = Ubuntu({
+    variable: "--font-ubuntu",
     subsets: ["latin"],
+    weight: ["300", "400", "500", "700"],
+    display: "swap",
 });
 
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
+const ubuntuMono = Ubuntu_Mono({
+    variable: "--font-ubuntu-mono",
     subsets: ["latin"],
+    weight: ["400", "700"],
+    display: "swap",
 });
 
 export function generateStaticParams() {
@@ -71,8 +77,10 @@ export const viewport: Viewport = {
     initialScale: 1,
     maximumScale: 5,
     themeColor: [
-        {media: "(prefers-color-scheme: light)", color: "#ffffff"},
-        {media: "(prefers-color-scheme: dark)", color: "#000000"},
+        // Matches --background in globals.css for each scheme, so the mobile browser
+        // chrome blends into the page instead of framing it in plain black/white.
+        {media: "(prefers-color-scheme: light)", color: "#fafafa"},
+        {media: "(prefers-color-scheme: dark)", color: "#0c0c0c"},
     ],
 };
 
@@ -89,7 +97,7 @@ export default async function LocaleLayout({children}: {children: React.ReactNod
     return (
         <html lang={locale} data-scroll-behavior="smooth" suppressHydrationWarning>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
+                className={`${ubuntu.variable} ${ubuntuMono.variable} font-sans antialiased flex min-h-screen flex-col`}
             >
                 <NextIntlClientProvider locale={locale} messages={messages}>
                     <ThemeProvider>
