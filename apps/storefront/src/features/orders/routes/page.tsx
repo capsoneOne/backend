@@ -4,6 +4,7 @@ import {getTranslations} from 'next-intl/server';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {OrderConfirmation} from './order-confirmation';
 import {noIndexRobots} from '@/config/metadata';
+import {StorefrontPageShell} from '@/components/catalogue-page';
 
 export async function generateMetadata(): Promise<Metadata> {
     const locale = await getRouteLocale();
@@ -21,7 +22,7 @@ export default async function OrderConfirmationPage(
     const t = await getTranslations({locale, namespace: 'Common'});
 
     return (
-        <Suspense fallback={<div className="container mx-auto px-4 py-16 text-center">{t('loading')}</div>}>
+        <Suspense fallback={<StorefrontPageShell className="text-center">{t('loading')}</StorefrontPageShell>}>
             <OrderConfirmation paramsPromise={props.params} />
         </Suspense>
     );

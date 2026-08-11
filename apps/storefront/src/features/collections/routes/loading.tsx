@@ -1,19 +1,21 @@
 import {ProductGridSkeleton} from '@/features/products/product-grid-skeleton';
+import {CataloguePageHeaderSkeleton, StorefrontPageShell} from '@/components/catalogue-page';
 
 export default function CollectionLoading() {
     return (
-        <div className="container mx-auto px-4 py-8 mt-16">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <StorefrontPageShell>
+            <CataloguePageHeaderSkeleton />
+            <div className="flex flex-col gap-8 lg:flex-row">
                 {/* Filters Sidebar Skeleton */}
-                <aside className="lg:col-span-1">
-                    <div className="h-64 animate-pulse bg-muted rounded-lg" />
+                <aside className="lg:w-60 lg:shrink-0">
+                    <div className="h-64 animate-pulse rounded-lg bg-muted" />
                 </aside>
 
                 {/* Product Grid Skeleton */}
-                <div className="lg:col-span-3">
+                <div className="min-w-0 flex-1">
                     <ProductGridSkeleton />
                 </div>
             </div>
-        </div>
+        </StorefrontPageShell>
     );
 }

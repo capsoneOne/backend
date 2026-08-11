@@ -4,6 +4,7 @@ import { SearchX, Home, ShoppingBag } from 'lucide-react';
 import { Link } from '@/platform/i18n/navigation';
 import { getTranslations } from 'next-intl/server';
 import {getTopCollections} from '@/features/collections/data';
+import {getCollectionPath} from '@/features/collections/paths';
 
 export default async function NotFound() {
     const locale = await getRouteLocale();
@@ -50,7 +51,7 @@ export default async function NotFound() {
                             {collections.slice(0, 6).map((collection) => (
                                 <Button
                                     key={collection.id}
-                                    render={<Link href={`/collection/${collection.slug}`} />}
+                                    render={<Link href={getCollectionPath(collection.slug)} />}
                                     nativeButton={false}
                                     variant="outline"
                                     size="sm"

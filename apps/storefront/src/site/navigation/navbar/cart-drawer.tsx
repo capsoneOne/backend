@@ -71,7 +71,7 @@ export function CartDrawer({
 
                 {lines.length === 0 ? (
                     <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
-                        <div className="flex size-14 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
+                        <div className="flex size-14 items-center justify-center rounded-xl bg-accent text-accent-foreground">
                             <ShoppingCart className="size-6" />
                         </div>
                         <p className="mt-2 text-lg font-medium">{t('empty')}</p>

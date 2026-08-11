@@ -97,7 +97,7 @@ export default async function VerifyEmailPage({searchParams}: PageProps<'/[local
     const t = await getTranslations({locale, namespace: 'Account'});
 
     return (
-        <div className="container mx-auto px-4 py-8 mt-16">
+        <div>
             <Suspense fallback={
                 <Card className="max-w-md mx-auto">
                     <CardHeader>

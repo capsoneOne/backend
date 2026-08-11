@@ -1,8 +1,16 @@
 {
   "Collection": {
     "home": "Home",
+    "shopAll": "Shop all",
+    "eyebrow": "Collection",
+    "featuredEyebrow": "The catalogue",
+    "featuredDescription": "Explore a curated edit of standout clothing, shoes, and accessories from across the store.",
+    "categories": "Categories",
+    "allProducts": "All products",
+    "defaultDescription": "Explore every style in {name}, then refine by size, colour, or availability.",
     "collectionNotFound": "Collection Not Found",
     "browseCollectionAt": "Browse our {name} collection at {siteName}",
+    "indexEyebrow": "Shop by category",
     "indexTitle": "Collections",
     "indexSubtitle": "Browse clothing, shoes, and accessories by category to find the right pieces faster.",
     "indexDescription": "Browse every collection at {siteName}.",

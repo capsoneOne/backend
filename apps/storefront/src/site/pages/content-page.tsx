@@ -4,6 +4,7 @@ import {getRouteLocale} from '@/platform/i18n/server';
 import {getTranslations} from 'next-intl/server';
 import {SITE_NAME, buildCanonicalUrl} from '@/config/metadata';
 import {toOgLocale} from '@/platform/i18n/locale-utils';
+import {StorefrontPageHeader, StorefrontPageShell} from '@/components/catalogue-page';
 
 /**
  * Shared shell and metadata builder for the static content pages.
@@ -51,15 +52,15 @@ export async function ContentPage({
     const t = await getTranslations({locale, namespace: 'Pages'});
 
     return (
-        <article className="container mx-auto mt-16 max-w-3xl px-4 py-16 md:py-24">
-            <header className="border-b border-border pb-10">
-                <h1 className="text-4xl font-bold md:text-5xl">{t(`${contentKey}.title`)}</h1>
-                <p className="mt-4 text-lg font-light leading-relaxed text-muted-foreground">
-                    {t(`${contentKey}.lede`)}
-                </p>
-            </header>
-            <div className="pt-10">{children}</div>
-        </article>
+        <StorefrontPageShell className="max-w-3xl">
+            <article>
+                <StorefrontPageHeader
+                    title={t(`${contentKey}.title`)}
+                    description={t(`${contentKey}.lede`)}
+                />
+                {children}
+            </article>
+        </StorefrontPageShell>
     );
 }
 

@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import { Suspense } from 'react';
-import { Link } from '@/platform/i18n/navigation';
 import { query } from '@/platform/vendure/api';
 import {SearchProductsQuery} from '@/features/search/graphql';
 import {GetCollectionProductsQuery} from '@/features/collections/graphql';
@@ -10,14 +8,6 @@ import {FacetFilters} from '@/features/search/facet-filters';
 import {ProductGridSkeleton} from '@/features/products/product-grid-skeleton';
 import { buildSearchInput, getCurrentPage } from '@/features/search/search-helpers';
 import { cacheLife, cacheTag } from 'next/cache';
-import {
-    Breadcrumb,
-    BreadcrumbList,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import { routing } from '@/platform/i18n/routing';
 import {
     SITE_NAME,
@@ -29,6 +19,15 @@ import {toOgLocale} from '@/platform/i18n/locale-utils';
 import {getActiveCurrencyCode} from '@/features/currency/currency-server';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {getTranslations} from 'next-intl/server';
+import {getAllCollections} from '@/features/collections/data';
+import {getCollectionPath} from '@/features/collections/paths';
+import {redirect} from '@/platform/i18n/navigation';
+import {
+    CataloguePageHeader,
+    CatalogueSidebar,
+    StorefrontBreadcrumbs,
+    StorefrontPageShell,
+} from '@/components/catalogue-page';
 
 async function getCollectionProducts(slug: string, searchParams: { [key: string]: string | string[] | undefined }, currencyCode: string) {
     'use cache';
@@ -59,10 +58,7 @@ async function getCollectionMetadata(slug: string) {
     }, {languageCode: locale});
 }
 
-export async function generateMetadata({
-    params,
-}: PageProps<'/[locale]/collection/[slug]'>): Promise<Metadata> {
-    const { slug } = await params;
+export async function generateCollectionMetadata(slug: string): Promise<Metadata> {
     const locale = await getRouteLocale();
     const result = await getCollectionMetadata(slug);
     const collection = result.data.collection;
@@ -75,11 +71,12 @@ export async function generateMetadata({
         };
     }
 
-    const description =
-        truncateDescription(collection.description) ||
-        t('browseCollectionAt', {name: collection.name, siteName: SITE_NAME});
+    const description = slug === 'featured'
+        ? t('featuredDescription')
+        : truncateDescription(collection.description) ||
+          t('browseCollectionAt', {name: collection.name, siteName: SITE_NAME});
     const ogLocale = toOgLocale(locale);
-    const collectionPath = `/collection/${collection.slug}`;
+    const collectionPath = getCollectionPath(collection.slug);
 
     return {
         title: collection.name,
@@ -109,8 +106,18 @@ export async function generateMetadata({
     };
 }
 
-export default async function CollectionPage({params, searchParams}: PageProps<'/[locale]/collection/[slug]'>) {
-    const { slug } = await params;
+export async function generateMetadata({params}: PageProps<'/[locale]/collection/[slug]'>): Promise<Metadata> {
+    const {slug} = await params;
+    return generateCollectionMetadata(slug);
+}
+
+interface CollectionPageContentProps {
+    slug: string;
+    searchParams: Promise<{[key: string]: string | string[] | undefined}>;
+    topLevel?: boolean;
+}
+
+export async function CollectionPageContent({slug, searchParams, topLevel = false}: CollectionPageContentProps) {
     const searchParamsResolved = await searchParams;
     const locale = await getRouteLocale();
     const currencyCode = await getActiveCurrencyCode();
@@ -118,60 +125,44 @@ export default async function CollectionPage({params, searchParams}: PageProps<'
     const page = getCurrentPage(searchParamsResolved);
 
     const productDataPromise = getCollectionProducts(slug, searchParamsResolved, currencyCode);
-    const collectionResult = await getCollectionMetadata(slug);
+    const [collectionResult, categories] = await Promise.all([
+        getCollectionMetadata(slug),
+        getAllCollections(locale),
+    ]);
     const collection = collectionResult.data.collection;
     const collectionName = collection?.name ?? slug;
 
     return (
-        <div className="container mx-auto px-4 py-8 mt-16">
-            {/* Breadcrumbs */}
-            <Breadcrumb className="mb-6">
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink render={<Link href="/" />}>{t('home')}</BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>{collectionName}</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
-
-            {/* Collection Header */}
-            <div className="relative mb-10 overflow-hidden rounded-3xl bg-muted px-6 py-10 md:px-10 md:py-14">
-                {collection?.featuredAsset ? (
-                    <>
-                        <Image
-                            src={collection.featuredAsset.preview}
-                            alt=""
-                            fill
-                            priority
-                            className="object-cover"
-                            sizes="100vw"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/45 to-black/10" />
-                    </>
-                ) : (
-                    <div className="absolute inset-0 bg-dotfield opacity-60" />
+        <StorefrontPageShell>
+            <CataloguePageHeader
+                eyebrow={topLevel ? t('featuredEyebrow') : t('eyebrow')}
+                title={collectionName}
+                description={topLevel ? t('featuredDescription') : collection?.description ? (
+                    <div dangerouslySetInnerHTML={{__html: collection.description}} />
+                ) : t('defaultDescription', {name: collectionName})}
+                breadcrumbs={topLevel ? undefined : (
+                    <StorefrontBreadcrumbs
+                        items={[
+                            {label: t('home'), href: '/'},
+                            {label: t('shopAll'), href: '/search'},
+                            {label: collectionName},
+                        ]}
+                    />
                 )}
-                <div className={collection?.featuredAsset ? 'relative max-w-2xl text-white' : 'relative max-w-2xl'}>
-                    <h1 className="text-4xl font-bold tracking-tight md:text-5xl">{collectionName}</h1>
-                    {collection?.description ? (
-                        <div
-                            className={`mt-4 max-w-xl text-base leading-relaxed ${collection.featuredAsset ? 'text-white/80' : 'text-muted-foreground'}`}
-                            dangerouslySetInnerHTML={{__html: collection.description}}
-                        />
-                    ) : null}
-                </div>
-            </div>
+            />
 
             <div className="flex flex-col gap-8 lg:flex-row">
-                {/* Filters Sidebar */}
-                <aside className="lg:w-64 lg:shrink-0 empty:hidden">
-                    <Suspense fallback={<div className="h-64 animate-pulse bg-muted rounded-lg" />}>
-                        <FacetFilters productDataPromise={productDataPromise} />
-                    </Suspense>
-                </aside>
+                <CatalogueSidebar
+                    categories={categories}
+                    activeSlug={slug}
+                    categoryTitle={t('categories')}
+                    allProductsLabel={t('allProducts')}
+                    filters={(
+                        <Suspense fallback={<div className="h-64 animate-pulse rounded-lg bg-muted" />}>
+                            <FacetFilters productDataPromise={productDataPromise} />
+                        </Suspense>
+                    )}
+                />
 
                 {/* Product Grid */}
                 <div className="min-w-0 flex-1">
@@ -180,6 +171,17 @@ export default async function CollectionPage({params, searchParams}: PageProps<'
                     </Suspense>
                 </div>
             </div>
-        </div>
+        </StorefrontPageShell>
     );
+}
+
+export default async function CollectionPage({params, searchParams}: PageProps<'/[locale]/collection/[slug]'>) {
+    const {slug} = await params;
+    const locale = await getRouteLocale();
+
+    if (slug === 'featured') {
+        return redirect({href: '/featured', locale});
+    }
+
+    return <CollectionPageContent slug={slug} searchParams={searchParams} />;
 }

@@ -68,7 +68,7 @@ export function ProductCard({product: productProp, priority, badgeLabel}: Produc
                 </p>
             }
             badge={!product.inStock || badgeLabel ? (
-                <span className="rounded-full bg-background/90 px-2.5 py-1 text-xs font-semibold text-foreground elevate-1 backdrop-blur-md">
+                <span className="rounded-full bg-background/90 px-2.5 py-1 text-xs font-medium text-foreground shadow-sm backdrop-blur-md">
                     {!product.inStock ? t('soldOut') : badgeLabel}
                 </span>
             ) : undefined}

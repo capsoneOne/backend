@@ -14,6 +14,8 @@ import {
     SheetClose,
 } from '@/components/ui/sheet';
 import {useTranslations} from 'next-intl';
+import {VisualSearchQuickUpload} from '@/features/visual-search';
+import {getCollectionPath} from '@/features/collections/paths';
 
 interface Collection {
     id: string;
@@ -34,12 +36,14 @@ export function MobileNav({collections}: MobileNavProps) {
     const t = useTranslations('Navigation');
     const [open, setOpen] = useState(false);
     const [searchValue, setSearchValue] = useState('');
+    const [imageOpen, setImageOpen] = useState(false);
     const router = useRouter();
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         if (!searchValue.trim()) return;
         router.push(`/search?q=${encodeURIComponent(searchValue.trim())}`);
+        setImageOpen(false);
         setOpen(false);
     };
 
@@ -60,26 +64,32 @@ export function MobileNav({collections}: MobileNavProps) {
 
                 <div className="flex flex-col gap-6 px-4 pb-6">
                     {/* Search */}
+                    <div>
                     <form onSubmit={handleSearch} className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                             type="search"
                             placeholder={t('searchProducts')}
-                            className="h-11 w-full pl-9"
+                            className="h-11 w-full pl-9 pr-11"
                             value={searchValue}
                             onChange={(e) => setSearchValue(e.target.value)}
                         />
+                        <button
+                            type="button"
+                            onClick={() => setImageOpen(value => !value)}
+                            className={`absolute right-0 top-0 inline-flex size-11 items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
+                                imageOpen ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent hover:text-primary'
+                            }`}
+                            aria-label={t('searchByImage')}
+                            aria-expanded={imageOpen}
+                        >
+                            <Camera className="size-4.5" aria-hidden="true" />
+                        </button>
                     </form>
-
-                    {/* Search by image */}
-                    <Link
-                        href="/visual-search"
-                        onClick={handleLinkClick}
-                        className="flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-medium hover:bg-accent hover:text-primary"
-                    >
-                        <Camera className="size-4" />
-                        {t('searchByImage')}
-                    </Link>
+                    {imageOpen ? (
+                        <VisualSearchQuickUpload className="mt-3 shadow-none" />
+                    ) : null}
+                    </div>
 
                     {/* Shop All */}
                     <div>
@@ -110,7 +120,7 @@ export function MobileNav({collections}: MobileNavProps) {
                                         <SheetClose
                                             render={
                                                 <Link
-                                                    href={`/collection/${collection.slug}`}
+                                                    href={getCollectionPath(collection.slug)}
                                                     className="flex min-h-11 items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold hover:bg-accent"
                                                 />
                                             }
@@ -126,7 +136,7 @@ export function MobileNav({collections}: MobileNavProps) {
                                                         key={child.id}
                                                         render={
                                                             <Link
-                                                                href={`/collection/${child.slug}`}
+                                                                href={getCollectionPath(child.slug)}
                                                                 className="flex min-h-11 items-center rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
                                                             />
                                                         }

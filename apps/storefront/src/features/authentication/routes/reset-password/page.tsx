@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
 import { ResetPasswordForm } from './reset-password-form';
+import {AuthPageShell} from '@/components/auth-page-shell';
 
 export const metadata: Metadata = {
     title: 'Reset Password',
@@ -10,8 +11,7 @@ export const metadata: Metadata = {
 
 export default function ResetPasswordPage({searchParams}: PageProps<'/[locale]/reset-password'>) {
     return (
-        <div className="container mx-auto px-4 py-16">
-            <div className="max-w-md mx-auto">
+        <AuthPageShell>
                 <Suspense fallback={
                     <div className="flex justify-center">
                         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -19,7 +19,6 @@ export default function ResetPasswordPage({searchParams}: PageProps<'/[locale]/r
                 }>
                     <ResetPasswordForm searchParams={searchParams} />
                 </Suspense>
-            </div>
-        </div>
+        </AuthPageShell>
     );
 }

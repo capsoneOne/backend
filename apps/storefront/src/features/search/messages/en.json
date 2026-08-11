@@ -20,12 +20,19 @@
     "removeFilter": "Remove {name} filter"
   },
   "Search": {
-    "title": "Search",
-    "pageTitle": "Search Products",
+    "title": "Shop all",
+    "pageTitle": "Shop all clothing",
+    "shopAll": "Shop all",
+    "catalogueEyebrow": "The catalogue",
+    "catalogueDescription": "Browse every style, then narrow the selection by category, size, colour, or availability.",
+    "resultsEyebrow": "Search results",
+    "resultsDescription": "Refine the results with categories and filters, or try another search from the navigation.",
+    "categories": "Categories",
+    "allProducts": "All products",
     "resultsFor": "Search results for \"{query}\"",
     "resultsTitle": "Search results for \"{query}\"",
     "metaDescription": "Find products matching \"{query}\" at {siteName}",
-    "metaCatalogDescription": "Search our product catalog at {siteName}"
+    "metaCatalogDescription": "Shop clothing, shoes, and accessories across every category at {siteName}"
   },
   "SearchSuggestions": {
     "searchProducts": "Search products...",

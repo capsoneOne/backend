@@ -3,6 +3,7 @@ import {ArrowRight} from 'lucide-react';
 import {getTranslations} from 'next-intl/server';
 
 import {GetCollectionProductsQuery} from '@/features/collections/graphql';
+import {getCollectionPath} from '@/features/collections/paths';
 import {getActiveCurrencyCode} from '@/features/currency/currency-server';
 import {GetNewestProductsQuery} from '@/features/products/graphql';
 import {Link} from '@/platform/i18n/navigation';
@@ -70,7 +71,7 @@ export async function NewArrivalsSection() {
             <div className="container mx-auto px-4">
                 <div className="mb-10 flex items-end justify-between gap-6">
                     <div>
-                        <p className="text-sm font-medium uppercase tracking-[0.18em] text-primary">
+                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
                             {t('newArrivalsEyebrow')}
                         </p>
                         <h2 className="mt-3 text-3xl font-bold md:text-4xl">{t('newArrivals')}</h2>
@@ -115,7 +116,7 @@ export async function SaleSection() {
                 title={collection.name || t('saleTitle')}
                 description={description || t('saleDescription')}
                 products={products}
-                href={`/collection/${collection.slug}`}
+                href={getCollectionPath(collection.slug)}
                 linkLabel={t('shopSale')}
                 badgeLabel={t('saleBadge')}
             />

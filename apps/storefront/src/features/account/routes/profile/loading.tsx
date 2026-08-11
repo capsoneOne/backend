@@ -1,16 +1,13 @@
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import {Skeleton} from '@/components/ui/skeleton';
+import {CataloguePageHeaderSkeleton} from '@/components/catalogue-page';
 
 export default function ProfileLoading() {
     return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold">Profile</h1>
-                <p className="text-muted-foreground mt-2">
-                    Manage your account information
-                </p>
-            </div>
+        <div>
+            <CataloguePageHeaderSkeleton variant="compact" />
 
+            <div className="space-y-6">
             <Card>
                 <CardHeader>
                     <CardTitle>Account Information</CardTitle>
@@ -49,6 +46,7 @@ export default function ProfileLoading() {
                     <Skeleton className="h-10 w-32"/>
                 </CardContent>
             </Card>
+            </div>
         </div>
     );
 }

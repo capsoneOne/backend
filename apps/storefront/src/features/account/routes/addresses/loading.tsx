@@ -1,16 +1,13 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import {CataloguePageHeaderSkeleton} from '@/components/catalogue-page';
 
 export default function AddressesLoading() {
     return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold">Addresses</h1>
-                <p className="text-muted-foreground mt-2">
-                    Manage your saved shipping and billing addresses
-                </p>
-            </div>
+        <div>
+            <CataloguePageHeaderSkeleton variant="compact" />
 
+            <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <div></div>
                 <Skeleton className="h-10 w-40" />
@@ -42,6 +39,7 @@ export default function AddressesLoading() {
                         </CardContent>
                     </Card>
                 ))}
+            </div>
             </div>
         </div>
     );

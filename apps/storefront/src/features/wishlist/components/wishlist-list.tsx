@@ -2,10 +2,11 @@
 
 import Image from 'next/image';
 import {useTranslations} from 'next-intl';
-import {Heart, Trash2} from 'lucide-react';
+import {ArrowRight, Heart, Lock, Trash2} from 'lucide-react';
 import {Link} from '@/platform/i18n/navigation';
 import {Button} from '@/components/ui/button';
-import {ProductTileSkeleton} from '@/components/product-tile';
+import {ProductTile, ProductTileSkeleton} from '@/components/product-tile';
+import {CataloguePageHeader, StorefrontPageShell} from '@/components/catalogue-page';
 import {Price} from '@/features/pricing/price';
 import {useWishlist} from '@/features/wishlist/wishlist-context';
 
@@ -19,100 +20,119 @@ import {useWishlist} from '@/features/wishlist/wishlist-context';
 export function WishlistList() {
     const t = useTranslations('Wishlist');
     const {items, ready, remove, clear} = useWishlist();
+    const clearWishlist = () => {
+        if (window.confirm(t('clearConfirm'))) clear();
+    };
 
     return (
-        <div className="container mx-auto mt-16 px-4 py-16 md:py-20">
-            <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-8">
-                <div>
-                    <h1 className="text-4xl font-bold md:text-5xl">{t('title')}</h1>
-                    <p className="mt-3 font-light text-muted-foreground">
+        <StorefrontPageShell>
+            <CataloguePageHeader
+                eyebrow={t('eyebrow')}
+                title={t('title')}
+                description={t('description')}
+                actions={(
+                    <div className="flex flex-wrap items-center gap-4">
+                    <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+                        <Heart className="size-4 text-primary" aria-hidden="true" />
                         {ready ? t('count', {count: items.length}) : t('loading')}
-                    </p>
-                </div>
-                {ready && items.length > 0 ? (
-                    <Button variant="ghost" size="sm" onClick={clear} className="rounded-full">
-                        <Trash2 className="mr-2 size-4" />
-                        {t('clearAll')}
-                    </Button>
-                ) : null}
-            </div>
+                    </span>
+                    {ready && items.length > 0 ? (
+                        <Button variant="ghost" size="sm" onClick={clearWishlist} className="min-h-10 px-3 text-muted-foreground">
+                            <Trash2 className="mr-2 size-4" />
+                            {t('clearAll')}
+                        </Button>
+                    ) : null}
+                    </div>
+                )}
+            />
 
-            {!ready ? (
-                <div className="mt-12 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 xl:grid-cols-4">
-                    {Array.from({length: 4}).map((_, i) => (
-                        <ProductTileSkeleton key={i} />
-                    ))}
-                </div>
-            ) : items.length === 0 ? (
-                <div className="mx-auto mt-16 flex max-w-md flex-col items-center gap-3 rounded-2xl border border-dashed border-border px-6 py-16 text-center">
-                    <div className="flex size-14 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
-                        <Heart className="size-6" />
+            <div>
+                {!ready ? (
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 md:gap-x-6 xl:grid-cols-4">
+                        {Array.from({length: 4}).map((_, i) => (
+                            <ProductTileSkeleton key={i} />
+                        ))}
                     </div>
-                    <p className="mt-2 text-lg font-medium">{t('emptyTitle')}</p>
-                    <p className="font-light text-muted-foreground">{t('emptyBody')}</p>
-                    <div className="mt-3 flex flex-wrap justify-center gap-3">
-                        <Button render={<Link href="/search" />} nativeButton={false} className="rounded-full px-6">
-                            {t('browse')}
-                        </Button>
-                        <Button
-                            render={<Link href="/visual-search" />}
-                            nativeButton={false}
-                            variant="outline"
-                            className="rounded-full px-6"
-                        >
-                            {t('searchByImage')}
-                        </Button>
+                ) : items.length === 0 ? (
+                    <div className="mx-auto grid max-w-4xl overflow-hidden rounded-xl border border-border bg-card md:grid-cols-2">
+                        <div className="relative flex min-h-72 items-center justify-center bg-secondary/45 p-8">
+                            <Image
+                                src="/storyset/choosing-clothes-cuate.svg"
+                                alt={t('illustrationAlt')}
+                                width={500}
+                                height={500}
+                                priority
+                                className="max-h-[19rem] w-full object-contain"
+                            />
+                            <p className="absolute bottom-3 left-0 right-0 text-center text-[0.6875rem] text-muted-foreground">
+                                <a
+                                    href="https://storyset.com/illustration/choosing-clothes/cuate"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="underline decoration-border underline-offset-4 transition-colors hover:text-foreground"
+                                >
+                                    {t('illustrationCredit')}
+                                </a>
+                            </p>
+                        </div>
+
+                        <div className="flex flex-col justify-center p-8 sm:p-10">
+                            <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">{t('emptyEyebrow')}</p>
+                            <h2 className="mt-3 text-balance text-2xl font-bold md:text-3xl">{t('emptyTitle')}</h2>
+                            <p className="mt-4 max-w-lg font-light leading-relaxed text-muted-foreground">{t('emptyBody')}</p>
+                            <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
+                                <Button render={<Link href="/search" />} nativeButton={false} className="min-h-11 rounded-lg px-5">
+                                    {t('browse')}
+                                    <ArrowRight className="ml-2 size-4" aria-hidden="true" />
+                                </Button>
+                                <Link
+                                    href="/collections"
+                                    className="inline-flex min-h-11 items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                                >
+                                    {t('exploreCategories')}
+                                </Link>
+                            </div>
+                            <p className="mt-6 flex items-center gap-2 text-xs text-muted-foreground">
+                                <Lock className="size-3.5 text-primary" aria-hidden="true" />
+                                {t('deviceNote')}
+                            </p>
+                        </div>
                     </div>
-                </div>
-            ) : (
-                <div className="mt-12 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 xl:grid-cols-4">
-                    {items.map(item => (
-                        <div key={item.productId} className="group flex flex-col">
-                            <Link
+                ) : (
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 md:gap-x-6 xl:grid-cols-4">
+                        {items.map(item => (
+                            <ProductTile
+                                key={item.productId}
                                 href={`/product/${item.slug}`}
-                                className="relative aspect-square overflow-hidden rounded-2xl bg-muted outline-none transition-all duration-500 group-hover:elevate-3 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
-                            >
-                                {item.imageUrl ? (
-                                    <Image
-                                        src={item.imageUrl}
-                                        alt={item.name}
-                                        fill
-                                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
-                                    />
-                                ) : (
-                                    <div className="flex h-full items-center justify-center px-4 text-center text-sm font-light text-muted-foreground">
-                                        {t('noImage')}
-                                    </div>
+                                imageUrl={item.imageUrl}
+                                imageAlt={item.name}
+                                title={item.name}
+                                noImageLabel={t('noImage')}
+                                actions={(
+                                    <button
+                                            type="button"
+                                            onClick={(event) => {
+                                                event.preventDefault();
+                                                event.stopPropagation();
+                                                remove(item.productId);
+                                            }}
+                                            aria-label={t('remove', {name: item.name})}
+                                            title={t('removeShort')}
+                                            className="inline-flex size-10 items-center justify-center rounded-full bg-background/90 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                                        >
+                                            <Trash2 className="size-4" aria-hidden="true" />
+                                        </button>
                                 )}
-                                <span className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-foreground/[0.06]" />
-                            </Link>
-
-                            <div className="flex items-start justify-between gap-2 px-1 pt-3.5">
-                                <div className="min-w-0">
-                                    <Link
-                                        href={`/product/${item.slug}`}
-                                        className="line-clamp-2 text-[0.9375rem] leading-snug transition-colors hover:text-primary"
-                                    >
-                                        {item.name}
-                                    </Link>
-                                    <p className="pt-1 text-[0.9375rem] font-bold tracking-tight">
+                                footer={(
+                                    <p className="text-[0.9375rem] font-bold tracking-tight">
                                         <Price value={item.price} currencyCode={item.currencyCode} />
                                     </p>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => remove(item.productId)}
-                                    aria-label={t('remove', {name: item.name})}
-                                    className="shrink-0 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                >
-                                    <Trash2 className="size-4" />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
+                                )}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+        </StorefrontPageShell>
     );
 }

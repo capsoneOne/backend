@@ -54,19 +54,19 @@ export function ProductTile({
         <Link
             href={href}
             className={cn(
-                'group flex h-full flex-col rounded-2xl outline-none transition-transform duration-300 ease-out hover:-translate-y-1',
+                'group flex h-full flex-col rounded-xl outline-none',
                 'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background',
                 className,
             )}
         >
-            <div className="relative aspect-square overflow-hidden rounded-2xl bg-muted transition-[box-shadow,transform] duration-500 group-hover:shadow-[0_20px_45px_-20px_color-mix(in_oklch,var(--color-primary)_35%,transparent)]">
+            <div className="relative aspect-square overflow-hidden rounded-xl bg-muted">
                 {imageUrl ? (
                     <Image
                         src={imageUrl}
                         alt={imageAlt}
                         fill
                         priority={priority}
-                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                        className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.025]"
                         sizes={sizes}
                     />
                 ) : (
@@ -76,7 +76,7 @@ export function ProductTile({
                 )}
 
                 {/* Inner hairline keeps pale product shots from bleeding into a pale page. */}
-                <span className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-foreground/[0.06]" />
+                <span className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-foreground/[0.06]" />
 
                 {badge ? <div className="absolute left-3 top-3 z-10">{badge}</div> : null}
 
@@ -87,7 +87,7 @@ export function ProductTile({
                 ) : null}
             </div>
 
-            <div className="flex flex-1 flex-col gap-1 px-1 pb-1 pt-3.5">
+            <div className="flex flex-1 flex-col gap-1 px-0.5 pb-1 pt-3.5">
                 <h3 className="line-clamp-2 text-[0.9375rem] leading-snug transition-colors group-hover:text-primary">
                     {title}
                 </h3>
@@ -101,7 +101,7 @@ export function ProductTile({
 export function ProductTileSkeleton() {
     return (
         <div className="flex flex-col">
-            <div className="aspect-square animate-pulse rounded-2xl bg-muted" />
+            <div className="aspect-square animate-pulse rounded-xl bg-muted" />
             <div className="space-y-2 px-1 pt-3.5">
                 <div className="h-4 w-3/4 animate-pulse rounded bg-muted" />
                 <div className="h-5 w-1/3 animate-pulse rounded bg-muted" />

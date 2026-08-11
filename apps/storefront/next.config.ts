@@ -5,6 +5,20 @@ const withNextIntl = createNextIntlPlugin('./src/site/i18n/request.ts');
 
 const nextConfig: NextConfig = {
     cacheComponents: true,
+    async redirects() {
+        return [
+            {
+                source: '/collection/featured',
+                destination: '/featured',
+                permanent: true,
+            },
+            {
+                source: '/:locale/collection/featured',
+                destination: '/:locale/featured',
+                permanent: true,
+            },
+        ];
+    },
     images: {
         // This is necessary to display images from your local Vendure instance
         dangerouslyAllowLocalIP: true,

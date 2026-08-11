@@ -30,7 +30,7 @@ export async function ProductGrid({productDataPromise, currentPage, take, search
 
     if (!searchResult.items.length) {
         return (
-            <Empty className="rounded-2xl border border-border px-6 py-16" role="status">
+            <Empty className="rounded-xl border border-border px-6 py-16" role="status">
                 <EmptyHeader>
                 <EmptyMedia variant="icon" className="size-14 rounded-full">
                     <PackageSearch className="size-7 text-muted-foreground"/>
@@ -42,10 +42,10 @@ export async function ProductGrid({productDataPromise, currentPage, take, search
                 </EmptyHeader>
                 <EmptyContent>
                 <div className="flex flex-wrap justify-center gap-3">
-                    <Button nativeButton={false} render={<Link href="/search"/>} size="lg" className="min-h-11 rounded-full">
+                    <Button nativeButton={false} render={<Link href="/search"/>} size="lg" className="min-h-11 rounded-lg">
                         {t('viewAllProducts')}
                     </Button>
-                    <Button nativeButton={false} render={<Link href="/visual-search"/>} variant="outline" size="lg" className="min-h-11 rounded-full">
+                    <Button nativeButton={false} render={<Link href="/visual-search"/>} variant="outline" size="lg" className="min-h-11 rounded-lg">
                         <Camera className="mr-2 size-4"/>
                         {t('tryVisualSearch')}
                     </Button>

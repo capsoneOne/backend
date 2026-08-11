@@ -11,16 +11,14 @@ export async function HeroSection() {
     const t = await getTranslations({locale, namespace: 'Hero'});
 
     return (
-        <section className="relative overflow-hidden border-b border-border bg-background">
-            <div className="pointer-events-none absolute -right-40 top-10 size-[38rem] rounded-full bg-secondary/80 blur-3xl" />
-            <div className="pointer-events-none absolute left-[8%] top-28 size-2 rounded-full bg-primary/50 animate-pulse-soft" />
-            <div className="container mx-auto grid min-h-[43rem] items-center gap-10 px-4 pb-20 pt-28 lg:grid-cols-2 lg:gap-16 lg:pb-24 lg:pt-32">
+        <section className="border-b border-border bg-secondary/20">
+            <div className="container mx-auto grid min-h-[39rem] items-center gap-10 px-4 pb-16 pt-24 lg:grid-cols-2 lg:gap-14 lg:pb-20 lg:pt-28">
                 <div className="mx-auto max-w-xl text-center lg:mx-0 lg:text-left">
-                    <p className="animate-fade-up text-sm font-bold uppercase tracking-[0.18em] text-primary">
+                    <p className="animate-fade-up text-xs font-bold uppercase tracking-[0.18em] text-primary">
                         {t('badge')}
                     </p>
 
-                    <h1 className="animate-fade-up mt-5 text-balance text-5xl font-bold leading-[1.02] md:text-6xl lg:text-7xl [animation-delay:70ms]">
+                    <h1 className="animate-fade-up mt-5 text-balance text-5xl font-bold leading-[1.04] md:text-6xl [animation-delay:70ms]">
                         {t('title')}{' '}
                         <span className="text-primary">{t('titleHighlight')}</span>
                     </h1>
@@ -34,7 +32,7 @@ export async function HeroSection() {
                             render={<Link href="/search" />}
                             nativeButton={false}
                             size="lg"
-                            className="group h-12 rounded-xl px-6 text-base elevate-1"
+                            className="group h-12 rounded-lg px-6 text-base"
                         >
                             <ShoppingBag className="mr-2 size-4.5" />
                             {t('shopNow')}
@@ -44,7 +42,7 @@ export async function HeroSection() {
                             nativeButton={false}
                             variant="outline"
                             size="lg"
-                            className="group h-12 rounded-xl bg-card px-6 text-base"
+                            className="group h-12 rounded-lg bg-background px-6 text-base"
                         >
                             <LayoutGrid className="mr-2 size-4" />
                             {t('viewCollections')}
@@ -58,20 +56,15 @@ export async function HeroSection() {
                     </p>
                 </div>
 
-                <div className="animate-fade-up relative mx-auto w-full max-w-[35rem] [animation-delay:120ms]">
-                    <div className="relative aspect-square">
-                        <div className="absolute inset-[9%] rounded-full bg-secondary/75" />
-                        <div className="animate-orbit-slow absolute inset-[4%] rounded-full border border-dashed border-primary/25">
-                            <span className="absolute left-[10%] top-[8%] size-3 rounded-full bg-primary" />
-                            <span className="absolute bottom-[4%] right-[18%] size-2 rounded-full bg-primary/60" />
-                        </div>
+                <div className="animate-fade-up relative mx-auto w-full max-w-[32rem] [animation-delay:120ms]">
+                    <div className="relative aspect-square rounded-xl border border-border bg-background/70 p-4">
                         <Image
                             src="/storyset/choosing-clothes-cuate.svg"
                             alt={t('illustrationAlt')}
                             width={500}
                             height={500}
                             priority
-                            className="animate-float-art relative h-full w-full object-contain drop-shadow-[0_24px_32px_rgb(37_99_235/0.12)]"
+                            className="h-full w-full object-contain"
                         />
                     </div>
                     <p className="mt-1 text-center text-xs text-muted-foreground">

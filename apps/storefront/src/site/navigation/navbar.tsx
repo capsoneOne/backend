@@ -8,7 +8,6 @@ import {CurrencyPickerWrapper} from '@/site/navigation/navbar/currency-picker-wr
 import {MobileNavWrapper} from '@/site/navigation/navbar/mobile-nav-wrapper';
 import {Suspense} from "react";
 import {SearchInput} from '@/site/navigation/search-input';
-import {VisualSearchLink} from '@/site/navigation/visual-search-link';
 import {SearchLink} from '@/site/navigation/search-link';
 import {WishlistLink} from '@/site/navigation/wishlist-link';
 import {NavbarUserSkeleton} from '@/site/navigation/skeletons/navbar-user-skeleton';
@@ -21,7 +20,7 @@ import {getRouteLocale} from '@/platform/i18n/server';
  * Three-zone header: identity, a centred search field, and actions.
  *
  * Collections and Shop All establish the fashion catalogue first. Text and
- * visual search remain immediately available as discovery tools.
+ * text and image search share one discovery control.
  */
 export async function Navbar() {
     const locale = await getRouteLocale();
@@ -63,9 +62,6 @@ export async function Navbar() {
                     <div className="ml-auto flex shrink-0 items-center gap-0.5 sm:gap-1">
                         <Suspense>
                             <SearchLink />
-                        </Suspense>
-                        <Suspense>
-                            <VisualSearchLink />
                         </Suspense>
                         <span className="mx-1 hidden h-5 w-px bg-border sm:block" />
                         <WishlistLink />

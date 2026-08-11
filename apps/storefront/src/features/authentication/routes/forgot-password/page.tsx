@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import {getTranslations} from 'next-intl/server';
 import {getRouteLocale} from '@/platform/i18n/server';
 import { ForgotPasswordForm } from './forgot-password-form';
+import {AuthPageShell} from '@/components/auth-page-shell';
 
 export async function generateMetadata(): Promise<Metadata> {
     const locale = await getRouteLocale();
@@ -13,10 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ForgotPasswordPage() {
     return (
-        <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4">
-            <div className="w-full max-w-md">
-                <ForgotPasswordForm />
-            </div>
-        </div>
+        <AuthPageShell>
+            <ForgotPasswordForm />
+        </AuthPageShell>
     );
 }

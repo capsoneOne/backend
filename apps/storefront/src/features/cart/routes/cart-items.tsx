@@ -33,7 +33,7 @@ export async function CartItems({activeOrder}: { activeOrder: ActiveOrder | null
     const t = await getTranslations('Cart');
     if (!activeOrder || activeOrder.lines.length === 0) {
         return (
-            <div className="container mx-auto px-4 py-16">
+            <div className="py-12">
                 <div className="text-center">
                     <h1 className="text-3xl font-bold mb-4">{t('empty')}</h1>
                     <p className="text-muted-foreground mb-8">
@@ -50,7 +50,7 @@ export async function CartItems({activeOrder}: { activeOrder: ActiveOrder | null
             {activeOrder.lines.map((line) => (
                 <div
                     key={line.id}
-                    className="flex flex-col sm:flex-row gap-4 p-4 first:rounded-t-xl last:rounded-b-xl border-x first:border-t last:border-b bg-card transition-colors duration-200 hover:bg-muted/30"
+                    className="flex flex-col gap-4 border-x bg-card p-4 first:rounded-t-xl first:border-t last:rounded-b-xl last:border-b sm:flex-row"
                 >
                     {line.productVariant.product.featuredAsset && (
                         <Link

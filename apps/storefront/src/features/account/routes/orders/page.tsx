@@ -19,6 +19,7 @@ import {formatDate} from '@/platform/i18n/format';
 import { Link, redirect } from '@/platform/i18n/navigation';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {getTranslations} from 'next-intl/server';
+import {StorefrontPageHeader} from '@/components/catalogue-page';
 
 export async function generateMetadata(): Promise<Metadata> {
     const locale = await getRouteLocale();
@@ -64,7 +65,7 @@ export default async function OrdersPage(props: PageProps<'/[locale]/account/ord
 
     return (
         <div>
-            <h1 className="text-3xl font-bold mb-6">{t('myOrders')}</h1>
+            <StorefrontPageHeader title={t('myOrders')} variant="compact" />
 
             {orders.length === 0 ? (
                 <div className="text-center py-12">

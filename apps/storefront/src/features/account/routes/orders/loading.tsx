@@ -1,10 +1,11 @@
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
 import {Skeleton} from '@/components/ui/skeleton';
+import {CataloguePageHeaderSkeleton} from '@/components/catalogue-page';
 
 export default function OrdersLoading() {
     return (
         <div>
-            <h1 className="text-3xl font-bold mb-6">My Orders</h1>
+            <CataloguePageHeaderSkeleton variant="compact" />
 
             <div className="border rounded-lg">
                 <Table>

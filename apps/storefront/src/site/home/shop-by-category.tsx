@@ -3,6 +3,7 @@ import {ArrowRight} from 'lucide-react';
 import {getTranslations} from 'next-intl/server';
 
 import {getAllCollections} from '@/features/collections/data';
+import {getCollectionPath} from '@/features/collections/paths';
 import {Link} from '@/platform/i18n/navigation';
 import {getRouteLocale} from '@/platform/i18n/server';
 
@@ -18,7 +19,7 @@ export async function ShopByCategory() {
             <div className="container mx-auto px-4">
                 <div className="flex items-end justify-between gap-4">
                     <div>
-                        <p className="text-sm font-medium uppercase tracking-[0.18em] text-primary">
+                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
                             {t('categoriesEyebrow')}
                         </p>
                         <h2 className="mt-3 text-3xl font-bold md:text-4xl">{t('shopByCategory')}</h2>
@@ -39,8 +40,8 @@ export async function ShopByCategory() {
                     {collections.slice(0, 6).map((collection, index) => (
                         <Link
                             key={collection.id}
-                            href={`/collection/${collection.slug}`}
-                            className="group relative min-h-72 overflow-hidden rounded-3xl bg-muted outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4"
+                            href={getCollectionPath(collection.slug)}
+                            className="group relative min-h-72 overflow-hidden rounded-xl bg-muted outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4"
                         >
                             {collection.featuredAsset ? (
                                 <Image
@@ -49,7 +50,7 @@ export async function ShopByCategory() {
                                     fill
                                     priority={index < 3}
                                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                    className="object-cover transition-transform duration-500 group-hover:scale-[1.025]"
                                 />
                             ) : (
                                 <div className="absolute inset-0 bg-dotfield opacity-70" />
@@ -58,9 +59,7 @@ export async function ShopByCategory() {
                             <div className="absolute inset-x-0 bottom-0 p-6 text-white">
                                 <div className="flex items-center justify-between gap-3">
                                     <h3 className="text-2xl font-semibold">{collection.name}</h3>
-                                    <span className="flex size-10 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm transition-transform group-hover:translate-x-1">
-                                        <ArrowRight className="size-5" />
-                                    </span>
+                                    <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
                                 </div>
                                 {collection.children?.length ? (
                                     <p className="mt-2 line-clamp-1 text-sm text-white/75">

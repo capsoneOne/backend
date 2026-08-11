@@ -103,7 +103,7 @@ export default function CheckoutFlow() {
                       completedSteps.has(step)
                         ? 'bg-primary text-primary-foreground'
                         : currentStep === step
-                        ? 'bg-primary text-primary-foreground ring-4 ring-primary/20'
+                        ? 'bg-primary text-primary-foreground ring-2 ring-primary/20'
                         : 'bg-muted text-muted-foreground'
                     }`}
                   >
@@ -149,7 +149,7 @@ export default function CheckoutFlow() {
                 <div className="flex items-center gap-3">
                   <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold ${
                     completedSteps.has('contact')
-                      ? 'bg-green-500 text-white'
+                      ? 'bg-primary text-primary-foreground'
                       : currentStep === 'contact'
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-muted text-muted-foreground'
@@ -178,8 +178,8 @@ export default function CheckoutFlow() {
             >
               <div className="flex items-center gap-3">
                 <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold ${
-                  completedSteps.has('shipping')
-                    ? 'bg-green-500 text-white'
+                    completedSteps.has('shipping')
+                    ? 'bg-primary text-primary-foreground'
                     : currentStep === 'shipping'
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-muted text-muted-foreground'
@@ -207,8 +207,8 @@ export default function CheckoutFlow() {
             >
               <div className="flex items-center gap-3">
                 <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold ${
-                  completedSteps.has('delivery')
-                    ? 'bg-green-500 text-white'
+                    completedSteps.has('delivery')
+                    ? 'bg-primary text-primary-foreground'
                     : currentStep === 'delivery'
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-muted text-muted-foreground'
@@ -236,8 +236,8 @@ export default function CheckoutFlow() {
             >
               <div className="flex items-center gap-3">
                 <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold ${
-                  completedSteps.has('payment')
-                    ? 'bg-green-500 text-white'
+                    completedSteps.has('payment')
+                    ? 'bg-primary text-primary-foreground'
                     : currentStep === 'payment'
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-muted text-muted-foreground'

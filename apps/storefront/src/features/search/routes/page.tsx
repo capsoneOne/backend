@@ -6,7 +6,7 @@ import {SearchResults} from "@/features/search/routes/search-results";
 import {SearchTerm, SearchTermSkeleton} from "@/features/search/routes/search-term";
 import {SearchResultsSkeleton} from "@/features/search/components/search-results-skeleton";
 import {SITE_NAME, noIndexRobots} from '@/config/metadata';
-import {SearchAutocomplete} from '@/features/search/search-autocomplete';
+import {StorefrontPageShell} from '@/components/catalogue-page';
 
 export async function generateMetadata({
     searchParams,
@@ -25,24 +25,19 @@ export async function generateMetadata({
         description: searchQuery
             ? t('metaDescription', {query: searchQuery, siteName: SITE_NAME})
             : t('metaCatalogDescription', {siteName: SITE_NAME}),
-        robots: noIndexRobots(),
+        robots: searchQuery ? noIndexRobots() : undefined,
     };
 }
 
 export default async function SearchPage({searchParams}: PageProps<'/[locale]/search'>) {
     return (
-        <div className="container mx-auto px-4 py-8 mt-16">
+        <StorefrontPageShell>
             <Suspense fallback={<SearchTermSkeleton/>}>
                 <SearchTerm searchParams={searchParams}/>
             </Suspense>
-            <div className="mb-6 lg:hidden">
-                <Suspense fallback={<div className="h-11 w-full animate-pulse rounded-full bg-muted" />}>
-                    <SearchAutocomplete className="max-w-none" />
-                </Suspense>
-            </div>
             <Suspense fallback={<SearchResultsSkeleton />}>
                 <SearchResults searchParams={searchParams}/>
             </Suspense>
-        </div>
+        </StorefrontPageShell>
     );
 }

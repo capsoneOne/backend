@@ -111,7 +111,7 @@ export function ImageCropper({
                 onPointerDown={event => onPointerDown(event, 'draw')}
                 onPointerMove={onPointerMove}
                 onPointerUp={onPointerUp}
-                className="relative mx-auto max-h-[60vh] w-fit touch-none select-none overflow-hidden rounded-2xl bg-muted"
+                className="relative mx-auto max-h-[60vh] w-fit touch-none select-none overflow-hidden rounded-xl bg-muted"
             >
                 {/* Intentionally a plain <img>: this is an object URL of a local file
                     at unknown dimensions, which next/image cannot optimise anyway. */}

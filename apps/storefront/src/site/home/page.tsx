@@ -55,10 +55,10 @@ export default async function Home() {
                 <SaleSection/>
             </Suspense>
 
-            <section className="reveal-section border-t border-border bg-secondary/30 py-20 md:py-28">
+            <section className="border-t border-border bg-secondary/20 py-16 md:py-24">
                 <div className="container mx-auto px-4">
                     <div className="mx-auto max-w-2xl text-center">
-                        <p className="text-sm font-medium uppercase tracking-[0.18em] text-primary">
+                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
                             {t('whyShopEyebrow')}
                         </p>
                         <h2 className="mt-3 text-3xl font-bold md:text-4xl">
@@ -66,16 +66,13 @@ export default async function Home() {
                         </h2>
                     </div>
 
-                    <div className="mt-14 grid gap-5 md:grid-cols-3">
+                    <div className="mt-12 grid gap-5 md:grid-cols-3">
                         {featureKeys.map((feature) => (
                             <div
                                 key={feature.key}
-                                className="group relative overflow-hidden rounded-2xl border border-border bg-card p-8 transition-all duration-300 hover:-translate-y-1 hover:elevate-3"
+                                className="rounded-xl border border-border bg-card p-7"
                             >
-                                {/* Hairline that lights up on hover — cheaper visually than
-                                    a full colour wash, and it survives dark mode. */}
-                                <span className="absolute inset-x-0 top-0 h-px scale-x-0 bg-gradient-to-r from-transparent via-primary to-transparent transition-transform duration-500 group-hover:scale-x-100" />
-                                <div className="flex size-12 items-center justify-center rounded-xl bg-accent text-accent-foreground transition-transform duration-300 group-hover:scale-105">
+                                <div className="flex size-11 items-center justify-center rounded-lg bg-secondary text-primary">
                                     <feature.icon className="size-5.5" />
                                 </div>
                                 <h3 className="mt-6 text-lg font-medium">{t(`features.${feature.key}.title`)}</h3>
@@ -101,7 +98,7 @@ function HomepageSectionSkeleton({cards}: {cards: number}) {
                 <div className="mt-10 grid grid-cols-2 gap-5 lg:grid-cols-4">
                     {Array.from({length: cards}).map((_, index) => (
                         <div key={index} className={index > 3 ? 'hidden lg:block' : ''}>
-                            <div className="aspect-square animate-pulse rounded-2xl bg-muted"/>
+                            <div className="aspect-square animate-pulse rounded-xl bg-muted"/>
                             <div className="mt-4 h-4 w-3/4 animate-pulse rounded bg-muted"/>
                             <div className="mt-2 h-5 w-1/3 animate-pulse rounded bg-muted"/>
                         </div>

@@ -5,11 +5,12 @@ import Image from 'next/image';
 import {useSearchParams} from 'next/navigation';
 import {useRouter} from '@/platform/i18n/navigation';
 import {Link} from '@/platform/i18n/navigation';
-import {Loader2, Search, X} from 'lucide-react';
+import {Camera, Loader2, Search, X} from 'lucide-react';
 import {Input} from '@/components/ui/input';
 import {useTranslations} from 'next-intl';
 import {Price} from '@/features/pricing/price';
 import {fetchSearchSuggestions, type SuggestionResult} from '@/features/search/suggestions';
+import {VisualSearchQuickUpload} from '@/features/visual-search';
 import {cn} from '@/lib/utils';
 
 const DEBOUNCE_MS = 200;
@@ -17,6 +18,7 @@ const MIN_QUERY = 2;
 
 export function SearchAutocomplete({className}: {className?: string}) {
     const t = useTranslations('SearchSuggestions');
+    const visualT = useTranslations('VisualSearch');
     const router = useRouter();
     const listboxId = useId();
     const searchParams = useSearchParams();
@@ -24,6 +26,7 @@ export function SearchAutocomplete({className}: {className?: string}) {
     const [searchValue, setSearchValue] = useState(searchParams.get('q') || '');
     const [suggestions, setSuggestions] = useState<SuggestionResult>({items: [], totalItems: 0});
     const [open, setOpen] = useState(false);
+    const [imageOpen, setImageOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     /** Index into the suggestion list for keyboard navigation; -1 is the input itself. */
     const [activeIndex, setActiveIndex] = useState(-1);
@@ -34,6 +37,7 @@ export function SearchAutocomplete({className}: {className?: string}) {
     useEffect(() => {
         setSearchValue(searchParams.get('q') || '');
         setOpen(false);
+        setImageOpen(false);
     }, [searchParams]);
 
     useEffect(() => {
@@ -61,7 +65,10 @@ export function SearchAutocomplete({className}: {className?: string}) {
     // Close on an outside click, the way every other combobox behaves.
     useEffect(() => {
         const onPointerDown = (event: PointerEvent) => {
-            if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
+            if (!containerRef.current?.contains(event.target as Node)) {
+                setOpen(false);
+                setImageOpen(false);
+            }
         };
         document.addEventListener('pointerdown', onPointerDown);
         return () => document.removeEventListener('pointerdown', onPointerDown);
@@ -70,6 +77,7 @@ export function SearchAutocomplete({className}: {className?: string}) {
     const submit = (term: string) => {
         if (!term.trim()) return;
         setOpen(false);
+        setImageOpen(false);
         startTransition(() => {
             router.push(`/search?q=${encodeURIComponent(term.trim())}`);
         });
@@ -79,6 +87,7 @@ export function SearchAutocomplete({className}: {className?: string}) {
         const items = suggestions.items;
         if (event.key === 'Escape') {
             setOpen(false);
+            setImageOpen(false);
             setActiveIndex(-1);
             return;
         }
@@ -105,7 +114,7 @@ export function SearchAutocomplete({className}: {className?: string}) {
         }
     };
 
-    const showPanel = open && searchValue.trim().length >= MIN_QUERY;
+    const showPanel = open && !imageOpen && searchValue.trim().length >= MIN_QUERY;
 
     return (
         <div ref={containerRef} className={cn("relative w-full max-w-md", className)}>
@@ -120,19 +129,22 @@ export function SearchAutocomplete({className}: {className?: string}) {
                 <Input
                     type="search"
                     placeholder={t('searchProducts')}
-                    className="h-11 w-full rounded-full border-transparent bg-muted pl-10 pr-11 transition-colors focus-visible:border-transparent focus-visible:bg-card"
+                    className="h-11 w-full rounded-full border-transparent bg-muted pl-10 pr-20 transition-colors focus-visible:border-transparent focus-visible:bg-card"
                     value={searchValue}
                     onChange={event => {
                         setSearchValue(event.target.value);
                         setOpen(true);
                         setActiveIndex(-1);
                     }}
-                    onFocus={() => setOpen(true)}
+                    onFocus={() => {
+                        setImageOpen(false);
+                        setOpen(true);
+                    }}
                     onKeyDown={handleKeyDown}
                     disabled={isPending}
                     role="combobox"
                     aria-label={t('searchProducts')}
-                    aria-expanded={showPanel}
+                    aria-expanded={showPanel || imageOpen}
                     aria-controls={listboxId}
                     aria-autocomplete="list"
                     aria-activedescendant={activeIndex >= 0 ? `${listboxId}-option-${suggestions.items[activeIndex]?.productId}` : undefined}
@@ -140,7 +152,7 @@ export function SearchAutocomplete({className}: {className?: string}) {
                     autoComplete="off"
                 />
                 {loading ? (
-                    <Loader2 className="absolute right-11 top-1/2 size-4 -translate-y-1/2 animate-spin text-muted-foreground" aria-hidden="true" />
+                    <Loader2 className="absolute right-[4.75rem] top-1/2 size-4 -translate-y-1/2 animate-spin text-muted-foreground" aria-hidden="true" />
                 ) : null}
                 {searchValue ? (
                     <button
@@ -151,12 +163,27 @@ export function SearchAutocomplete({className}: {className?: string}) {
                             setOpen(false);
                             setActiveIndex(-1);
                         }}
-                        className="absolute right-0 top-0 inline-flex size-11 items-center justify-center rounded-full text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                        className="absolute right-10 top-0 inline-flex size-11 items-center justify-center rounded-full text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
                         aria-label={t('clearSearch')}
                     >
                         <X className="size-4" aria-hidden="true" />
                     </button>
                 ) : null}
+                <button
+                    type="button"
+                    onClick={() => {
+                        setImageOpen(value => !value);
+                        setOpen(false);
+                    }}
+                    className={cn(
+                        'absolute right-0 top-0 inline-flex size-11 items-center justify-center rounded-full outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring',
+                        imageOpen ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent hover:text-primary',
+                    )}
+                    aria-label={visualT('quickTitle')}
+                    aria-expanded={imageOpen}
+                >
+                    <Camera className="size-4.5" aria-hidden="true" />
+                </button>
             </form>
 
             <p className="sr-only" role="status" aria-live="polite">
@@ -169,7 +196,7 @@ export function SearchAutocomplete({className}: {className?: string}) {
 
             {showPanel ? (
                 <div
-                    className="absolute left-0 right-0 top-12 z-50 overflow-hidden rounded-2xl border border-border bg-popover elevate-3"
+                    className="absolute left-0 right-0 top-12 z-50 overflow-hidden rounded-xl border border-border bg-popover elevate-2"
                 >
                     {suggestions.items.length === 0 ? (
                         <>
@@ -241,6 +268,13 @@ export function SearchAutocomplete({className}: {className?: string}) {
                         </>
                     )}
                 </div>
+            ) : null}
+
+            {imageOpen ? (
+                <VisualSearchQuickUpload
+                    onClose={() => setImageOpen(false)}
+                    className="absolute right-0 top-12 z-50 w-[min(32rem,calc(100vw-2rem))]"
+                />
             ) : null}
         </div>
     );

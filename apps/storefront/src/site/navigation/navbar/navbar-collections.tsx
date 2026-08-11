@@ -12,6 +12,7 @@ import {
 import {NavbarLink} from '@/site/navigation/navbar/navbar-link';
 import {Link} from '@/platform/i18n/navigation';
 import {ArrowRight} from 'lucide-react';
+import {getCollectionPath} from '@/features/collections/paths';
 
 export async function NavbarCollections() {
     "use cache";
@@ -35,7 +36,7 @@ export async function NavbarCollections() {
                                 <NavigationMenuContent>
                                     <div className="w-[32rem] p-3">
                                         <NavigationMenuLink
-                                            render={<Link href={`/collection/${collection.slug}`} />}
+                                            render={<Link href={getCollectionPath(collection.slug)} />}
                                             className="mb-2 flex items-center justify-between rounded-lg bg-muted/60 px-4 py-3 font-medium"
                                         >
                                             <span>Shop all {collection.name}</span>
@@ -45,7 +46,7 @@ export async function NavbarCollections() {
                                             {collection.children.map(child => (
                                                 <NavigationMenuLink
                                                     key={child.id}
-                                                    render={<Link href={`/collection/${child.slug}`} />}
+                                                    render={<Link href={getCollectionPath(child.slug)} />}
                                                     className="rounded-lg px-4 py-3"
                                                 >
                                                     {child.name}
@@ -56,7 +57,7 @@ export async function NavbarCollections() {
                                 </NavigationMenuContent>
                             </>
                         ) : (
-                            <NavbarLink href={`/collection/${collection.slug}`}>
+                            <NavbarLink href={getCollectionPath(collection.slug)}>
                                 {collection.name}
                             </NavbarLink>
                         )}

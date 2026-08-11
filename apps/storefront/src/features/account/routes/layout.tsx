@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import {Suspense} from 'react';
 import {noIndexRobots} from '@/config/metadata';
 import {AccountNavLinks} from '@/features/account/components/account-nav-links';
+import {StorefrontPageShell} from '@/components/catalogue-page';
 
 export const metadata: Metadata = {
     robots: noIndexRobots(),
@@ -11,11 +12,12 @@ const navItems = [
     {href: '/account/orders', labelKey: 'orders', icon: 'Package'},
     {href: '/account/addresses', labelKey: 'addresses', icon: 'MapPin'},
     {href: '/account/profile', labelKey: 'profile', icon: 'User'},
+    {href: '/account/settings', labelKey: 'settings', icon: 'Settings'},
 ];
 
 export default async function AccountLayout({children}: LayoutProps<'/[locale]/account'>) {
     return (
-        <div className="container mx-auto px-4 py-30">
+        <StorefrontPageShell>
             {/* Mobile: horizontal tab bar */}
             <div className="md:hidden mb-6">
                 <Suspense>
@@ -34,6 +36,6 @@ export default async function AccountLayout({children}: LayoutProps<'/[locale]/a
                     {children}
                 </main>
             </div>
-        </div>
+        </StorefrontPageShell>
     );
 }

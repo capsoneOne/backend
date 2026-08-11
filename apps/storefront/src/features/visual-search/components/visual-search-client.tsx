@@ -128,7 +128,7 @@ export function VisualSearchClient({initialProduct}: {initialProduct?: InitialPr
     const openPicker = () => inputRef.current?.click();
 
     return (
-        <div className="reveal-section space-y-10">
+        <div id="visual-search-upload" className="reveal-section scroll-mt-28 space-y-10">
             <input
                 ref={inputRef}
                 type="file"
@@ -155,10 +155,10 @@ export function VisualSearchClient({initialProduct}: {initialProduct?: InitialPr
                     const file = e.dataTransfer.files?.[0];
                     if (file) handleFile(file);
                 }}
-                className={`relative mx-auto max-w-3xl overflow-hidden rounded-3xl border bg-card p-8 transition-all duration-300 sm:p-12 ${
+                className={`relative mx-auto max-w-4xl overflow-hidden rounded-xl border bg-card p-8 transition-colors duration-200 sm:p-12 ${
                     dragging
-                        ? 'scale-[1.01] border-primary bg-accent/50 shadow-[0_24px_60px_-28px_color-mix(in_oklch,var(--color-primary)_65%,transparent)]'
-                        : 'border-border elevate-1 hover:border-primary/35 hover:shadow-[0_24px_60px_-30px_color-mix(in_oklch,var(--color-primary)_45%,transparent)]'
+                        ? 'border-primary bg-accent/50'
+                        : 'border-border hover:border-primary/35'
                 }`}
             >
                 <div className="pointer-events-none absolute inset-0 bg-dotfield opacity-60 [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,black,transparent)]" />
@@ -169,7 +169,7 @@ export function VisualSearchClient({initialProduct}: {initialProduct?: InitialPr
                     </div>
                 ) : preview ? (
                     <div className="relative flex flex-col items-center gap-7 sm:flex-row sm:items-center sm:justify-center">
-                        <div className="relative size-44 shrink-0 overflow-hidden rounded-2xl bg-muted elevate-2">
+                        <div className="relative size-44 shrink-0 overflow-hidden rounded-xl bg-muted">
                             <Image src={preview} alt={t('yourImage')} fill sizes="176px" className="object-contain" unoptimized/>
                         </div>
                         <div className="space-y-3 text-center sm:text-left">
@@ -193,7 +193,7 @@ export function VisualSearchClient({initialProduct}: {initialProduct?: InitialPr
                     </div>
                 ) : showInitialProduct && initialProduct ? (
                     <div className="relative flex flex-col items-center gap-7 sm:flex-row sm:justify-center">
-                        <div className="relative size-44 shrink-0 overflow-hidden rounded-2xl bg-muted elevate-2">
+                        <div className="relative size-44 shrink-0 overflow-hidden rounded-xl bg-muted">
                             {initialProduct.imageUrl ? (
                                 <Image src={initialProduct.imageUrl} alt={initialProduct.name} fill sizes="176px" priority className="object-cover" />
                             ) : null}
@@ -210,7 +210,10 @@ export function VisualSearchClient({initialProduct}: {initialProduct?: InitialPr
                     </div>
                 ) : (
                     <div className="relative flex flex-col items-center text-center">
-                        <div className="flex size-16 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
+                        <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
+                            {t('uploadStep')}
+                        </p>
+                        <div className="mt-5 flex size-16 items-center justify-center rounded-xl bg-primary text-primary-foreground">
                             <ImageUp className="size-7"/>
                         </div>
                         <p className="mt-6 text-xl font-medium">{t('dropzoneTitle')}</p>
@@ -228,6 +231,11 @@ export function VisualSearchClient({initialProduct}: {initialProduct?: InitialPr
                         >
                             {t('chooseImage')}
                         </Button>
+                        <div className="mt-8 flex flex-wrap justify-center gap-x-5 gap-y-2 border-t border-border/70 pt-6 text-xs text-muted-foreground">
+                            <span>{t('photoTipOne')}</span>
+                            <span>{t('photoTipTwo')}</span>
+                            <span>{t('photoTipThree')}</span>
+                        </div>
                     </div>
                 )}
             </div>
@@ -249,7 +257,7 @@ export function VisualSearchClient({initialProduct}: {initialProduct?: InitialPr
                 {!pending && state.status === 'error' && (
                     <div
                         role="alert"
-                        className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-2xl border border-destructive/25 bg-destructive/5 px-6 py-9 text-center"
+                        className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-xl border border-destructive/25 bg-destructive/5 px-6 py-9 text-center"
                     >
                         <AlertCircle className="size-6 text-destructive"/>
                         <p className="text-sm text-destructive">
@@ -326,7 +334,7 @@ function Results({
 
     if (items.length === 0) {
         return (
-            <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-2xl border border-dashed border-border px-6 py-14 text-center">
+            <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-xl border border-dashed border-border px-6 py-14 text-center">
                 <div className="rounded-full bg-muted p-4">
                     <SearchX className="size-6 text-muted-foreground"/>
                 </div>
@@ -352,7 +360,7 @@ function Results({
                 </h2>
             </div>
 
-            <section className="rounded-2xl border border-border/70 bg-muted/20 p-4 sm:p-5" aria-labelledby="visual-result-filters-title">
+            <section className="rounded-xl border border-border bg-muted/20 p-4 sm:p-5" aria-labelledby="visual-result-filters-title">
                 <div className="mb-4 flex items-center justify-between gap-4">
                     <h3 id="visual-result-filters-title" className="flex items-center gap-2 font-semibold">
                         <SlidersHorizontal className="size-4 text-primary" aria-hidden="true" />
@@ -414,7 +422,7 @@ function Results({
             </section>
 
             {filteredItems.length === 0 ? (
-                <div className="mx-auto flex max-w-lg flex-col items-center gap-3 rounded-2xl border border-dashed border-border px-6 py-12 text-center" role="status">
+                <div className="mx-auto flex max-w-lg flex-col items-center gap-3 rounded-xl border border-dashed border-border px-6 py-12 text-center" role="status">
                     <div className="rounded-full bg-muted p-4">
                         <SearchX className="size-6 text-muted-foreground" aria-hidden="true" />
                     </div>

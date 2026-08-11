@@ -1,9 +1,10 @@
 import { Skeleton } from '@/components/ui/skeleton';
+import {CataloguePageHeaderSkeleton, StorefrontPageShell} from '@/components/catalogue-page';
 
 export default function CheckoutLoading() {
     return (
-        <div className="container mx-auto px-4 py-8">
-            <Skeleton className="h-9 w-32 mb-8" />
+        <StorefrontPageShell>
+            <CataloguePageHeaderSkeleton variant="compact" />
 
             <div className="grid lg:grid-cols-3 gap-8">
                 {/* Checkout Steps */}
@@ -85,6 +86,6 @@ export default function CheckoutLoading() {
                     </div>
                 </div>
             </div>
-        </div>
+        </StorefrontPageShell>
     );
 }

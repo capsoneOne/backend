@@ -36,7 +36,7 @@ export function MerchandiseProductCard({product: productProp, labels, priority}:
             noImageLabel={labels.noImage}
             priority={priority}
             badge={
-                <span className="rounded-full bg-background/90 px-2.5 py-1 text-xs font-semibold text-foreground elevate-1 backdrop-blur-md">
+                <span className="rounded-full bg-background/90 px-2.5 py-1 text-xs font-medium text-foreground shadow-sm backdrop-blur-md">
                     {inStock ? labels.new : labels.soldOut}
                 </span>
             }

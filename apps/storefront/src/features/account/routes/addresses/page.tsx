@@ -5,6 +5,7 @@ import {GetCustomerAddressesQuery} from '@/features/account/graphql';
 import {GetAvailableCountriesQuery} from '@/features/checkout/graphql';
 import { AddressesClient } from './addresses-client';
 import {getTranslations} from 'next-intl/server';
+import {StorefrontPageHeader} from '@/components/catalogue-page';
 
 export async function generateMetadata(): Promise<Metadata> {
     const locale = await getRouteLocale();
@@ -26,15 +27,16 @@ export default async function AddressesPage() {
     const countries = countriesResult.data.availableCountries || [];
 
     return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold">{t('addresses')}</h1>
-                <p className="text-muted-foreground mt-2">
-                    {t('manageAddresses')}
-                </p>
-            </div>
+        <div>
+            <StorefrontPageHeader
+                title={t('addresses')}
+                description={t('manageAddresses')}
+                variant="compact"
+            />
 
-            <AddressesClient addresses={addresses} countries={countries} />
+            <div className="space-y-6">
+                <AddressesClient addresses={addresses} countries={countries} />
+            </div>
         </div>
     );
 }

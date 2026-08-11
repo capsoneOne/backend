@@ -3,6 +3,7 @@ import {query} from '@/platform/vendure/api';
 import {routing} from '@/platform/i18n/routing';
 import {buildCanonicalUrl} from '@/config/metadata';
 import {SitemapCollectionsQuery, SitemapProductsQuery} from '@/site/seo/graphql';
+import {getCollectionPath} from '@/features/collections/paths';
 
 /** Vendure caps `take` at 100 by default; page through rather than guess a ceiling. */
 const PAGE_SIZE = 100;
@@ -69,7 +70,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         for (const collection of collections.data.collections.items) {
             entries.push({
-                ...withAlternates(`/collection/${collection.slug}`),
+                ...withAlternates(getCollectionPath(collection.slug)),
                 changeFrequency: 'weekly',
                 priority: 0.7,
             });

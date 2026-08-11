@@ -1,8 +1,6 @@
 'use client';
 
 import {use} from 'react';
-import {ChevronLeft} from 'lucide-react';
-import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {Separator} from '@/components/ui/separator';
 import {Badge} from '@/components/ui/badge';
@@ -14,6 +12,7 @@ import {formatDate} from '@/platform/i18n/format';
 import {useLocale, useTranslations} from 'next-intl';
 import type {ResultOf} from '@/platform/vendure/graphql';
 import type {GetOrderDetailQuery} from '@/features/account/graphql';
+import {StorefrontBreadcrumbs, StorefrontPageHeader} from '@/components/catalogue-page';
 
 type OrderByCode = NonNullable<ResultOf<typeof GetOrderDetailQuery>['orderByCode']>;
 type OrderLineItem = OrderByCode['lines'][number];
@@ -37,21 +36,20 @@ export function OrderDetail({orderPromise}: OrderDetailProps) {
 
     return (
         <div>
-            <div className="mb-6">
-                <Button render={<Link href="/account/orders" />} nativeButton={false} variant="ghost" size="sm" className="mb-4">
-                        <ChevronLeft className="h-4 w-4 mr-2"/>
-                        {t('backToOrders')}
-                </Button>
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold">{t('order', {code: order.code})}</h1>
-                        <p className="text-muted-foreground mt-1">
-                            {t('placedOn', {date: formatDate(order.createdAt, 'long', locale)})}
-                        </p>
-                    </div>
-                    <OrderStatusBadge state={order.state}/>
-                </div>
-            </div>
+            <StorefrontPageHeader
+                title={t('order', {code: order.code})}
+                description={t('placedOn', {date: formatDate(order.createdAt, 'long', locale)})}
+                variant="compact"
+                breadcrumbs={(
+                    <StorefrontBreadcrumbs
+                        items={[
+                            {label: t('myOrders'), href: '/account/orders'},
+                            {label: t('order', {code: order.code})},
+                        ]}
+                    />
+                )}
+                actions={<OrderStatusBadge state={order.state}/>}
+            />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">

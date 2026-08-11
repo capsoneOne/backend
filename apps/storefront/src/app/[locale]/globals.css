@@ -47,7 +47,7 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Visual Search — crisp blue, quiet neutrals, and focused hierarchy.
+   StyleMatch — crisp blue, quiet neutrals, and focused hierarchy.
 
    A cool white canvas and ink-blue type keep the catalogue calm. Cobalt is the
    single interface accent, reserved for actions, prices, links, and focus.
@@ -97,8 +97,8 @@
   --sidebar-ring: oklch(0.53 0.19 255);
 
   --shadow-e1: 0 1px 2px 0 oklch(0.18 0.02 255 / 6%);
-  --shadow-e2: 0 5px 18px -5px oklch(0.18 0.02 255 / 10%), 0 1px 3px 0 oklch(0.18 0.02 255 / 5%);
-  --shadow-e3: 0 22px 52px -16px oklch(0.18 0.02 255 / 16%), 0 3px 10px -3px oklch(0.18 0.02 255 / 8%);
+  --shadow-e2: 0 4px 14px -6px oklch(0.18 0.02 255 / 9%), 0 1px 2px 0 oklch(0.18 0.02 255 / 4%);
+  --shadow-e3: 0 16px 36px -18px oklch(0.18 0.02 255 / 14%), 0 2px 6px -3px oklch(0.18 0.02 255 / 6%);
 }
 
 /* Dark mode preserves the same cobalt identity on a deep navy canvas. */
@@ -182,7 +182,7 @@
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(16px) scale(0.99);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -211,7 +211,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .animate-fade-up {
-    animation: fade-up 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .animate-float-art {

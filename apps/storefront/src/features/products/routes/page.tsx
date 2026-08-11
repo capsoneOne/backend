@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Link } from '@/platform/i18n/navigation';
 import { query } from '@/platform/vendure/api';
 import {GetProductDetailQuery} from '@/features/products/graphql';
 import { ProductPurchasePanel } from '@/features/products/components/product-purchase-panel';
@@ -12,14 +11,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from '@/components/ui/accordion';
-import {
-    Breadcrumb,
-    BreadcrumbList,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import {StorefrontBreadcrumbs, StorefrontPageShell} from '@/components/catalogue-page';
 import { notFound } from 'next/navigation';
 import { cacheLife, cacheTag } from 'next/cache';
 import { Truck, RotateCcw, ShieldCheck, Clock } from 'lucide-react';
@@ -34,6 +26,7 @@ import {getTranslations} from 'next-intl/server';
 import {toOgLocale} from '@/platform/i18n/locale-utils';
 import {getActiveCurrencyCode} from '@/features/currency/currency-server';
 import {getRouteLocale} from '@/platform/i18n/server';
+import {getCollectionPath} from '@/features/collections/paths';
 
 async function getProductData(slug: string, currencyCode: string) {
     'use cache';
@@ -127,60 +120,50 @@ export default async function ProductDetailPage({
                 items={[
                     {name: t('home'), path: '/'},
                     ...(primaryCollection
-                        ? [{name: primaryCollection.name, path: `/collection/${primaryCollection.slug}`}]
+                        ? [{name: primaryCollection.name, path: getCollectionPath(primaryCollection.slug)}]
                         : []),
                     {name: product.name, path: `/product/${product.slug}`},
                 ]}
             />
 
-            <div className="container mx-auto px-4 py-8 mt-16">
+            <StorefrontPageShell>
                 {/* Breadcrumb Navigation */}
-                <Breadcrumb className="mb-6">
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink render={<Link href="/" />}>{t('home')}</BreadcrumbLink>
-                        </BreadcrumbItem>
-                        {primaryCollection && (
-                            <>
-                                <BreadcrumbSeparator />
-                                <BreadcrumbItem>
-                                    <BreadcrumbLink render={<Link href={`/collection/${primaryCollection.slug}`} />}>
-                                        {primaryCollection.name}
-                                    </BreadcrumbLink>
-                                </BreadcrumbItem>
-                            </>
-                        )}
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>{product.name}</BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
+                <div className="mb-7">
+                    <StorefrontBreadcrumbs
+                        items={[
+                            {label: t('home'), href: '/'},
+                            ...(primaryCollection
+                                ? [{label: primaryCollection.name, href: getCollectionPath(primaryCollection.slug)}]
+                                : []),
+                            {label: product.name},
+                        ]}
+                    />
+                </div>
 
                 <ProductPurchasePanel
                     product={{...productForDisplay, assets: product.assets, featuredAsset: product.featuredAsset}}
                     searchParams={searchParamsResolved}
                     currencyCode={currencyCode}
                 />
-            </div>
+            </StorefrontPageShell>
 
             {/* Shipping & Trust Badges */}
-            <section className="py-8 mt-8 border-y border-border/50">
+            <section className="mt-6 border-y border-border bg-secondary/20 py-7">
                 <div className="container mx-auto px-4">
                     <div className="flex flex-wrap items-center justify-center gap-4 md:gap-8">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-muted/60 px-4 py-2 text-sm font-medium text-muted-foreground">
+                        <div className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground">
                             <Truck className="h-4 w-4 text-primary" />
                             {t('trustBadges.fastShipping')}
                         </div>
-                        <div className="inline-flex items-center gap-2 rounded-full bg-muted/60 px-4 py-2 text-sm font-medium text-muted-foreground">
+                        <div className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground">
                             <RotateCcw className="h-4 w-4 text-primary" />
                             {t('trustBadges.freeReturns')}
                         </div>
-                        <div className="inline-flex items-center gap-2 rounded-full bg-muted/60 px-4 py-2 text-sm font-medium text-muted-foreground">
+                        <div className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground">
                             <ShieldCheck className="h-4 w-4 text-primary" />
                             {t('trustBadges.secureCheckout')}
                         </div>
-                        <div className="inline-flex items-center gap-2 rounded-full bg-muted/60 px-4 py-2 text-sm font-medium text-muted-foreground">
+                        <div className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground">
                             <Clock className="h-4 w-4 text-primary" />
                             {t('trustBadges.guarantee')}
                         </div>
@@ -189,7 +172,7 @@ export default async function ProductDetailPage({
             </section>
 
             {/* Store FAQ Section */}
-            <section className="py-16 bg-muted/30">
+            <section className="bg-background py-14 md:py-16">
                 <div className="container mx-auto px-4 max-w-2xl">
                     <h2 className="text-2xl font-bold text-center mb-8">{t('faq.title')}</h2>
                     <Accordion className="w-full">
