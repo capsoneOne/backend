@@ -18,6 +18,21 @@ async function findMessageFiles(directory) {
     return files;
 }
 
+/**
+ * Configured locales, read from routing.ts rather than hardcoded.
+ *
+ * This test used to assume `de` was always the companion locale, which is only true
+ * of the upstream starter. Deriving the list keeps the parity guarantee meaningful
+ * as locales come and go — including at a single locale, where it correctly has
+ * nothing to compare.
+ */
+async function configuredLocales() {
+    const source = await readFile(path.join(root, 'src/platform/i18n/routing.ts'), 'utf8');
+    const match = source.match(/locales:\s*\[([^\]]*)\]/);
+    assert.ok(match, 'routing.ts must declare a locales array.');
+    return [...match[1].matchAll(/['"]([\w-]+)['"]/g)].map(m => m[1]);
+}
+
 async function findTypeScriptFiles(directory) {
     const files = [];
     for (const entry of await readdir(directory, {withFileTypes: true})) {
@@ -67,15 +82,35 @@ function messageKeys(value, prefix = '') {
 test('message keys match across locales', async () => {
     const discovered = await findMessageFiles(path.join(root, 'src'));
     const englishFiles = discovered.filter(file => path.basename(file) === 'en.json');
+    const translations = (await configuredLocales()).filter(locale => locale !== 'en');
+
     for (const englishFile of englishFiles) {
-        const germanFile = path.join(path.dirname(englishFile), 'de.json');
-        assert.ok(discovered.includes(germanFile), `${englishFile} has no matching de.json file.`);
         const english = JSON.parse(await readFile(path.join(root, englishFile), 'utf8'));
-        const german = JSON.parse(await readFile(path.join(root, germanFile), 'utf8'));
-        assert.deepEqual(
-            messageKeys(german).sort(),
-            messageKeys(english).sort(),
-            `${englishFile} and ${germanFile} must define the same message keys.`,
+        for (const locale of translations) {
+            const translated = path.join(path.dirname(englishFile), `${locale}.json`);
+            assert.ok(
+                discovered.includes(translated),
+                `${englishFile} has no matching ${locale}.json file.`,
+            );
+            const messages = JSON.parse(await readFile(path.join(root, translated), 'utf8'));
+            assert.deepEqual(
+                messageKeys(messages).sort(),
+                messageKeys(english).sort(),
+                `${englishFile} and ${translated} must define the same message keys.`,
+            );
+        }
+    }
+});
+
+test('every message file belongs to a configured locale', async () => {
+    // The inverse guard: an orphaned km.json left behind by a locale removal would
+    // otherwise sit in the tree unnoticed, since nothing imports it.
+    const locales = new Set(await configuredLocales());
+    for (const file of await findMessageFiles(path.join(root, 'src'))) {
+        const locale = path.basename(file, '.json');
+        assert.ok(
+            locales.has(locale),
+            `${file} is not a configured locale (routing.ts declares: ${[...locales].join(', ')}).`,
         );
     }
 });

@@ -45,6 +45,18 @@ services:
         restart: unless-stopped
         ports:
             - "8100:8000"
+        environment:
+            # stub = deterministic, no semantic meaning (default).
+            # sim  = colour/structure encoder with a real shared image/text space —
+            #        good enough to build ranking UI and integration tests against,
+            #        not good enough to report numbers from. Distinct REVISION, so its
+            #        vectors can never mix with the stub's or the real model's.
+            EMBEDDER_MODEL: ${EMBEDDER_MODEL:-stub}
+            # Simulated model load and per-item inference. Non-zero on purpose: an
+            # instant embedder hides every cold-start and latency bug. Set both to 0
+            # in CI. Raise SIM_LOAD_SECONDS to rehearse a slept Hugging Face Space.
+            SIM_LOAD_SECONDS: ${SIM_LOAD_SECONDS:-3}
+            SIM_LATENCY_MS: ${SIM_LATENCY_MS:-45}
         healthcheck:
             # /health returns 503 until model weights are loaded and warmed, so nothing
             # routes traffic to a cold service. start_period covers slow model loads;

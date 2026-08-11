@@ -21,10 +21,13 @@
     "@vendure/dashboard": "3.7.2",
     "@vendure/email-plugin": "3.7.2",
     "@vendure/graphiql-plugin": "3.7.2",
+    "bakong-khqr": "^1.0.20",
     "dotenv": "17.4.2",
-    "pg": "8.22.0"
+    "pg": "8.22.0",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
+    "@types/multer": "^2.2.0",
     "@vendure/cli": "3.7.2",
     "ts-node": "10.9.2",
     "typescript": "5.8.2",

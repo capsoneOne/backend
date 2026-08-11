@@ -14,6 +14,7 @@
     "greeting": "Hi, {name}",
     "shoppingCart": "Shopping Cart",
     "switchLanguage": "Switch language",
-    "switchCurrency": "Switch currency"
+    "switchCurrency": "Switch currency",
+    "searchByImage": "Search by image"
   }
 }

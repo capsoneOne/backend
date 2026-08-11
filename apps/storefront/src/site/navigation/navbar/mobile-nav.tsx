@@ -2,7 +2,7 @@
 
 import {useState} from 'react';
 import { Link, useRouter } from '@/platform/i18n/navigation';
-import {Menu, Search, ShoppingBag, User, Package, MapPin} from 'lucide-react';
+import {Menu, Search, ShoppingBag, User, Package, MapPin, Camera} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {
@@ -65,6 +65,16 @@ export function MobileNav({collections}: MobileNavProps) {
                             onChange={(e) => setSearchValue(e.target.value)}
                         />
                     </form>
+
+                    {/* Search by image */}
+                    <Link
+                        href="/visual-search"
+                        onClick={handleLinkClick}
+                        className="flex items-center gap-3 text-sm font-medium hover:text-primary"
+                    >
+                        <Camera className="size-4" />
+                        {t('searchByImage')}
+                    </Link>
 
                     {/* Shop All */}
                     <div>

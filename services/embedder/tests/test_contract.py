@@ -1,12 +1,14 @@
 """Contract tests.
 
 Every test here asserts an invariant from docs/embedding-service-contract.md against
-whatever model is currently wired into app/model.py. They are model-agnostic on
-purpose: they must keep passing when the stub is replaced by a real encoder.
+whichever implementation EMBEDDER_MODEL selects. They are model-agnostic on purpose:
+they must keep passing when the stub is replaced by a real encoder.
 
 A failure here is a broken build, not a tuning issue.
 
-    python -m pytest services/embedder/tests/ -v
+    python -m pytest services/embedder/tests/ -v                    # stub (default)
+    EMBEDDER_MODEL=sim SIM_LOAD_SECONDS=0 SIM_LATENCY_MS=0 \
+        python -m pytest services/embedder/tests/ -v                # simulator
 """
 
 from __future__ import annotations
@@ -19,8 +21,8 @@ import pytest
 from fastapi.testclient import TestClient
 from PIL import Image
 
-from app import model as m
 from app.main import MAX_BATCH_ITEMS, NORM_TOLERANCE, app
+from app.model_registry import active as m
 
 
 @pytest.fixture(scope="module")

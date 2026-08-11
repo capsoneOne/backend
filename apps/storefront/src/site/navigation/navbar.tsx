@@ -9,6 +9,7 @@ import {CurrencyPickerWrapper} from '@/site/navigation/navbar/currency-picker-wr
 import {MobileNavWrapper} from '@/site/navigation/navbar/mobile-nav-wrapper';
 import {Suspense} from "react";
 import {SearchInput} from '@/site/navigation/search-input';
+import {VisualSearchLink} from '@/site/navigation/visual-search-link';
 import {NavbarUserSkeleton} from '@/site/navigation/skeletons/navbar-user-skeleton';
 import {SearchInputSkeleton} from '@/site/navigation/skeletons/search-input-skeleton';
 
@@ -17,7 +18,7 @@ export function Navbar() {
         <header className="fixed top-0 left-0 right-0 z-50 border-b backdrop-blur-md bg-background/80">
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
-                    <div className="flex items-center gap-8">
+                    <div className="flex items-center gap-3 md:gap-8">
                         <Suspense>
                             <MobileNavWrapper />
                         </Suspense>
@@ -30,12 +31,15 @@ export function Navbar() {
                             </Suspense>
                         </nav>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1 sm:gap-2 md:gap-4">
                         <div className="hidden lg:flex">
                             <Suspense fallback={<SearchInputSkeleton />}>
                                 <SearchInput/>
                             </Suspense>
                         </div>
+                        <Suspense>
+                            <VisualSearchLink />
+                        </Suspense>
                         <Suspense>
                             <LanguagePicker />
                         </Suspense>
