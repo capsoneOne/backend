@@ -19,6 +19,11 @@ interface Collection {
     id: string;
     name: string;
     slug: string;
+    children?: Array<{
+        id: string;
+        name: string;
+        slug: string;
+    }> | null;
 }
 
 interface MobileNavProps {
@@ -101,19 +106,39 @@ export function MobileNav({collections}: MobileNavProps) {
                             </p>
                             <nav className="flex flex-col gap-0.5">
                                 {collections.map((collection) => (
-                                    <SheetClose
-                                        key={collection.slug}
-                                        render={
-                                            <Link
-                                                href={`/collection/${collection.slug}`}
-                                                className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors"
-                                            />
-                                        }
-                                        nativeButton={false}
-                                        onClick={handleLinkClick}
-                                    >
-                                        {collection.name}
-                                    </SheetClose>
+                                    <div key={collection.slug} className="rounded-xl border border-border/70 p-1.5">
+                                        <SheetClose
+                                            render={
+                                                <Link
+                                                    href={`/collection/${collection.slug}`}
+                                                    className="flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold hover:bg-accent"
+                                                />
+                                            }
+                                            nativeButton={false}
+                                            onClick={handleLinkClick}
+                                        >
+                                            {collection.name}
+                                        </SheetClose>
+                                        {collection.children?.length ? (
+                                            <div className="grid grid-cols-2 gap-0.5 pb-1 pl-3">
+                                                {collection.children.map(child => (
+                                                    <SheetClose
+                                                        key={child.id}
+                                                        render={
+                                                            <Link
+                                                                href={`/collection/${child.slug}`}
+                                                                className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
+                                                            />
+                                                        }
+                                                        nativeButton={false}
+                                                        onClick={handleLinkClick}
+                                                    >
+                                                        {child.name}
+                                                    </SheetClose>
+                                                ))}
+                                            </div>
+                                        ) : null}
+                                    </div>
                                 ))}
                             </nav>
                         </div>

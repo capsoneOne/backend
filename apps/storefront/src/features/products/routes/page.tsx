@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import { Link } from '@/platform/i18n/navigation';
 import { query } from '@/platform/vendure/api';
 import {GetProductDetailQuery} from '@/features/products/graphql';
-import { ProductImageCarousel } from '@/features/products/components/product-image-carousel';
-import { ProductInfo } from '@/features/products/components/product-info';
+import { ProductPurchasePanel } from '@/features/products/components/product-purchase-panel';
 import {getDisplayOptionGroups} from '@/features/products/product-options';
 import { RelatedProducts } from '@/features/products/components/related-products';
 import { BreadcrumbJsonLd, ProductJsonLd } from '@/features/products/components/product-json-ld';
@@ -158,17 +157,11 @@ export default async function ProductDetailPage({
                     </BreadcrumbList>
                 </Breadcrumb>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-                    {/* Left Column: Image Carousel */}
-                    <div className="lg:sticky lg:top-20 lg:self-start">
-                        <ProductImageCarousel images={product.assets} />
-                    </div>
-
-                    {/* Right Column: Product Info */}
-                    <div>
-                        <ProductInfo product={productForDisplay} searchParams={searchParamsResolved} currencyCode={currencyCode} />
-                    </div>
-                </div>
+                <ProductPurchasePanel
+                    product={{...productForDisplay, assets: product.assets, featuredAsset: product.featuredAsset}}
+                    searchParams={searchParamsResolved}
+                    currencyCode={currencyCode}
+                />
             </div>
 
             {/* Shipping & Trust Badges */}

@@ -1,10 +1,12 @@
-import { Controller, Post, Query, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Query, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
     ConfigService,
     LanguageCode,
     ProductVariantService,
+    RequestContext,
     RequestContextService,
+    ID,
     UserInputError,
 } from '@vendure/core';
 import type { Request } from 'express';
@@ -71,11 +73,38 @@ export class VisualSearchController {
 
         const hits = await this.visualSearch.searchByImage(ctx, file.buffer, clampTake(take));
 
-        // Variants are fetched per product rather than as a relation. `priceWithTax` is
-        // not a stored column — it is computed at runtime by applyChannelPriceAndTax,
-        // which getVariantsByProductId applies. Loading `variants` as a plain relation
-        // returns rows with no price at all, which is why the first REST response came
-        // back with an empty variants array.
+        return this.serializeHits(request, ctx, hits);
+    }
+
+    @Get('similar')
+    async similar(
+        @Req() request: Request,
+        @Query('productId') productId?: string,
+        @Query('assetId') assetId?: string,
+        @Query('take') take?: string,
+        @Query('languageCode') languageCode?: string,
+    ) {
+        if (!productId) {
+            throw new UserInputError('productId is required');
+        }
+        const ctx = await this.requestContextService.create({
+            apiType: 'shop',
+            languageCode: languageCode as LanguageCode | undefined,
+        });
+        const hits = await this.visualSearch.searchSimilarToProduct(
+            ctx,
+            productId as ID,
+            assetId as ID | undefined,
+            clampTake(take),
+        );
+        return this.serializeHits(request, ctx, hits);
+    }
+
+    private async serializeHits(
+        request: Request,
+        ctx: RequestContext,
+        hits: Awaited<ReturnType<VisualSearchService['searchByImage']>>,
+    ) {
         const variantsByProduct = new Map(
             await Promise.all(
                 hits.map(async hit => {

@@ -7,6 +7,7 @@ import {SITE_NAME, SITE_URL, buildCanonicalUrl} from "@/config/metadata";
 import {BadgeCheck, Tag, Zap} from "lucide-react";
 import {getTranslations} from 'next-intl/server';
 import {toOgLocale} from '@/platform/i18n/locale-utils';
+import {ShopByCategory} from '@/site/home/shop-by-category';
 
 export async function generateMetadata(): Promise<Metadata> {
     const locale = await getRouteLocale();
@@ -44,6 +45,9 @@ export default async function Home() {
     return (
         <div className="flex min-h-screen flex-col">
             <HeroSection/>
+            <Suspense>
+                <ShopByCategory/>
+            </Suspense>
             <Suspense>
                 <FeaturedProducts/>
             </Suspense>

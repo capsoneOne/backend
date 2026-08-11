@@ -178,6 +178,45 @@ export class VisualSearchService implements OnModuleInit {
         return this.searchByVector(ctx, result.vector, take);
     }
 
+    /**
+     * Uses an already-indexed catalogue image as the query. This powers "find
+     * similar" without downloading and embedding the same product image again.
+     */
+    async searchSimilarToProduct(
+        ctx: RequestContext,
+        productId: ID,
+        assetId: ID | undefined,
+        take = 12,
+    ): Promise<VisualSearchHit[]> {
+        const revision = await this.embedder.getRevision();
+        const rows: Array<{embedding: string}> = assetId == null
+            ? await this.connection.rawConnection.query(
+                `
+            SELECT embedding::text AS embedding
+            FROM product_asset_embedding
+            WHERE "productId" = $1 AND revision = $2
+            ORDER BY "assetId" ASC
+            LIMIT 1
+            `,
+                [productId, revision],
+            )
+            : await this.connection.rawConnection.query(
+                `
+            SELECT embedding::text AS embedding
+            FROM product_asset_embedding
+            WHERE "productId" = $1 AND revision = $2 AND "assetId" = $3
+            LIMIT 1
+            `,
+                [productId, revision, assetId],
+            );
+
+        if (!rows[0]?.embedding) return [];
+
+        const vector = JSON.parse(rows[0].embedding) as number[];
+        const hits = await this.searchByVector(ctx, vector, take + 1);
+        return hits.filter(hit => String(hit.product.id) !== String(productId)).slice(0, take);
+    }
+
     private async searchByVector(
         ctx: RequestContext,
         vector: number[],

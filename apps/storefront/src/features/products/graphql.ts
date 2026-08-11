@@ -20,6 +20,7 @@ export const ProductCardFragment = graphql(`
             }
         }
         currencyCode
+        inStock
     }
 `);
 
@@ -30,6 +31,9 @@ export const GetProductDetailQuery = graphql(`
             name
             description
             slug
+            featuredAsset {
+                id
+            }
             assets {
                 id
                 preview
@@ -41,6 +45,11 @@ export const GetProductDetailQuery = graphql(`
                 sku
                 priceWithTax
                 stockLevel
+                assets {
+                    id
+                    preview
+                    source
+                }
                 options {
                     id
                     code

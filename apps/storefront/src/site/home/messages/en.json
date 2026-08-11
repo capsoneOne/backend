@@ -9,9 +9,13 @@
     "viewCollections": "View Collections"
   },
   "Home": {
-    "pageTitle": "Your One-Stop Shop",
-    "description": "Discover high-quality products at competitive prices. Shop now for the best deals on electronics, fashion, home goods, and more.",
-    "ogDescription": "Discover high-quality products at competitive prices. Shop now for the best deals.",
+    "categoriesEyebrow": "Explore the collection",
+    "shopByCategory": "Shop by category",
+    "shopByCategoryDescription": "Find the right piece faster, from everyday essentials to the latest seasonal styles.",
+    "viewAllCategories": "View all categories",
+    "pageTitle": "Clothing made easier to discover",
+    "description": "Explore clothing and accessories by category or upload a photo to find visually similar styles.",
+    "ogDescription": "Browse clothing collections or find a similar style with visual search.",
     "whyShopWithUs": "Why Shop With Us",
     "features": {
       "highQuality": {

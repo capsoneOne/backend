@@ -84,6 +84,18 @@ export default async function CollectionsIndexPage() {
                             <p className="px-1 pt-1 text-sm font-light text-muted-foreground">
                                 {t('productCount', {count: collection.productVariants.totalItems})}
                             </p>
+                            {collection.children?.length ? (
+                                <div className="mt-3 flex flex-wrap gap-2 px-1">
+                                    {collection.children.slice(0, 6).map(child => (
+                                        <span
+                                            key={child.id}
+                                            className="rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground transition-colors group-hover:border-primary/30 group-hover:text-foreground"
+                                        >
+                                            {child.name}
+                                        </span>
+                                    ))}
+                                </div>
+                            ) : null}
                         </Link>
                     ))}
                 </div>

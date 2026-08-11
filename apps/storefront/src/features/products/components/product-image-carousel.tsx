@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,8 @@ interface ProductImageCarouselProps {
 
 export function ProductImageCarousel({ images }: ProductImageCarouselProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => setCurrentIndex(0), [images]);
 
     if (!images || images.length === 0) {
         return (
