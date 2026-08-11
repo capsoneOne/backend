@@ -3,7 +3,9 @@
 import {useCallback, useEffect, useRef, useState, useTransition} from 'react';
 import Image from 'next/image';
 import {useLocale, useTranslations} from 'next-intl';
-import {Link} from '@/platform/i18n/navigation';
+import {AlertCircle, ImageUp, RotateCcw, SearchX} from 'lucide-react';
+import {Button} from '@/components/ui/button';
+import {ProductTile, ProductTileSkeleton} from '@/components/product-tile';
 import {Price} from '@/features/pricing/price';
 import {VISUAL_SEARCH_MAX_FILE_BYTES, VISUAL_SEARCH_MAX_FILE_MB} from '../limits';
 import type {VisualSearchErrorCode, VisualSearchHit, VisualSearchState} from '../types';
@@ -60,8 +62,33 @@ export function VisualSearchClient() {
         [locale],
     );
 
+    const reset = useCallback(() => {
+        if (previewRef.current) URL.revokeObjectURL(previewRef.current);
+        previewRef.current = null;
+        setPreview(null);
+        setState({status: 'idle'});
+        // Without this the same file cannot be picked twice in a row: the input still
+        // holds it, so `change` never fires again.
+        if (inputRef.current) inputRef.current.value = '';
+    }, []);
+
+    const openPicker = () => inputRef.current?.click();
+
     return (
-        <div className="space-y-8">
+        <div className="space-y-10">
+            <input
+                ref={inputRef}
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                // Focusable only through the visible button below, which forwards the click.
+                tabIndex={-1}
+                onChange={e => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFile(file);
+                }}
+            />
+
             <div
                 onDragOver={e => {
                     e.preventDefault();
@@ -74,54 +101,96 @@ export function VisualSearchClient() {
                     const file = e.dataTransfer.files?.[0];
                     if (file) handleFile(file);
                 }}
-                onClick={() => inputRef.current?.click()}
-                className={`cursor-pointer rounded-xl border-2 border-dashed p-10 text-center transition-colors ${
-                    dragging ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/60'
+                className={`relative mx-auto max-w-3xl overflow-hidden rounded-3xl border bg-card p-8 transition-all duration-300 sm:p-12 ${
+                    dragging
+                        ? 'border-primary bg-accent/40 elevate-3'
+                        : 'border-border elevate-2 hover:elevate-3'
                 }`}
             >
-                <input
-                    ref={inputRef}
-                    type="file"
-                    accept="image/*"
-                    // `capture` makes mobile browsers offer the camera directly.
-                    capture="environment"
-                    className="hidden"
-                    onChange={e => {
-                        const file = e.target.files?.[0];
-                        if (file) handleFile(file);
-                    }}
-                />
+                <div className="pointer-events-none absolute inset-0 bg-dotfield opacity-60 [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,black,transparent)]" />
+
                 {preview ? (
-                    <div className="mx-auto relative h-48 w-48">
-                        <Image src={preview} alt={t('yourImage')} fill className="object-contain" unoptimized />
+                    <div className="relative flex flex-col items-center gap-7 sm:flex-row sm:items-center sm:justify-center">
+                        <div className="relative size-44 shrink-0 overflow-hidden rounded-2xl bg-muted elevate-2">
+                            <Image src={preview} alt={t('yourImage')} fill className="object-contain" unoptimized/>
+                        </div>
+                        <div className="space-y-3 text-center sm:text-left">
+                            <p className="text-lg font-medium">{t('yourImage')}</p>
+                            <p className="max-w-xs font-light text-muted-foreground">{t('previewHint')}</p>
+                            <div className="flex flex-wrap justify-center gap-2 pt-1 sm:justify-start">
+                                <Button type="button" variant="outline" size="sm" onClick={openPicker} className="rounded-full">
+                                    <ImageUp className="mr-2 size-4"/>
+                                    {t('replaceImage')}
+                                </Button>
+                                <Button type="button" variant="ghost" size="sm" onClick={reset} className="rounded-full">
+                                    <RotateCcw className="mr-2 size-4"/>
+                                    {t('startOver')}
+                                </Button>
+                            </div>
+                        </div>
                     </div>
                 ) : (
-                    <>
-                        <p className="font-medium">{t('dropzoneTitle')}</p>
-                        <p className="text-sm text-muted-foreground mt-1">
+                    <div className="relative flex flex-col items-center text-center">
+                        <div className="flex size-16 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
+                            <ImageUp className="size-7"/>
+                        </div>
+                        <p className="mt-6 text-xl font-medium">{t('dropzoneTitle')}</p>
+                        <p className="mt-1.5 font-light text-muted-foreground">
                             {t('dropzoneHint', {max: VISUAL_SEARCH_MAX_FILE_MB})}
                         </p>
-                    </>
+                        {/* A real button, so the flow works from the keyboard and reads
+                            correctly to a screen reader. The bare div this replaced was
+                            reachable by mouse only. */}
+                        <Button
+                            type="button"
+                            size="lg"
+                            onClick={openPicker}
+                            className="mt-7 h-12 rounded-full px-7 text-base elevate-2"
+                        >
+                            {t('chooseImage')}
+                        </Button>
+                    </div>
                 )}
             </div>
 
-            {pending && <p className="text-center text-muted-foreground">{t('searching')}</p>}
+            {/* Announced to assistive tech as results arrive, since the change is visual
+                and happens well after the click. */}
+            <div aria-live="polite" aria-atomic="false">
+                {pending && (
+                    <div className="space-y-4">
+                        <p className="text-center text-sm text-muted-foreground">{t('searching')}</p>
+                        <div className="grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
+                            {Array.from({length: 8}).map((_, i) => (
+                                <ProductTileSkeleton key={i}/>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
-            {state.status === 'error' && (
-                <p className="text-center text-destructive">
-                    {t(ERROR_KEYS[state.code], {max: VISUAL_SEARCH_MAX_FILE_MB})}
-                </p>
-            )}
+                {!pending && state.status === 'error' && (
+                    <div
+                        role="alert"
+                        className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-2xl border border-destructive/25 bg-destructive/5 px-6 py-9 text-center"
+                    >
+                        <AlertCircle className="size-6 text-destructive"/>
+                        <p className="text-sm text-destructive">
+                            {t(ERROR_KEYS[state.code], {max: VISUAL_SEARCH_MAX_FILE_MB})}
+                        </p>
+                        <Button type="button" variant="outline" size="sm" onClick={openPicker} className="rounded-full">
+                            {t('tryAnotherImage')}
+                        </Button>
+                    </div>
+                )}
 
-            {state.status === 'ok' && !pending && (
-                <Results
-                    items={state.result.items}
-                    revision={state.result.revision}
-                    emptyLabel={t('noResults')}
-                    matchLabel={t('match')}
-                    modelLabel={t('modelLabel')}
-                />
-            )}
+                {!pending && state.status === 'ok' && (
+                    <Results
+                        items={state.result.items}
+                        revision={state.result.revision}
+                        noImageLabel={t('noImage')}
+                        onRetry={openPicker}
+                    />
+                )}
+            </div>
         </div>
     );
 }
@@ -129,66 +198,74 @@ export function VisualSearchClient() {
 function Results({
     items,
     revision,
-    emptyLabel,
-    matchLabel,
-    modelLabel,
+    noImageLabel,
+    onRetry,
 }: {
     items: ReadonlyArray<VisualSearchHit>;
     revision: string;
-    emptyLabel: string;
-    matchLabel: string;
-    modelLabel: string;
+    noImageLabel: string;
+    onRetry: () => void;
 }) {
+    const t = useTranslations('VisualSearch');
+
     if (items.length === 0) {
-        return <p className="text-center text-muted-foreground">{emptyLabel}</p>;
+        return (
+            <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-2xl border border-dashed border-border px-6 py-14 text-center">
+                <div className="rounded-full bg-muted p-4">
+                    <SearchX className="size-6 text-muted-foreground"/>
+                </div>
+                <p className="font-medium">{t('noResults')}</p>
+                <p className="text-sm text-muted-foreground">{t('noResultsHint')}</p>
+                <Button type="button" variant="outline" size="sm" onClick={onRetry} className="mt-1 rounded-full">
+                    {t('tryAnotherImage')}
+                </Button>
+            </div>
+        );
     }
+
     return (
-        <div className="space-y-4">
-            {/* Which model produced these. Without it a stub result is indistinguishable
-                from a real one — see the embedding service contract. */}
-            <p className="text-xs text-muted-foreground text-right">
-                {modelLabel}: <code>{revision}</code>
-            </p>
-            <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
+        <div className="space-y-6">
+            <div className="flex items-baseline justify-between gap-4 border-b border-border pb-4">
+                <h2 className="text-lg font-medium">{t('resultsTitle', {count: items.length})}</h2>
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
                 {items.map(item => {
                     const product = item.product;
                     const variant = product.variants[0];
                     // Cosine distance is in [0, 2]; present it as a similarity percentage.
                     const similarity = Math.max(0, Math.round((1 - item.distance / 2) * 100));
                     return (
-                        <Link
+                        <ProductTile
                             key={product.id}
                             href={`/product/${product.slug}`}
-                            className="group block overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-                        >
-                            <div className="relative aspect-square overflow-hidden bg-muted">
-                                {product.featuredAsset && (
-                                    <Image
-                                        src={product.featuredAsset.preview}
-                                        alt={product.name}
-                                        fill
-                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                                    />
-                                )}
-                                <span className="absolute left-2 top-2 rounded-full bg-background/90 px-2 py-0.5 text-xs font-medium">
-                                    {similarity}% {matchLabel}
+                            imageUrl={product.featuredAsset?.preview}
+                            imageAlt={product.name}
+                            title={product.name}
+                            noImageLabel={noImageLabel}
+                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                            badge={
+                                <span className="rounded-full bg-background/85 px-2.5 py-1 text-xs font-medium text-foreground elevate-1 backdrop-blur-md">
+                                    {t('matchScore', {score: similarity})}
                                 </span>
-                            </div>
-                            <div className="space-y-1 p-4">
-                                <h3 className="line-clamp-2 font-medium leading-snug group-hover:text-primary">
-                                    {product.name}
-                                </h3>
-                                {variant && (
-                                    <p className="text-sm text-muted-foreground">
-                                        <Price value={variant.priceWithTax} currencyCode={variant.currencyCode} />
+                            }
+                            footer={
+                                variant ? (
+                                    <p className="text-[0.9375rem] font-bold tracking-tight">
+                                        <Price value={variant.priceWithTax} currencyCode={variant.currencyCode}/>
                                     </p>
-                                )}
-                            </div>
-                        </Link>
+                                ) : null
+                            }
+                        />
                     );
                 })}
             </div>
+
+            {/* Which model produced these. Kept — a stub result is otherwise
+                indistinguishable from a real one — but demoted out of the shopper's way. */}
+            <p className="pt-2 text-right text-[11px] text-muted-foreground/70">
+                {t('modelLabel')}: <code className="font-mono">{revision}</code>
+            </p>
         </div>
     );
 }

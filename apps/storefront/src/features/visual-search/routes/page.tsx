@@ -20,9 +20,11 @@ export default async function VisualSearchPage() {
     const t = await getTranslations({locale, namespace: 'VisualSearch'});
 
     return (
-        <div className="container mx-auto mt-16 px-4 py-8">
-            <h1 className="text-3xl font-semibold">{t('pageTitle')}</h1>
-            <p className="mt-2 mb-8 text-muted-foreground">{t('pageSubtitle')}</p>
+        <div className="container mx-auto mt-16 px-4 py-16 md:py-20">
+            <div className="mx-auto mb-12 max-w-2xl text-center">
+                <h1 className="text-4xl font-bold md:text-5xl">{t('pageTitle')}</h1>
+                <p className="mt-4 text-lg font-light text-muted-foreground">{t('pageSubtitle')}</p>
+            </div>
             <VisualSearchClient />
         </div>
     );

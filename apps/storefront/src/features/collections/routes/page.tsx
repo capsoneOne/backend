@@ -140,16 +140,16 @@ export default async function CollectionPage({params, searchParams}: PageProps<'
                 <h1 className="text-3xl font-bold tracking-tight">{collectionName}</h1>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="flex flex-col gap-8 lg:flex-row">
                 {/* Filters Sidebar */}
-                <aside className="lg:col-span-1">
+                <aside className="lg:w-64 lg:shrink-0 empty:hidden">
                     <Suspense fallback={<div className="h-64 animate-pulse bg-muted rounded-lg" />}>
                         <FacetFilters productDataPromise={productDataPromise} />
                     </Suspense>
                 </aside>
 
                 {/* Product Grid */}
-                <div className="lg:col-span-3">
+                <div className="min-w-0 flex-1">
                     <Suspense fallback={<ProductGridSkeleton />}>
                         <ProductGrid productDataPromise={productDataPromise} currentPage={page} take={12} />
                     </Suspense>

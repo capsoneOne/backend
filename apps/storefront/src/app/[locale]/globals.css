@@ -7,8 +7,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-ubuntu);
+  --font-mono: var(--font-ubuntu-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -42,92 +42,146 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 10px);
 }
 
-/* Indigo + gold. Hue 275 carries structure, hue 90 carries emphasis.
-   Chroma stays low on every ground token so product photography — the actual
-   content of a visual-search storefront — is never competing with the UI. */
+/* ---------------------------------------------------------------------------
+   Visual Search — monochrome, with one accent.
+
+   Every ground token is pure neutral (chroma 0). The only saturated colour in
+   the system is --primary, a vivid coral, and it is rationed: calls to action,
+   prices under a match badge, focus rings. Nothing else. On a storefront the
+   product photography is the colour, and a tinted UI competes with it.
+
+   Typeface is Ubuntu, which ships 300/400/500/700 — there is no 600. Prefer
+   font-medium and font-bold in components; font-semibold synthesises and looks
+   smeared at display sizes.
+   --------------------------------------------------------------------------- */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(0.99 0.005 275);
-  --foreground: oklch(0.20 0.045 275);
+  --radius: 0.75rem;
+
+  --background: oklch(0.984 0 0);
+  --foreground: oklch(0.185 0 0);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.20 0.045 275);
+  --card-foreground: oklch(0.185 0 0);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.20 0.045 275);
-  --primary: oklch(0.38 0.13 275);
-  --primary-foreground: oklch(0.98 0.01 90);
-  --secondary: oklch(0.96 0.012 275);
-  --secondary-foreground: oklch(0.28 0.06 275);
-  --muted: oklch(0.96 0.012 275);
-  --muted-foreground: oklch(0.52 0.04 275);
-  --accent: oklch(0.94 0.06 90);
-  --accent-foreground: oklch(0.28 0.06 275);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.012 275);
-  --input: oklch(0.92 0.012 275);
-  --ring: oklch(0.55 0.15 90);
-  --chart-1: oklch(0.38 0.13 275);
-  --chart-2: oklch(0.55 0.15 90);
-  --chart-3: oklch(0.50 0.10 310);
-  --chart-4: oklch(0.70 0.13 60);
-  --chart-5: oklch(0.45 0.09 240);
-  --sidebar: oklch(0.975 0.01 275);
-  --sidebar-foreground: oklch(0.20 0.045 275);
-  --sidebar-primary: oklch(0.38 0.13 275);
-  --sidebar-primary-foreground: oklch(0.98 0.01 90);
-  --sidebar-accent: oklch(0.94 0.06 90);
-  --sidebar-accent-foreground: oklch(0.28 0.06 275);
-  --sidebar-border: oklch(0.92 0.012 275);
-  --sidebar-ring: oklch(0.55 0.15 90);
+  --popover-foreground: oklch(0.185 0 0);
+
+  --primary: oklch(0.655 0.205 32);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.956 0 0);
+  --secondary-foreground: oklch(0.245 0 0);
+  --muted: oklch(0.958 0 0);
+  --muted-foreground: oklch(0.518 0 0);
+  --accent: oklch(0.944 0 0);
+  --accent-foreground: oklch(0.215 0 0);
+  /* Pushed off coral's hue so a destructive action never reads as a CTA. */
+  --destructive: oklch(0.505 0.19 18);
+
+  --border: oklch(0.902 0 0);
+  --input: oklch(0.902 0 0);
+  --ring: oklch(0.655 0.205 32);
+
+  --chart-1: oklch(0.655 0.205 32);
+  --chart-2: oklch(0.30 0 0);
+  --chart-3: oklch(0.50 0 0);
+  --chart-4: oklch(0.68 0 0);
+  --chart-5: oklch(0.80 0 0);
+
+  --sidebar: oklch(0.972 0 0);
+  --sidebar-foreground: oklch(0.185 0 0);
+  --sidebar-primary: oklch(0.655 0.205 32);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.944 0 0);
+  --sidebar-accent-foreground: oklch(0.215 0 0);
+  --sidebar-border: oklch(0.902 0 0);
+  --sidebar-ring: oklch(0.655 0.205 32);
+
+  /* Elevation is pure black at low alpha — a tinted shadow would reintroduce
+     hue through the back door. */
+  --shadow-e1: 0 1px 2px 0 oklch(0 0 0 / 6%);
+  --shadow-e2: 0 4px 16px -4px oklch(0 0 0 / 10%), 0 1px 3px 0 oklch(0 0 0 / 5%);
+  --shadow-e3: 0 18px 40px -12px oklch(0 0 0 / 18%), 0 2px 8px -2px oklch(0 0 0 / 8%);
 }
 
-/* Dark inverts the emphasis: gold becomes primary because indigo has nowhere
-   left to go against a dark indigo ground. Lightness flips on --primary and
-   --primary-foreground together — editing one without the other is what
-   breaks a shadcn dark theme. */
+/* Dark lifts the coral rather than swapping it, and lifts --primary-foreground
+   with it — editing one without the other is what breaks a shadcn dark theme. */
 .dark {
-  --background: oklch(0.16 0.03 275);
-  --foreground: oklch(0.96 0.01 90);
-  --card: oklch(0.21 0.04 275);
-  --card-foreground: oklch(0.96 0.01 90);
-  --popover: oklch(0.21 0.04 275);
-  --popover-foreground: oklch(0.96 0.01 90);
-  --primary: oklch(0.80 0.12 90);
-  --primary-foreground: oklch(0.20 0.05 275);
-  --secondary: oklch(0.28 0.045 275);
-  --secondary-foreground: oklch(0.96 0.01 90);
-  --muted: oklch(0.28 0.045 275);
-  --muted-foreground: oklch(0.72 0.035 275);
-  --accent: oklch(0.30 0.05 275);
-  --accent-foreground: oklch(0.94 0.05 90);
-  --destructive: oklch(0.704 0.191 22.216);
+  --background: oklch(0.155 0 0);
+  --foreground: oklch(0.965 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.965 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.965 0 0);
+
+  --primary: oklch(0.715 0.185 32);
+  --primary-foreground: oklch(0.155 0 0);
+  --secondary: oklch(0.262 0 0);
+  --secondary-foreground: oklch(0.965 0 0);
+  --muted: oklch(0.262 0 0);
+  --muted-foreground: oklch(0.715 0 0);
+  --accent: oklch(0.285 0 0);
+  --accent-foreground: oklch(0.965 0 0);
+  --destructive: oklch(0.645 0.185 18);
+
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.72 0.12 90);
-  --chart-1: oklch(0.62 0.15 275);
-  --chart-2: oklch(0.80 0.12 90);
-  --chart-3: oklch(0.66 0.13 310);
-  --chart-4: oklch(0.72 0.14 60);
-  --chart-5: oklch(0.58 0.12 240);
-  --sidebar: oklch(0.21 0.04 275);
-  --sidebar-foreground: oklch(0.96 0.01 90);
-  --sidebar-primary: oklch(0.80 0.12 90);
-  --sidebar-primary-foreground: oklch(0.20 0.05 275);
-  --sidebar-accent: oklch(0.30 0.05 275);
-  --sidebar-accent-foreground: oklch(0.94 0.05 90);
+  --ring: oklch(0.715 0.185 32);
+
+  --chart-1: oklch(0.715 0.185 32);
+  --chart-2: oklch(0.90 0 0);
+  --chart-3: oklch(0.72 0 0);
+  --chart-4: oklch(0.55 0 0);
+  --chart-5: oklch(0.38 0 0);
+
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.965 0 0);
+  --sidebar-primary: oklch(0.715 0.185 32);
+  --sidebar-primary-foreground: oklch(0.155 0 0);
+  --sidebar-accent: oklch(0.285 0 0);
+  --sidebar-accent-foreground: oklch(0.965 0 0);
   --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.72 0.12 90);
+  --sidebar-ring: oklch(0.715 0.185 32);
+
+  --shadow-e1: 0 1px 2px 0 oklch(0 0 0 / 40%);
+  --shadow-e2: 0 4px 16px -4px oklch(0 0 0 / 50%), 0 1px 3px 0 oklch(0 0 0 / 30%);
+  --shadow-e3: 0 18px 40px -12px oklch(0 0 0 / 60%), 0 2px 8px -2px oklch(0 0 0 / 40%);
 }
 
 @layer base {
-  html {}
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "kern" 1;
   }
+  /* Ubuntu's default tracking is loose at display sizes and cramped at caption
+     sizes. These two rules are the whole typographic correction. */
+  h1, h2, h3 {
+    letter-spacing: -0.02em;
+  }
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+}
+
+@utility elevate-1 {
+  box-shadow: var(--shadow-e1);
+}
+@utility elevate-2 {
+  box-shadow: var(--shadow-e2);
+}
+@utility elevate-3 {
+  box-shadow: var(--shadow-e3);
+}
+
+/* The page-level texture: a faint dot field that reads as "canvas" behind the
+   hero and the upload panel without competing with product images. */
+@utility bg-dotfield {
+  background-image: radial-gradient(circle at center, var(--color-border) 1px, transparent 1px);
+  background-size: 22px 22px;
 }
 
 @keyframes fade-up {
