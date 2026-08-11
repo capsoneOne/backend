@@ -36,28 +36,38 @@ const IMAGE_DIR = path.join(import.meta.dirname, 'images');
 
 const PRODUCTS = [
     {slug: 'red-leather-boot', name: 'Red Leather Boot', file: 'red-boot.jpg', price: 12900,
-     description: 'Ankle-height boot in deep red full-grain leather.'},
+     description: 'Ankle-height boot in deep red full-grain leather.',
+     kmName: 'ស្បែកជើងកវែងស្បែកក្រហម', kmDescription: 'ស្បែកជើងកវែងត្រឹមកជើង ផលិតពីស្បែកពេញគ្រាប់ពណ៌ក្រហមចាស់។'},
     {slug: 'blue-denim-jacket', name: 'Blue Denim Jacket', file: 'blue-jacket.jpg', price: 8900,
-     description: 'Classic mid-wash denim jacket with a boxy fit.'},
+     description: 'Classic mid-wash denim jacket with a boxy fit.',
+     kmName: 'អាវក្រៅដេនីមពណ៌ខៀវ', kmDescription: 'អាវក្រៅដេនីមបោកពណ៌មធ្យមបែបបុរាណ ជាមួយរាងទូលាយ។'},
     {slug: 'green-ceramic-mug', name: 'Green Ceramic Mug', file: 'green-mug.jpg', price: 1800,
-     description: 'Hand-glazed stoneware mug in forest green.'},
+     description: 'Hand-glazed stoneware mug in forest green.',
+     kmName: 'ពែងសេរ៉ាមិចពណ៌បៃតង', kmDescription: 'ពែងថ្មសេរ៉ាមិចលាបរលោងដោយដៃ ពណ៌បៃតងព្រៃ។'},
     {slug: 'yellow-rain-coat', name: 'Yellow Rain Coat', file: 'yellow-raincoat.jpg', price: 10500,
-     description: 'Waterproof shell in high-visibility yellow.'},
+     description: 'Waterproof shell in high-visibility yellow.',
+     kmName: 'អាវភ្លៀងពណ៌លឿង', kmDescription: 'អាវក្រៅមិនជ្រាបទឹក ពណ៌លឿងដែលមើលឃើញច្បាស់។'},
     {slug: 'black-sunglasses', name: 'Black Sunglasses', file: 'black-sunglasses.jpg', price: 6400,
-     description: 'Matte black acetate frames with polarised lenses.'},
+     description: 'Matte black acetate frames with polarised lenses.',
+     kmName: 'វ៉ែនតាការពារកម្ដៅថ្ងៃពណ៌ខ្មៅ', kmDescription: 'ស៊ុមអាសេតាតពណ៌ខ្មៅម៉ាត់ ជាមួយកញ្ចក់ប៉ូលារីស។'},
     {slug: 'white-sneaker', name: 'White Sneaker', file: 'white-sneaker.jpg', price: 9500,
-     description: 'Minimal low-top sneaker in white leather.'},
+     description: 'Minimal low-top sneaker in white leather.',
+     kmName: 'ស្បែកជើងប៉ាតាពណ៌ស', kmDescription: 'ស្បែកជើងប៉ាតាកទាបសាមញ្ញ ផលិតពីស្បែកពណ៌ស។'},
     {slug: 'orange-backpack', name: 'Orange Backpack', file: 'orange-backpack.jpg', price: 7200,
-     description: '22-litre daypack in burnt orange ripstop.'},
+     description: '22-litre daypack in burnt orange ripstop.',
+     kmName: 'កាបូបស្ពាយពណ៌ទឹកក្រូច', kmDescription: 'កាបូបស្ពាយប្រចាំថ្ងៃចំណុះ 22 លីត្រ ពណ៌ទឹកក្រូចចាស់ និងក្រណាត់ធន់ការរហែក។'},
     {slug: 'purple-scarf', name: 'Purple Scarf', file: 'purple-scarf.jpg', price: 3400,
-     description: 'Lambswool scarf in heather purple.'},
+     description: 'Lambswool scarf in heather purple.',
+     kmName: 'កន្សែងបង់កពណ៌ស្វាយ', kmDescription: 'កន្សែងបង់ករោមចៀមទន់ ពណ៌ស្វាយចម្រុះ។'},
 ];
 
 const COLLECTIONS = [
     {
         slug: 'featured',
         name: 'Featured',
+        kmName: 'ទំនិញលេចធ្លោ',
         description: 'A curated edit of standout layers, shoes, and accessories for the season.',
+        kmDescription: 'ជម្រើសសម្លៀកបំពាក់ជាស្រទាប់ ស្បែកជើង និងគ្រឿងបន្ថែមលេចធ្លោសម្រាប់រដូវកាលនេះ។',
         featuredProduct: 'blue-denim-jacket',
         products: [
             'red-leather-boot',
@@ -72,21 +82,27 @@ const COLLECTIONS = [
     {
         slug: 'clothing',
         name: 'Clothing',
+        kmName: 'សម្លៀកបំពាក់',
         description: 'Easy layers and weather-ready outerwear for an everyday rotation.',
+        kmDescription: 'សម្លៀកបំពាក់ងាយស្លៀកជាស្រទាប់ និងអាវក្រៅសម្រាប់គ្រប់អាកាសធាតុប្រចាំថ្ងៃ។',
         featuredProduct: 'yellow-rain-coat',
         products: ['blue-denim-jacket', 'yellow-rain-coat'],
         children: [
             {
                 slug: 'jackets',
                 name: 'Jackets',
+                kmName: 'អាវក្រៅ',
                 description: 'Versatile jackets made for effortless layering.',
+                kmDescription: 'អាវក្រៅច្រើនបែបដែលងាយស្រួលស្លៀកជាស្រទាប់។',
                 featuredProduct: 'blue-denim-jacket',
                 products: ['blue-denim-jacket'],
             },
             {
                 slug: 'rainwear',
                 name: 'Rainwear',
+                kmName: 'សម្លៀកបំពាក់ភ្លៀង',
                 description: 'Lightweight, weather-ready layers for grey days.',
+                kmDescription: 'សម្លៀកបំពាក់ស្រាលសម្រាប់អាកាសធាតុភ្លៀង និងថ្ងៃមេឃស្រអាប់។',
                 featuredProduct: 'yellow-rain-coat',
                 products: ['yellow-rain-coat'],
             },
@@ -95,21 +111,27 @@ const COLLECTIONS = [
     {
         slug: 'shoes',
         name: 'Shoes',
+        kmName: 'ស្បែកជើង',
         description: 'Everyday sneakers and statement boots built to go anywhere.',
+        kmDescription: 'ស្បែកជើងប៉ាតាប្រចាំថ្ងៃ និងស្បែកជើងកវែងលេចធ្លោសម្រាប់ទៅគ្រប់ទីកន្លែង។',
         featuredProduct: 'white-sneaker',
         products: ['red-leather-boot', 'white-sneaker'],
         children: [
             {
                 slug: 'sneakers',
                 name: 'Sneakers',
+                kmName: 'ស្បែកជើងប៉ាតា',
                 description: 'Clean low-tops for comfortable everyday wear.',
+                kmDescription: 'ស្បែកជើងកទាបរចនាស្អាត សម្រាប់ពាក់ប្រចាំថ្ងៃដោយផាសុកភាព។',
                 featuredProduct: 'white-sneaker',
                 products: ['white-sneaker'],
             },
             {
                 slug: 'boots',
                 name: 'Boots',
+                kmName: 'ស្បែកជើងកវែង',
                 description: 'Polished boots with a confident, easy silhouette.',
+                kmDescription: 'ស្បែកជើងកវែងរលោង ជាមួយរាងស្អាត និងងាយពាក់។',
                 featuredProduct: 'red-leather-boot',
                 products: ['red-leather-boot'],
             },
@@ -118,28 +140,36 @@ const COLLECTIONS = [
     {
         slug: 'accessories',
         name: 'Accessories',
+        kmName: 'គ្រឿងបន្ថែម',
         description: 'The finishing pieces: bags, eyewear, and soft accessories.',
+        kmDescription: 'គ្រឿងបំពេញម៉ូដ៖ កាបូប វ៉ែនតា និងគ្រឿងបន្ថែមទន់ៗ។',
         featuredProduct: 'orange-backpack',
         products: ['black-sunglasses', 'orange-backpack', 'purple-scarf'],
         children: [
             {
                 slug: 'bags',
                 name: 'Bags',
+                kmName: 'កាបូប',
                 description: 'Practical carryalls designed for days on the move.',
+                kmDescription: 'កាបូបប្រើប្រាស់ងាយស្រួល សម្រាប់ថ្ងៃដែលអ្នកធ្វើដំណើរច្រើន។',
                 featuredProduct: 'orange-backpack',
                 products: ['orange-backpack'],
             },
             {
                 slug: 'eyewear',
                 name: 'Eyewear',
+                kmName: 'វ៉ែនតា',
                 description: 'Modern frames that finish the look.',
+                kmDescription: 'ស៊ុមទំនើបដែលបំពេញរូបរាងរបស់អ្នក។',
                 featuredProduct: 'black-sunglasses',
                 products: ['black-sunglasses'],
             },
             {
                 slug: 'scarves',
                 name: 'Scarves',
+                kmName: 'កន្សែងបង់ក',
                 description: 'Soft colour and warmth for cooler days.',
+                kmDescription: 'ពណ៌ទន់ និងភាពកក់ក្ដៅសម្រាប់ថ្ងៃត្រជាក់។',
                 featuredProduct: 'purple-scarf',
                 products: ['purple-scarf'],
             },
@@ -226,6 +256,23 @@ async function login() {
  * creation cannot resolve a tax rate and fails.
  */
 async function ensureChannelSetup() {
+    const {globalSettings} = await gql(`query { globalSettings { availableLanguages } }`);
+    if (!globalSettings.availableLanguages.includes('km')) {
+        const r = await gql(
+            `mutation Update($input: UpdateGlobalSettingsInput!) {
+                updateGlobalSettings(input: $input) {
+                    ... on GlobalSettings { id availableLanguages }
+                    ... on ErrorResult { errorCode message }
+                }
+            }`,
+            {input: {availableLanguages: [...new Set([...globalSettings.availableLanguages, 'km'])]}},
+        );
+        if (r.updateGlobalSettings.errorCode) {
+            throw new Error(`${r.updateGlobalSettings.errorCode}: ${r.updateGlobalSettings.message}`);
+        }
+        console.log('  Khmer language enabled globally');
+    }
+
     const {countries} = await gql(`query { countries { items { id code } } }`);
     let country = countries.items.find(c => c.code === 'US');
     if (!country) {
@@ -235,12 +282,28 @@ async function ensureChannelSetup() {
                 input: {
                     code: 'US',
                     enabled: true,
-                    translations: [{languageCode: 'en', name: 'United States'}],
+                    translations: [
+                        {languageCode: 'en', name: 'United States'},
+                        {languageCode: 'km', name: 'សហរដ្ឋអាមេរិក'},
+                    ],
                 },
             },
         );
         country = r.createCountry;
         console.log('  country', country.code);
+    } else {
+        await gql(
+            `mutation Update($input: UpdateCountryInput!) { updateCountry(input: $input) { id code } }`,
+            {
+                input: {
+                    id: country.id,
+                    translations: [
+                        {languageCode: 'en', name: 'United States'},
+                        {languageCode: 'km', name: 'សហរដ្ឋអាមេរិក'},
+                    ],
+                },
+            },
+        );
     }
 
     const {zones} = await gql(`query { zones { items { id name } } }`);
@@ -290,19 +353,52 @@ async function ensureChannelSetup() {
                 ... on ErrorResult { errorCode message }
             }
         }`,
-        {input: {id: activeChannel.id, defaultTaxZoneId: zone.id, defaultShippingZoneId: zone.id}},
+        {
+            input: {
+                id: activeChannel.id,
+                availableLanguageCodes: ['en', 'km'],
+                defaultTaxZoneId: zone.id,
+                defaultShippingZoneId: zone.id,
+            },
+        },
     );
     return zone;
 }
 
 async function ensureProducts() {
-    const {products} = await gql(`query { products(options: {take: 100}) { items { id slug featuredAsset { id } } } }`);
+    const {products} = await gql(`query {
+        products(options: {take: 100}) {
+            items { id slug featuredAsset { id } variants { id } }
+        }
+    }`);
     const existing = new Map(products.items.map(p => [p.slug, p]));
     const catalog = new Map();
 
     for (const p of PRODUCTS) {
         if (existing.has(p.slug)) {
             const product = existing.get(p.slug);
+            await gql(
+                `mutation Update($input: UpdateProductInput!) { updateProduct(input: $input) { id } }`,
+                {
+                    input: {
+                        id: product.id,
+                        translations: productTranslations(p),
+                    },
+                },
+            );
+            if (product.variants[0]) {
+                await gql(
+                    `mutation Update($input: [UpdateProductVariantInput!]!) {
+                        updateProductVariants(input: $input) { ... on ProductVariant { id } }
+                    }`,
+                    {
+                        input: [{
+                            id: product.variants[0].id,
+                            translations: variantTranslations(p),
+                        }],
+                    },
+                );
+            }
             catalog.set(p.slug, {id: product.id, assetId: product.featuredAsset?.id});
             continue;
         }
@@ -314,14 +410,7 @@ async function ensureProducts() {
                     featuredAssetId: assetId,
                     assetIds: [assetId],
                     enabled: true,
-                    translations: [
-                        {
-                            languageCode: 'en',
-                            name: p.name,
-                            slug: p.slug,
-                            description: p.description,
-                        },
-                    ],
+                    translations: productTranslations(p),
                 },
             },
         );
@@ -337,7 +426,7 @@ async function ensureProducts() {
                         price: p.price,
                         stockOnHand: 100,
                         featuredAssetId: assetId,
-                        translations: [{languageCode: 'en', name: p.name}],
+                        translations: variantTranslations(p),
                     },
                 ],
             },
@@ -346,6 +435,30 @@ async function ensureProducts() {
         console.log('  product', created.createProduct.name);
     }
     return catalog;
+}
+
+function productTranslations(product) {
+    return [
+        {
+            languageCode: 'en',
+            name: product.name,
+            slug: product.slug,
+            description: product.description,
+        },
+        {
+            languageCode: 'km',
+            name: product.kmName,
+            slug: product.slug,
+            description: product.kmDescription,
+        },
+    ];
+}
+
+function variantTranslations(product) {
+    return [
+        {languageCode: 'en', name: product.name},
+        {languageCode: 'km', name: product.kmName},
+    ];
 }
 
 function collectionInput(definition, catalog, parentId) {
@@ -363,6 +476,12 @@ function collectionInput(definition, catalog, parentId) {
                 name: definition.name,
                 slug: definition.slug,
                 description: definition.description,
+            },
+            {
+                languageCode: 'km',
+                name: definition.kmName,
+                slug: definition.slug,
+                description: definition.kmDescription,
             },
         ],
         filters: [

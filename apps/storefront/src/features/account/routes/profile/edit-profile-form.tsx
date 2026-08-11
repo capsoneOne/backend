@@ -42,7 +42,7 @@ export function EditProfileForm({ customer }: EditProfileFormProps) {
                             id="firstName"
                             name="firstName"
                             type="text"
-                            placeholder="John"
+                            placeholder={t('firstNamePlaceholder')}
                             defaultValue={customer?.firstName || ''}
                             required
                             disabled={isPending}
@@ -54,7 +54,7 @@ export function EditProfileForm({ customer }: EditProfileFormProps) {
                             id="lastName"
                             name="lastName"
                             type="text"
-                            placeholder="Doe"
+                            placeholder={t('lastNamePlaceholder')}
                             defaultValue={customer?.lastName || ''}
                             required
                             disabled={isPending}

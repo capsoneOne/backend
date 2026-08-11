@@ -1,8 +1,13 @@
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
 import {Skeleton} from '@/components/ui/skeleton';
 import {CataloguePageHeaderSkeleton} from '@/components/catalogue-page';
+import {getTranslations} from 'next-intl/server';
+import {getRouteLocale} from '@/platform/i18n/server';
 
-export default function OrdersLoading() {
+export default async function OrdersLoading() {
+    const locale = await getRouteLocale();
+    const t = await getTranslations({locale, namespace: 'Account'});
+
     return (
         <div>
             <CataloguePageHeaderSkeleton variant="compact" />
@@ -11,11 +16,11 @@ export default function OrdersLoading() {
                 <Table>
                     <TableHeader className="bg-muted/60">
                         <TableRow>
-                            <TableHead>Order Number</TableHead>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Items</TableHead>
-                            <TableHead className="text-right">Total</TableHead>
+                            <TableHead>{t('orderNumber')}</TableHead>
+                            <TableHead>{t('date')}</TableHead>
+                            <TableHead>{t('status')}</TableHead>
+                            <TableHead>{t('itemsHeader')}</TableHead>
+                            <TableHead className="text-right">{t('totalHeader')}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>

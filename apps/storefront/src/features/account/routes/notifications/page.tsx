@@ -48,6 +48,7 @@ export default async function NotificationsPage() {
         <StorefrontPageShell>
             <div className="mx-auto max-w-4xl">
                 <StorefrontPageHeader
+                    eyebrow={t('notificationsEmptyEyebrow')}
                     title={t('notifications')}
                     description={t('notificationsDescription')}
                 />

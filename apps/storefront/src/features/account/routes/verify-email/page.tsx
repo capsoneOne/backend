@@ -1,3 +1,4 @@
+import type {Metadata} from 'next';
 import { Suspense } from 'react';
 import { mutate } from '@/platform/vendure/api';
 import {UpdateCustomerEmailAddressMutation} from '@/features/account/graphql';
@@ -6,6 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Link } from '@/platform/i18n/navigation';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {getTranslations} from 'next-intl/server';
+import {AccountPageHeader} from '@/features/account/components/account-page-header';
+
+export async function generateMetadata(): Promise<Metadata> {
+    const locale = await getRouteLocale();
+    const t = await getTranslations({locale, namespace: 'Account'});
+    return {title: t('verifyEmail.pageTitle')};
+}
 
 async function VerifyEmailContent({searchParams}: {searchParams: Promise<Record<string, string | string[] | undefined>>}) {
     const locale = await getRouteLocale();
@@ -97,7 +105,11 @@ export default async function VerifyEmailPage({searchParams}: PageProps<'/[local
     const t = await getTranslations({locale, namespace: 'Account'});
 
     return (
-        <div>
+        <div className="space-y-6">
+            <AccountPageHeader
+                title={t('verifyEmail.pageTitle')}
+                description={t('verifyEmail.pageDescription')}
+            />
             <Suspense fallback={
                 <Card className="max-w-md mx-auto">
                     <CardHeader>

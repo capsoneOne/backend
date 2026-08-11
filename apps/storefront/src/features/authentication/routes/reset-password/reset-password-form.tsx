@@ -24,7 +24,7 @@ export function ResetPasswordForm({ searchParams }: ResetPasswordFormProps) {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>{t('invalidResetLink')}</CardTitle>
+                    <CardTitle><h2>{t('invalidResetLink')}</h2></CardTitle>
                     <CardDescription>
                         {t('invalidResetLinkDescription')}
                     </CardDescription>
@@ -42,15 +42,9 @@ export function ResetPasswordForm({ searchParams }: ResetPasswordFormProps) {
 
     return (
         <Card>
-            <CardHeader>
-                <CardTitle>{t('resetYourPassword')}</CardTitle>
-                <CardDescription>
-                    {t('resetYourPasswordDescription')}
-                </CardDescription>
-            </CardHeader>
             <form action={formAction}>
                 <input type="hidden" name="token" value={token} />
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 pt-6">
                     <div className="space-y-2">
                         <Label htmlFor="password">{t('newPassword')}</Label>
                         <PasswordInput

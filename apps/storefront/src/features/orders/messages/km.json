@@ -1,0 +1,25 @@
+{
+  "OrderStatus": {
+    "AddingItems": "កំពុងបន្ថែមទំនិញ",
+    "ArrangingPayment": "កំពុងរៀបចំការទូទាត់",
+    "PaymentAuthorized": "បានអនុញ្ញាតការទូទាត់",
+    "PaymentSettled": "បានទូទាត់រួច",
+    "PartiallyShipped": "បានផ្ញើមួយផ្នែក",
+    "Shipped": "បានផ្ញើចេញ",
+    "PartiallyDelivered": "បានដឹកដល់មួយផ្នែក",
+    "Delivered": "បានដឹកដល់",
+    "Cancelled": "បានលុបចោល"
+  },
+  "OrderConfirmation": {
+    "pageTitle": "ការបញ្ជាក់ការបញ្ជាទិញ",
+    "orderConfirmed": "បានបញ្ជាក់ការបញ្ជាទិញ!",
+    "thankYou": "អរគុណសម្រាប់ការបញ្ជាទិញ។ លេខបញ្ជាទិញរបស់អ្នកគឺ",
+    "emailConfirmation": "យើងនឹងផ្ញើព័ត៌មានការបញ្ជាទិញ និងការតាមដានទៅអ៊ីមែលរបស់អ្នក។",
+    "orderSummary": "សង្ខេបការបញ្ជាទិញ",
+    "qty": "ចំនួន៖ {quantity}",
+    "total": "សរុប",
+    "shippingAddress": "អាសយដ្ឋានដឹកជញ្ជូន",
+    "continueShopping": "បន្តទិញទំនិញ",
+    "viewOrders": "មើលការបញ្ជាទិញ"
+  }
+}

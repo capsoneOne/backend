@@ -83,7 +83,7 @@ export async function Navbar() {
                                 <NavbarUser/>
                             </Suspense>
                         </span>
-                        <span className="hidden min-[1700px]:inline-flex">
+                        <span className="inline-flex">
                             <Suspense><LanguagePicker /></Suspense>
                         </span>
                         <span className="hidden min-[1700px]:inline-flex">

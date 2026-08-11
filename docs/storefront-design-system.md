@@ -47,6 +47,15 @@ same system and does not introduce a separate product identity.
 - Breadcrumbs always sit inside the shared header or immediately above a product purchase panel, with the same spacing and truncation behavior.
 - Authentication routes use `AuthPageShell` so recovery and verification screens align with sign-in and registration.
 
+## Page eyebrows
+
+- Eyebrows are a hierarchy cue, not decoration on every page.
+- Use an eyebrow on top-level discovery, editorial, utility, and transaction destinations: Shop all, Categories, Featured, Wishlist, Notifications, Cart, Checkout, and visual-search or homepage heroes.
+- Collection browse pages may use an eyebrow alongside breadcrumbs because they remain catalogue surfaces.
+- Do not use an eyebrow on product details, compact account pages, order details, authentication result states, or informational and legal pages.
+- Authentication form pages use the store name as their shared kicker; account pages use `AccountPageHeader` without a kicker.
+- Keep eyebrow styling centralized at `text-xs font-bold uppercase tracking-[0.18em] text-primary`.
+
 ## Global navigation
 
 - Desktop product navigation contains two text destinations: **Shop** and **Categories**. Search remains the central discovery control.
@@ -54,6 +63,8 @@ same system and does not introduce a separate product identity.
 - Categories opens one catalogue menu and links to `/categories`; individual collections do not become competing top-level navigation items.
 - Mobile exposes Shop, Categories, Wishlist, Cart, Notifications, and Profile as a compact destination grid, followed by the actual category taxonomy.
 - Notifications are not decorative: `/notifications` is a standalone authenticated feed derived from the shopper's recent order updates. It is a global store utility and does not inherit account navigation.
+- The language control is an always-visible 44px icon toggle. It preserves the current route and query string while switching between English and Khmer, and its small badge names the destination language.
+- English uses Ubuntu; Khmer glyphs use Kantumruy Pro. Khmer pages neutralize Latin-only letter-spacing and uppercase utilities so consonant clusters keep their natural rhythm. Khmer display headings use `1.18` line-height, secondary headings use `1.35`, and paragraphs without an explicit leading utility use `1.55`.
 
 ## Components and patterns
 

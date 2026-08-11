@@ -8,10 +8,14 @@ import {getRouteLocale} from '@/platform/i18n/server';
 import {getTranslations} from 'next-intl/server';
 import {AuthPageShell} from '@/components/auth-page-shell';
 
-export const metadata: Metadata = {
-    title: 'Verification Pending',
-    description: 'Check your email to verify your account.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+    const locale = await getRouteLocale();
+    const t = await getTranslations({locale, namespace: 'Auth'});
+    return {
+        title: t('verifyPendingPageTitle'),
+        description: t('verifyPendingPageDescription'),
+    };
+}
 
 async function VerifyPendingContent({searchParams}: {searchParams: Promise<Record<string, string | string[] | undefined>>}) {
     const locale = await getRouteLocale();

@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 
 /**
  * The last-resort boundary, for errors thrown by the root layout itself.
@@ -17,12 +17,27 @@ export default function GlobalErrorBoundary({
     error: Error & {digest?: string};
     reset: () => void;
 }) {
+    const [khmer, setKhmer] = useState(false);
+
     useEffect(() => {
         console.error('Root layout error', error.digest ?? '', error);
+        setKhmer(window.location.pathname === '/km' || window.location.pathname.startsWith('/km/'));
     }, [error]);
 
+    const copy = khmer ? {
+        title: 'មានបញ្ហាកើតឡើង',
+        message: 'មិនអាចផ្ទុកទំព័របានទេ។ សូមព្យាយាមម្ដងទៀត។',
+        reference: 'លេខយោង',
+        retry: 'ព្យាយាមម្ដងទៀត',
+    } : {
+        title: 'Something went wrong',
+        message: 'The page could not be loaded. Please try again.',
+        reference: 'Reference',
+        retry: 'Try again',
+    };
+
     return (
-        <html lang="en">
+        <html lang={khmer ? 'km' : 'en'}>
             <body
                 style={{
                     margin: 0,
@@ -38,14 +53,14 @@ export default function GlobalErrorBoundary({
             >
                 <main style={{maxWidth: '28rem', textAlign: 'center'}}>
                     <h1 style={{fontSize: '1.75rem', fontWeight: 700, margin: 0}}>
-                        Something went wrong
+                        {copy.title}
                     </h1>
                     <p style={{marginTop: '0.75rem', lineHeight: 1.6, color: '#555'}}>
-                        The page could not be loaded. Please try again.
+                        {copy.message}
                     </p>
                     {error.digest ? (
                         <p style={{marginTop: '1.25rem', fontSize: '0.75rem', color: '#888'}}>
-                            Reference: {error.digest}
+                            {copy.reference}: {error.digest}
                         </p>
                     ) : null}
                     <button
@@ -55,14 +70,14 @@ export default function GlobalErrorBoundary({
                             padding: '0.75rem 1.75rem',
                             borderRadius: '999px',
                             border: 'none',
-                            background: '#f45034',
+                            background: '#0866d8',
                             color: '#fff',
                             fontSize: '1rem',
                             fontFamily: 'inherit',
                             cursor: 'pointer',
                         }}
                     >
-                        Try again
+                        {copy.retry}
                     </button>
                 </main>
             </body>

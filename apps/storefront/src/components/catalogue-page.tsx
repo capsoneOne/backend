@@ -26,7 +26,7 @@ interface StorefrontBreadcrumbsProps {
 /** Breadcrumbs are reserved for detail pages that sit below a browse page. */
 export function StorefrontBreadcrumbs({items}: StorefrontBreadcrumbsProps) {
     return (
-        <Breadcrumb aria-label="Breadcrumb">
+        <Breadcrumb>
             <BreadcrumbList>
                 {items.map((item, index) => (
                     <Fragment key={`${item.label}-${index}`}>

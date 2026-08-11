@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {useTranslations} from 'next-intl';
 
 interface ProductImageCarouselProps {
     images: Array<{
@@ -14,6 +15,7 @@ interface ProductImageCarouselProps {
 }
 
 export function ProductImageCarousel({ images }: ProductImageCarouselProps) {
+    const t = useTranslations('Product');
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => setCurrentIndex(0), [images]);
@@ -21,7 +23,7 @@ export function ProductImageCarousel({ images }: ProductImageCarouselProps) {
     if (!images || images.length === 0) {
         return (
             <div className="aspect-square bg-muted rounded-xl flex items-center justify-center">
-                <span className="text-muted-foreground">No images available</span>
+                <span className="text-muted-foreground">{t('noImagesAvailable')}</span>
             </div>
         );
     }
@@ -40,7 +42,7 @@ export function ProductImageCarousel({ images }: ProductImageCarouselProps) {
             <div className="relative aspect-square bg-muted rounded-xl overflow-hidden group cursor-crosshair">
                 <Image
                     src={images[currentIndex].source}
-                    alt={`Product image ${currentIndex + 1}`}
+                    alt={t('productImage', {number: currentIndex + 1})}
                     fill
                     className="object-cover hover:scale-105 transition-transform duration-500"
                     sizes="(max-width: 1024px) 100vw, 50vw"
@@ -55,6 +57,7 @@ export function ProductImageCarousel({ images }: ProductImageCarouselProps) {
                             size="icon"
                             className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background shadow-sm opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
                             onClick={goToPrevious}
+                            aria-label={t('previousImage')}
                         >
                             <ChevronLeft className="h-5 w-5" />
                         </Button>
@@ -63,6 +66,7 @@ export function ProductImageCarousel({ images }: ProductImageCarouselProps) {
                             size="icon"
                             className="absolute right-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background shadow-sm opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
                             onClick={goToNext}
+                            aria-label={t('nextImage')}
                         >
                             <ChevronRight className="h-5 w-5" />
                         </Button>
@@ -92,7 +96,7 @@ export function ProductImageCarousel({ images }: ProductImageCarouselProps) {
                         >
                             <Image
                                 src={image.preview}
-                                alt={`Thumbnail ${index + 1}`}
+                                alt={t('thumbnail', {number: index + 1})}
                                 fill
                                 className="object-cover"
                                 sizes="25vw"

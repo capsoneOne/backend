@@ -7,7 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-ubuntu);
+  --font-sans: var(--font-ubuntu), var(--font-kantumruy), sans-serif;
   --font-mono: var(--font-ubuntu-mono);
   --color-illustration: var(--illustration);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -160,6 +160,32 @@
     background: var(--accent);
     color: var(--accent-foreground);
   }
+}
+
+/* Khmer letterforms already carry their own internal rhythm. Latin display
+   tracking and uppercase transforms create visible gaps between clusters, so
+   neutralize those utilities only when the active storefront locale is Khmer. */
+html[lang="km"] [class*="tracking-"] {
+  letter-spacing: normal;
+}
+
+html[lang="km"] [class*="uppercase"] {
+  text-transform: none;
+}
+
+html[lang="km"] h1 {
+  letter-spacing: normal;
+  line-height: 1.2;
+}
+
+html[lang="km"] h2,
+html[lang="km"] h3 {
+  letter-spacing: normal;
+  line-height: 1.35;
+}
+
+html[lang="km"] p:not([class*="leading-"]) {
+  line-height: 1.55;
 }
 
 @utility elevate-1 {

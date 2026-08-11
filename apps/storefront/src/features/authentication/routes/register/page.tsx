@@ -6,7 +6,7 @@ import {AuthPageShell} from '@/components/auth-page-shell';
 import { RegistrationForm } from "./registration-form";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import {SITE_NAME} from "@/config/metadata";
+import {AuthPageHeader} from '@/features/authentication/components/auth-page-header';
 
 export async function generateMetadata(): Promise<Metadata> {
     const locale = await getRouteLocale();
@@ -69,13 +69,7 @@ export default async function RegisterPage({searchParams}: PageProps<'/[locale]/
     return (
         <AuthPageShell>
                 <div className="space-y-6">
-                    <div className="space-y-2 text-center">
-                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">{SITE_NAME}</p>
-                        <h1 className="text-3xl font-bold">{t('createAccount')}</h1>
-                        <p className="text-muted-foreground">
-                            {t('signUpMessage')}
-                        </p>
-                    </div>
+                    <AuthPageHeader title={t('createAccount')} description={t('signUpMessage')} />
                     <Suspense fallback={<RegistrationFormSkeleton />}>
                         <RegisterContent searchParams={searchParams} />
                     </Suspense>

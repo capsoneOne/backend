@@ -1,9 +1,11 @@
 import { cn } from "@/lib/utils"
 import { Loader2Icon } from "lucide-react"
+import {useTranslations} from 'next-intl'
 
 function Spinner({ className, ...props }: React.ComponentProps<"svg">) {
+  const t = useTranslations('Common')
   return (
-    <Loader2Icon role="status" aria-label="Loading" className={cn("size-4 animate-spin", className)} {...props} />
+    <Loader2Icon role="status" aria-label={t('loadingLabel')} className={cn("size-4 animate-spin", className)} {...props} />
   )
 }
 

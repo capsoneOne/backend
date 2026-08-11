@@ -1,7 +1,7 @@
 import type {Metadata, Viewport} from "next";
 import {locale as rootLocale} from "next/root-params";
 import {hasLocale, NextIntlClientProvider} from "next-intl";
-import {Ubuntu, Ubuntu_Mono} from "next/font/google";
+import {Kantumruy_Pro, Ubuntu, Ubuntu_Mono} from "next/font/google";
 import {getMessages, getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 import {routing} from "@/platform/i18n/routing";
@@ -27,6 +27,13 @@ const ubuntuMono = Ubuntu_Mono({
     variable: "--font-ubuntu-mono",
     subsets: ["latin"],
     weight: ["400", "700"],
+    display: "swap",
+});
+
+const kantumruyPro = Kantumruy_Pro({
+    variable: "--font-kantumruy",
+    subsets: ["khmer"],
+    weight: ["400", "500", "600", "700"],
     display: "swap",
 });
 
@@ -99,7 +106,7 @@ export default async function LocaleLayout({children}: {children: React.ReactNod
     return (
         <html lang={locale} data-scroll-behavior="smooth" suppressHydrationWarning>
             <body
-                className={`${ubuntu.variable} ${ubuntuMono.variable} font-sans antialiased flex min-h-screen flex-col`}
+                className={`${ubuntu.variable} ${ubuntuMono.variable} ${kantumruyPro.variable} font-sans antialiased flex min-h-screen flex-col`}
             >
                 <NextIntlClientProvider locale={locale} messages={messages}>
                     <ThemeProvider>
