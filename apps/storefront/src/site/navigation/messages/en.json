@@ -15,6 +15,9 @@
     "shoppingCart": "Shopping Cart",
     "switchLanguage": "Switch language",
     "switchCurrency": "Switch currency",
-    "searchByImage": "Search by image"
+    "searchByImage": "Search by image",
+    "searching": "Searching…",
+    "noSuggestions": "No matching products.",
+    "viewAllResults": "{count, plural, =0 {See all results} one {See # result} other {See all # results}}"
   }
 }

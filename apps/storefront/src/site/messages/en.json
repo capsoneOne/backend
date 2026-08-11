@@ -18,6 +18,14 @@
     "documentation": "Documentation",
     "sourceCode": "Source Code",
     "copyright": "{siteName}. All rights reserved.",
-    "poweredBy": "Powered by"
+    "poweredBy": "Powered by",
+    "company": "Company",
+    "about": "About",
+    "contact": "Contact",
+    "help": "Help Centre",
+    "shippingReturns": "Shipping & Returns",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "allCollections": "All collections"
   }
 }

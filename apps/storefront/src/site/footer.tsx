@@ -39,7 +39,7 @@ export async function Footer() {
     return (
         <footer className="mt-auto border-t border-border bg-muted/30">
             <div className="container mx-auto px-4 py-16">
-                <div className="grid gap-12 md:grid-cols-[1.6fr_1fr_1fr_1fr]">
+                <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr_1fr]">
                     <div className="max-w-sm">
                         <NavigationLink href="/" className="inline-block">
                             <Brand responsive={false} />
@@ -52,6 +52,11 @@ export async function Footer() {
                     <div>
                         <p className={headingClass}>{t('categories')}</p>
                         <ul className="mt-5 space-y-3">
+                            <li>
+                                <NavigationLink href="/collections" className={linkClass}>
+                                    {t('allCollections')}
+                                </NavigationLink>
+                            </li>
                             {collections.map((collection) => (
                                 <li key={collection.id}>
                                     <NavigationLink href={`/collection/${collection.slug}`} className={linkClass}>
@@ -78,6 +83,16 @@ export async function Footer() {
                     </div>
 
                     <div>
+                        <p className={headingClass}>{t('company')}</p>
+                        <ul className="mt-5 space-y-3">
+                            <li><NavigationLink href="/about" className={linkClass}>{t('about')}</NavigationLink></li>
+                            <li><NavigationLink href="/contact" className={linkClass}>{t('contact')}</NavigationLink></li>
+                            <li><NavigationLink href="/help" className={linkClass}>{t('help')}</NavigationLink></li>
+                            <li><NavigationLink href="/shipping-returns" className={linkClass}>{t('shippingReturns')}</NavigationLink></li>
+                        </ul>
+                    </div>
+
+                    <div>
                         <p className={headingClass}>{t('vendure')}</p>
                         <ul className="mt-5 space-y-3">
                             <li>
@@ -100,7 +115,13 @@ export async function Footer() {
                 </div>
 
                 <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 text-sm font-light text-muted-foreground md:flex-row">
-                    <Copyright/>
+                    <div className="flex flex-col items-center gap-x-5 gap-y-2 sm:flex-row">
+                        <Copyright/>
+                        <span className="flex gap-5">
+                            <NavigationLink href="/privacy" className={linkClass}>{t('privacy')}</NavigationLink>
+                            <NavigationLink href="/terms" className={linkClass}>{t('terms')}</NavigationLink>
+                        </span>
+                    </div>
                     <div className="flex items-center gap-2">
                         <span>{t('poweredBy')}</span>
                         <a href="https://vendure.io" target="_blank" rel="noopener noreferrer" className="opacity-70 transition-opacity hover:opacity-100">

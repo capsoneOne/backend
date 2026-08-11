@@ -6,6 +6,7 @@ import { ProductImageCarousel } from '@/features/products/components/product-ima
 import { ProductInfo } from '@/features/products/components/product-info';
 import {getDisplayOptionGroups} from '@/features/products/product-options';
 import { RelatedProducts } from '@/features/products/components/related-products';
+import { BreadcrumbJsonLd, ProductJsonLd } from '@/features/products/components/product-json-ld';
 import {
     Accordion,
     AccordionContent,
@@ -122,6 +123,17 @@ export default async function ProductDetailPage({
 
     return (
         <>
+            <ProductJsonLd product={product} currencyCode={currencyCode} />
+            <BreadcrumbJsonLd
+                items={[
+                    {name: t('home'), path: '/'},
+                    ...(primaryCollection
+                        ? [{name: primaryCollection.name, path: `/collection/${primaryCollection.slug}`}]
+                        : []),
+                    {name: product.name, path: `/product/${product.slug}`},
+                ]}
+            />
+
             <div className="container mx-auto px-4 py-8 mt-16">
                 {/* Breadcrumb Navigation */}
                 <Breadcrumb className="mb-6">

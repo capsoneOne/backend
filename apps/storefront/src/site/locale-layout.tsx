@@ -11,6 +11,7 @@ import {Toaster} from "@/components/ui/sonner";
 import {Navbar} from '@/site/navigation/navbar';
 import {Footer} from "@/site/footer";
 import {ThemeProvider} from "@/site/providers/theme-provider";
+import {WishlistProvider} from "@/features/wishlist/wishlist-context";
 import {SITE_NAME, SITE_URL} from "@/config/metadata";
 
 // Ubuntu has no 600. Loading 300/400/500/700 explicitly keeps the browser from
@@ -101,10 +102,12 @@ export default async function LocaleLayout({children}: {children: React.ReactNod
             >
                 <NextIntlClientProvider locale={locale} messages={messages}>
                     <ThemeProvider>
-                        <Navbar />
-                        {children}
-                        <Footer/>
-                        <Toaster/>
+                        <WishlistProvider>
+                            <Navbar />
+                            {children}
+                            <Footer/>
+                            <Toaster/>
+                        </WishlistProvider>
                     </ThemeProvider>
                 </NextIntlClientProvider>
             </body>

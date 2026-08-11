@@ -9,7 +9,7 @@
     "replaceImage": "Use a different image",
     "startOver": "Start over",
     "tryAnotherImage": "Try another image",
-    "previewHint": "We compare this photo against every product image in the catalogue.",
+    "previewHint": "We compare this photo against every product image in the catalogue. Crop it if the background is busy.",
     "yourImage": "Your image",
     "noImage": "No image",
     "searching": "Finding visually similar products…",
@@ -24,6 +24,11 @@
     "errorRead": "Could not read that file. Try choosing it again.",
     "errorEmpty": "No image was received. Please try again.",
     "errorUnavailable": "Image search is warming up. Try again in a few seconds.",
-    "errorFailed": "Something went wrong searching for that image. Please try again."
+    "errorFailed": "Something went wrong searching for that image. Please try again.",
+    "cropImage": "Crop",
+    "cropHint": "Drag to box the product. Cropping out the background usually improves the match a lot.",
+    "cropApply": "Search this area",
+    "cropReset": "Reset",
+    "cropCancel": "Cancel"
   }
 }

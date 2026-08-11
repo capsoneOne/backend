@@ -3,13 +3,14 @@
 import {useCallback, useEffect, useRef, useState, useTransition} from 'react';
 import Image from 'next/image';
 import {useLocale, useTranslations} from 'next-intl';
-import {AlertCircle, ImageUp, RotateCcw, SearchX} from 'lucide-react';
+import {AlertCircle, Crop, ImageUp, RotateCcw, SearchX} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {ProductTile, ProductTileSkeleton} from '@/components/product-tile';
 import {Price} from '@/features/pricing/price';
 import {VISUAL_SEARCH_MAX_FILE_BYTES, VISUAL_SEARCH_MAX_FILE_MB} from '../limits';
 import type {VisualSearchErrorCode, VisualSearchHit, VisualSearchState} from '../types';
 import {searchByImageUpload} from '../upload';
+import {ImageCropper, cropFile, type CropRect} from './image-cropper';
 
 /** Error codes are stable; the copy for them is translatable. */
 const ERROR_KEYS: Record<VisualSearchErrorCode, string> = {
@@ -28,14 +29,24 @@ export function VisualSearchClient() {
     const [state, setState] = useState<VisualSearchState>({status: 'idle'});
     const [pending, startTransition] = useTransition();
     const [dragging, setDragging] = useState(false);
+    const [cropping, setCropping] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const previewRef = useRef<string | null>(null);
+    /** The chosen file, kept so a crop can be re-derived from the original. */
+    const fileRef = useRef<File | null>(null);
 
     // Revoke the previous object URL whenever it is replaced, and on unmount. Without
     // this every upload leaks the whole image for the lifetime of the page.
     useEffect(() => () => {
         if (previewRef.current) URL.revokeObjectURL(previewRef.current);
     }, []);
+
+    const runSearch = useCallback(
+        (file: File) => {
+            startTransition(async () => setState(await searchByImageUpload(file, locale)));
+        },
+        [locale],
+    );
 
     const handleFile = useCallback(
         (file: File) => {
@@ -54,18 +65,41 @@ export function VisualSearchClient() {
             if (previewRef.current) URL.revokeObjectURL(previewRef.current);
             const objectUrl = URL.createObjectURL(file);
             previewRef.current = objectUrl;
+            fileRef.current = file;
             setPreview(objectUrl);
+            setCropping(false);
             setState({status: 'idle'});
 
-            startTransition(async () => setState(await searchByImageUpload(file, locale)));
+            runSearch(file);
         },
-        [locale],
+        [runSearch],
+    );
+
+    const applyCrop = useCallback(
+        async (rect: CropRect) => {
+            const original = fileRef.current;
+            if (!original) return;
+            const cropped = await cropFile(original, rect);
+
+            if (previewRef.current) URL.revokeObjectURL(previewRef.current);
+            const objectUrl = URL.createObjectURL(cropped);
+            previewRef.current = objectUrl;
+            setPreview(objectUrl);
+            setCropping(false);
+            // The crop becomes the new original, so a second crop refines the
+            // first rather than reverting to the full frame.
+            fileRef.current = cropped;
+            runSearch(cropped);
+        },
+        [runSearch],
     );
 
     const reset = useCallback(() => {
         if (previewRef.current) URL.revokeObjectURL(previewRef.current);
         previewRef.current = null;
+        fileRef.current = null;
         setPreview(null);
+        setCropping(false);
         setState({status: 'idle'});
         // Without this the same file cannot be picked twice in a row: the input still
         // holds it, so `change` never fires again.
@@ -109,7 +143,11 @@ export function VisualSearchClient() {
             >
                 <div className="pointer-events-none absolute inset-0 bg-dotfield opacity-60 [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,black,transparent)]" />
 
-                {preview ? (
+                {preview && cropping ? (
+                    <div className="relative">
+                        <ImageCropper src={preview} onApply={applyCrop} onCancel={() => setCropping(false)} />
+                    </div>
+                ) : preview ? (
                     <div className="relative flex flex-col items-center gap-7 sm:flex-row sm:items-center sm:justify-center">
                         <div className="relative size-44 shrink-0 overflow-hidden rounded-2xl bg-muted elevate-2">
                             <Image src={preview} alt={t('yourImage')} fill className="object-contain" unoptimized/>
@@ -118,6 +156,10 @@ export function VisualSearchClient() {
                             <p className="text-lg font-medium">{t('yourImage')}</p>
                             <p className="max-w-xs font-light text-muted-foreground">{t('previewHint')}</p>
                             <div className="flex flex-wrap justify-center gap-2 pt-1 sm:justify-start">
+                                <Button type="button" variant="default" size="sm" onClick={() => setCropping(true)} className="rounded-full">
+                                    <Crop className="mr-2 size-4"/>
+                                    {t('cropImage')}
+                                </Button>
                                 <Button type="button" variant="outline" size="sm" onClick={openPicker} className="rounded-full">
                                     <ImageUp className="mr-2 size-4"/>
                                     {t('replaceImage')}

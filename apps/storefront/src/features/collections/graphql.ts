@@ -13,6 +13,27 @@ export const GetTopCollectionsQuery = graphql(`
     }
 `);
 
+/** Every collection with its imagery, for the collections index. */
+export const GetAllCollectionsQuery = graphql(`
+    query GetAllCollections {
+        collections(options: { take: 100, filter: { parentId: { eq: "1" } } }) {
+            items {
+                id
+                name
+                slug
+                description
+                featuredAsset {
+                    id
+                    preview
+                }
+                productVariants {
+                    totalItems
+                }
+            }
+        }
+    }
+`);
+
 export const GetCollectionProductsQuery = graphql(`
     query GetCollectionProducts($slug: String!, $input: SearchInput!) {
         collection(slug: $slug) {

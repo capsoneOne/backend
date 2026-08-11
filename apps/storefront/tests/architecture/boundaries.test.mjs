@@ -40,6 +40,11 @@ test('Next.js app files remain re-export shims', async () => {
 
         let hasReExport = false;
         for (const statement of source.statements) {
+            // Next.js requires the `use client` directive in the error boundary
+            // files themselves — it is not inherited through a re-export — so a
+            // directive prologue is the one non-export statement allowed here.
+            const isDirectivePrologue = ts.isExpressionStatement(statement)
+                && ts.isStringLiteral(statement.expression);
             const isStylesheetImport = ts.isImportDeclaration(statement)
                 && !statement.importClause
                 && ts.isStringLiteral(statement.moduleSpecifier)
@@ -49,7 +54,7 @@ test('Next.js app files remain re-export shims', async () => {
                 && statement.moduleSpecifier
                 && ts.isStringLiteral(statement.moduleSpecifier);
             if (isExplicitReExport) hasReExport = true;
-            if (!isStylesheetImport && !isExplicitReExport) {
+            if (!isDirectivePrologue && !isStylesheetImport && !isExplicitReExport) {
                 violations.push(`${path.relative(root, file)} contains behavior instead of only explicit re-exports`);
             }
         }

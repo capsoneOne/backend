@@ -10,6 +10,7 @@ import {Suspense} from "react";
 import {SearchInput} from '@/site/navigation/search-input';
 import {VisualSearchLink} from '@/site/navigation/visual-search-link';
 import {SearchLink} from '@/site/navigation/search-link';
+import {WishlistLink} from '@/site/navigation/wishlist-link';
 import {NavbarUserSkeleton} from '@/site/navigation/skeletons/navbar-user-skeleton';
 import {SearchInputSkeleton} from '@/site/navigation/skeletons/search-input-skeleton';
 import {Brand} from '@/site/brand';
@@ -57,6 +58,7 @@ export function Navbar() {
                             <VisualSearchLink />
                         </Suspense>
                         <span className="mx-1 hidden h-5 w-px bg-border sm:block" />
+                        <WishlistLink />
                         <Suspense>
                             <LanguagePicker />
                         </Suspense>

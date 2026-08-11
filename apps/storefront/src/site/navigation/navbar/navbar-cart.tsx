@@ -1,5 +1,5 @@
 import {cacheLife, cacheTag} from 'next/cache';
-import {CartIcon} from './cart-icon';
+import {CartDrawer, type CartDrawerLine} from './cart-drawer';
 import {query} from '@/platform/vendure/api';
 import {GetActiveOrderQuery} from '@/features/cart/graphql';
 
@@ -14,7 +14,25 @@ export async function NavbarCart() {
         tags: ['cart'],
     });
 
-    const cartItemCount = orderResult.data.activeOrder?.totalQuantity || 0;
+    const order = orderResult.data.activeOrder;
 
-    return <CartIcon cartItemCount={cartItemCount} />;
+    // Flattened here rather than in the drawer: the client component should not
+    // have to know the shape of a Vendure order line.
+    const lines: CartDrawerLine[] = (order?.lines ?? []).map(line => ({
+        id: line.id,
+        name: line.productVariant.product.name,
+        slug: line.productVariant.product.slug,
+        imageUrl: line.productVariant.product.featuredAsset?.preview ?? null,
+        quantity: line.quantity,
+        linePriceWithTax: line.linePriceWithTax,
+    }));
+
+    return (
+        <CartDrawer
+            lines={lines}
+            itemCount={order?.totalQuantity ?? 0}
+            subTotalWithTax={order?.subTotalWithTax ?? 0}
+            currencyCode={order?.currencyCode ?? 'USD'}
+        />
+    );
 }

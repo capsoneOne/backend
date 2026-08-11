@@ -24,6 +24,12 @@ interface ProductTileProps {
     footer?: ReactNode;
     /** Pinned to the top-left of the image, e.g. a similarity score. */
     badge?: ReactNode;
+    /**
+     * Buttons pinned to the top-right of the image — wishlist, quick add. They
+     * fade in on hover on pointer devices, but stay visible on touch, where
+     * there is no hover to reveal them.
+     */
+    actions?: ReactNode;
     sizes?: string;
     noImageLabel: string;
     /** Set on the first row of an above-the-fold grid so the LCP image is not lazy. */
@@ -38,6 +44,7 @@ export function ProductTile({
     title,
     footer,
     badge,
+    actions,
     sizes = '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw',
     noImageLabel,
     priority = false,
@@ -72,6 +79,12 @@ export function ProductTile({
                 <span className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-foreground/[0.06]" />
 
                 {badge ? <div className="absolute left-3 top-3 z-10">{badge}</div> : null}
+
+                {actions ? (
+                    <div className="absolute right-3 top-3 z-10 flex flex-col gap-2 transition-opacity duration-200 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
+                        {actions}
+                    </div>
+                ) : null}
             </div>
 
             <div className="flex flex-1 flex-col gap-1 px-1 pb-1 pt-3.5">

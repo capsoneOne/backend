@@ -2,6 +2,11 @@
   "Collection": {
     "home": "Home",
     "collectionNotFound": "Collection Not Found",
-    "browseCollectionAt": "Browse our {name} collection at {siteName}"
+    "browseCollectionAt": "Browse our {name} collection at {siteName}",
+    "indexTitle": "Collections",
+    "indexSubtitle": "Browse the catalogue by category, or skip the browsing and search with a photo.",
+    "indexDescription": "Browse every collection at {siteName}.",
+    "indexEmpty": "No collections have been published yet.",
+    "productCount": "{count, plural, =0 {No products} one {# product} other {# products}}"
   }
 }
