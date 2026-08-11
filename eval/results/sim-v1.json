@@ -1,0 +1,278 @@
+{
+  "revision": "sim-v1",
+  "modelId": "sim-clip-vit-b32",
+  "embeddingDim": 512,
+  "querySet": "provisional-synthetic-v1",
+  "ranAt": "2026-08-11T08:30:23.746Z",
+  "indexedProducts": 9,
+  "metrics": {
+    "recall@1": 0.8125,
+    "recall@5": 1,
+    "recall@10": 1,
+    "mrr": 0.8802
+  },
+  "randomBaseline": {
+    "recall@1": 0.1111,
+    "recall@5": 0.5556,
+    "recall@10": 1
+  },
+  "headroomCaptured": {
+    "recall@1": 0.7891,
+    "recall@5": 1,
+    "recall@10": null
+  },
+  "byKind": {
+    "angle": {
+      "recall@1": 0.875,
+      "recall@5": 1,
+      "recall@10": 1
+    },
+    "clutter": {
+      "recall@1": 0.75,
+      "recall@5": 1,
+      "recall@10": 1
+    }
+  },
+  "latencyMs": {
+    "n": 16,
+    "min": 74,
+    "p10": 74.5,
+    "median": 78.5,
+    "mean": 78.8125,
+    "p90": 82,
+    "p95": 82.75,
+    "max": 85
+  },
+  "calibration": {
+    "relevant": {
+      "n": 16,
+      "min": 0.0959,
+      "p10": 0.1217,
+      "median": 0.2209,
+      "mean": 0.2875,
+      "p90": 0.538,
+      "p95": 0.5819,
+      "max": 0.6552
+    },
+    "topDistractor": {
+      "n": 16,
+      "min": 0.1219,
+      "p10": 0.3393,
+      "median": 0.5271,
+      "mean": 0.5098,
+      "p90": 0.6479,
+      "p95": 0.6546,
+      "max": 0.6651
+    }
+  },
+  "perQuery": [
+    {
+      "id": "red-boot-angle",
+      "kind": "angle",
+      "rank": 1,
+      "latencyMs": 78,
+      "relevantDistance": 0.4828716516494751,
+      "topDistractorDistance": 0.510547935962677,
+      "top": [
+        "red-leather-boot@0.483",
+        "blue-denim-jacket@0.511",
+        "yellow-rain-coat@0.515"
+      ]
+    },
+    {
+      "id": "red-boot-clutter",
+      "kind": "clutter",
+      "rank": 1,
+      "latencyMs": 82,
+      "relevantDistance": 0.2020343900333159,
+      "topDistractorDistance": 0.5776996188670281,
+      "top": [
+        "red-leather-boot@0.202",
+        "orange-backpack@0.578",
+        "white-sneaker@0.668"
+      ]
+    },
+    {
+      "id": "blue-jacket-angle",
+      "kind": "angle",
+      "rank": 1,
+      "latencyMs": 85,
+      "relevantDistance": 0.16624081134796143,
+      "topDistractorDistance": 0.6131357618055195,
+      "top": [
+        "blue-denim-jacket@0.166",
+        "purple-scarf@0.613",
+        "yellow-rain-coat@0.635"
+      ]
+    },
+    {
+      "id": "blue-jacket-clutter",
+      "kind": "clutter",
+      "rank": 1,
+      "latencyMs": 81,
+      "relevantDistance": 0.1965572594570293,
+      "topDistractorDistance": 0.6510960861713846,
+      "top": [
+        "blue-denim-jacket@0.197",
+        "white-sneaker@0.651",
+        "purple-scarf@0.709"
+      ]
+    },
+    {
+      "id": "green-mug-angle",
+      "kind": "angle",
+      "rank": 1,
+      "latencyMs": 76,
+      "relevantDistance": 0.224527193577717,
+      "topDistractorDistance": 0.5351472517935776,
+      "top": [
+        "green-ceramic-mug@0.225",
+        "orange-backpack@0.535",
+        "yellow-rain-coat@0.549"
+      ]
+    },
+    {
+      "id": "green-mug-clutter",
+      "kind": "clutter",
+      "rank": 1,
+      "latencyMs": 81,
+      "relevantDistance": 0.25538680718501794,
+      "topDistractorDistance": 0.6351163278554774,
+      "top": [
+        "green-ceramic-mug@0.255",
+        "black-sunglasses@0.635",
+        "blue-denim-jacket@0.642"
+      ]
+    },
+    {
+      "id": "yellow-raincoat-angle",
+      "kind": "angle",
+      "rank": 1,
+      "latencyMs": 78,
+      "relevantDistance": 0.10713627615164534,
+      "topDistractorDistance": 0.12188110118749995,
+      "top": [
+        "yellow-rain-coat@0.107",
+        "black-sunglasses@0.122",
+        "green-ceramic-mug@0.489"
+      ]
+    },
+    {
+      "id": "yellow-raincoat-clutter",
+      "kind": "clutter",
+      "rank": 1,
+      "latencyMs": 82,
+      "relevantDistance": 0.21729485885531408,
+      "topDistractorDistance": 0.2731982469558716,
+      "top": [
+        "yellow-rain-coat@0.217",
+        "black-sunglasses@0.273",
+        "white-sneaker@0.585"
+      ]
+    },
+    {
+      "id": "black-sunglasses-angle",
+      "kind": "angle",
+      "rank": 2,
+      "latencyMs": 77,
+      "relevantDistance": 0.5184355665185701,
+      "topDistractorDistance": 0.4818367979721072,
+      "top": [
+        "yellow-rain-coat@0.482",
+        "black-sunglasses@0.518",
+        "orange-backpack@0.519"
+      ]
+    },
+    {
+      "id": "black-sunglasses-clutter",
+      "kind": "clutter",
+      "rank": 4,
+      "latencyMs": 81,
+      "relevantDistance": 0.6552372872829437,
+      "topDistractorDistance": 0.4054911136627197,
+      "top": [
+        "red-leather-boot@0.405",
+        "orange-backpack@0.438",
+        "yellow-rain-coat@0.620"
+      ]
+    },
+    {
+      "id": "white-sneaker-angle",
+      "kind": "angle",
+      "rank": 1,
+      "latencyMs": 74,
+      "relevantDistance": 0.13839638233184204,
+      "topDistractorDistance": 0.6650827923466434,
+      "top": [
+        "white-sneaker@0.138",
+        "black-sunglasses@0.665",
+        "purple-scarf@0.684"
+      ]
+    },
+    {
+      "id": "white-sneaker-clutter",
+      "kind": "clutter",
+      "rank": 3,
+      "latencyMs": 78,
+      "relevantDistance": 0.557491706534968,
+      "topDistractorDistance": 0.4237439460678021,
+      "top": [
+        "yellow-rain-coat@0.424",
+        "black-sunglasses@0.434",
+        "white-sneaker@0.557"
+      ]
+    },
+    {
+      "id": "orange-backpack-angle",
+      "kind": "angle",
+      "rank": 1,
+      "latencyMs": 74,
+      "relevantDistance": 0.09592137026552428,
+      "topDistractorDistance": 0.5076720567843929,
+      "top": [
+        "orange-backpack@0.096",
+        "red-leather-boot@0.508",
+        "green-ceramic-mug@0.556"
+      ]
+    },
+    {
+      "id": "orange-backpack-clutter",
+      "kind": "clutter",
+      "rank": 1,
+      "latencyMs": 80,
+      "relevantDistance": 0.23021471500396729,
+      "topDistractorDistance": 0.6446608901023865,
+      "top": [
+        "orange-backpack@0.230",
+        "red-leather-boot@0.645",
+        "white-sneaker@0.677"
+      ]
+    },
+    {
+      "id": "purple-scarf-angle",
+      "kind": "angle",
+      "rank": 1,
+      "latencyMs": 75,
+      "relevantDistance": 0.1363431039163261,
+      "topDistractorDistance": 0.5190555906014318,
+      "top": [
+        "purple-scarf@0.136",
+        "blue-denim-jacket@0.519",
+        "black-sunglasses@0.545"
+      ]
+    },
+    {
+      "id": "purple-scarf-clutter",
+      "kind": "clutter",
+      "rank": 1,
+      "latencyMs": 79,
+      "relevantDistance": 0.4156162738800008,
+      "topDistractorDistance": 0.5921684989728333,
+      "top": [
+        "purple-scarf@0.416",
+        "white-sneaker@0.592",
+        "orange-backpack@0.723"
+      ]
+    }
+  ]
+}

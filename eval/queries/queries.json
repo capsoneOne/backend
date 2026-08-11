@@ -1,0 +1,23 @@
+{
+    "set": "provisional-synthetic-v1",
+    "note": "PROVISIONAL. Catalog images with synthetic corruptions applied, NOT phone photos. See eval/README.md before reporting any number from this set.",
+    "generatedBy": "make-provisional-set.py",
+    "queries": [
+        {"id": "red-boot-angle", "image": "red-boot-angle.jpg", "kind": "angle", "relevantSlugs": ["red-leather-boot"]},
+        {"id": "red-boot-clutter", "image": "red-boot-clutter.jpg", "kind": "clutter", "relevantSlugs": ["red-leather-boot"]},
+        {"id": "blue-jacket-angle", "image": "blue-jacket-angle.jpg", "kind": "angle", "relevantSlugs": ["blue-denim-jacket"]},
+        {"id": "blue-jacket-clutter", "image": "blue-jacket-clutter.jpg", "kind": "clutter", "relevantSlugs": ["blue-denim-jacket"]},
+        {"id": "green-mug-angle", "image": "green-mug-angle.jpg", "kind": "angle", "relevantSlugs": ["green-ceramic-mug"]},
+        {"id": "green-mug-clutter", "image": "green-mug-clutter.jpg", "kind": "clutter", "relevantSlugs": ["green-ceramic-mug"]},
+        {"id": "yellow-raincoat-angle", "image": "yellow-raincoat-angle.jpg", "kind": "angle", "relevantSlugs": ["yellow-rain-coat"]},
+        {"id": "yellow-raincoat-clutter", "image": "yellow-raincoat-clutter.jpg", "kind": "clutter", "relevantSlugs": ["yellow-rain-coat"]},
+        {"id": "black-sunglasses-angle", "image": "black-sunglasses-angle.jpg", "kind": "angle", "relevantSlugs": ["black-sunglasses"]},
+        {"id": "black-sunglasses-clutter", "image": "black-sunglasses-clutter.jpg", "kind": "clutter", "relevantSlugs": ["black-sunglasses"]},
+        {"id": "white-sneaker-angle", "image": "white-sneaker-angle.jpg", "kind": "angle", "relevantSlugs": ["white-sneaker"]},
+        {"id": "white-sneaker-clutter", "image": "white-sneaker-clutter.jpg", "kind": "clutter", "relevantSlugs": ["white-sneaker"]},
+        {"id": "orange-backpack-angle", "image": "orange-backpack-angle.jpg", "kind": "angle", "relevantSlugs": ["orange-backpack"]},
+        {"id": "orange-backpack-clutter", "image": "orange-backpack-clutter.jpg", "kind": "clutter", "relevantSlugs": ["orange-backpack"]},
+        {"id": "purple-scarf-angle", "image": "purple-scarf-angle.jpg", "kind": "angle", "relevantSlugs": ["purple-scarf"]},
+        {"id": "purple-scarf-clutter", "image": "purple-scarf-clutter.jpg", "kind": "clutter", "relevantSlugs": ["purple-scarf"]}
+    ]
+}

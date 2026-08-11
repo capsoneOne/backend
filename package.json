@@ -22,6 +22,9 @@
     "start:storefront": "npm run start -w storefront",
     "start:worker": "npm run start:worker -w server",
 
+    "seed": "npm run seed -w server",
+    "eval": "node eval/run.mjs",
+
     "lint": "npm run lint -w storefront",
     "check-types": "npm run check-types -w storefront",
     "test": "npm run test:storefront && npm run test:embedder",
