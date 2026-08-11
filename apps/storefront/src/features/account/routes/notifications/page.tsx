@@ -56,7 +56,7 @@ export default async function NotificationsPage() {
                 {orders.length === 0 ? (
                     <Card className="gap-0 overflow-hidden py-0">
                         <CardContent className="grid p-0 md:grid-cols-2">
-                            <div className="relative flex min-h-72 items-center justify-center bg-secondary/45 p-7 sm:p-9">
+                            <div className="flex min-h-72 items-center justify-center bg-secondary/45 p-7 sm:p-9">
                                 <Image
                                     src="/storyset/new-message-cuate.svg"
                                     alt={t('notificationsIllustrationAlt')}
@@ -65,16 +65,6 @@ export default async function NotificationsPage() {
                                     priority
                                     className="max-h-80 w-full object-contain"
                                 />
-                                <p className="absolute inset-x-0 bottom-3 text-center text-[0.6875rem] text-muted-foreground">
-                                    <a
-                                        href="https://storyset.com/illustration/new-message/cuate"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="underline decoration-border underline-offset-4 transition-colors hover:text-foreground"
-                                    >
-                                        {t('notificationsIllustrationCredit')}
-                                    </a>
-                                </p>
                             </div>
                             <div className="flex flex-col justify-center px-7 py-10 sm:p-10">
                                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">

@@ -23,7 +23,7 @@ export function ProductPurchasePanel({product, searchParams, currencyCode}: Prod
             <div className="lg:sticky lg:top-20 lg:self-start">
                 <ProductImageCarousel images={images} />
             </div>
-            <div className="rounded-2xl border border-border/70 bg-card/70 p-5 shadow-[var(--shadow-e1)] backdrop-blur-sm md:p-7">
+            <div className="rounded-xl border border-border bg-card p-6 md:p-8">
                 <ProductInfo
                     product={product}
                     searchParams={searchParams}

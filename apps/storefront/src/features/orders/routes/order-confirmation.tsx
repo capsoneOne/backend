@@ -10,7 +10,7 @@ import {getRouteLocale} from '@/platform/i18n/server';
 import {getTranslations} from 'next-intl/server';
 import {query} from '@/platform/vendure/api';
 import {graphql} from '@/platform/vendure/graphql';
-import {StorefrontPageShell} from '@/components/catalogue-page';
+import {StorefrontPageHeader, StorefrontPageShell} from '@/components/catalogue-page';
 
 const GetOrderByCodeQuery = graphql(`
     query GetOrderByCode($code: String!) {
@@ -70,21 +70,26 @@ export async function OrderConfirmation({paramsPromise}: OrderConfirmationProps)
     return (
         <StorefrontPageShell>
             <div className="max-w-3xl mx-auto">
-                <div className="text-center mb-10">
-                    <div className="flex justify-center mb-6">
-                        <div className="rounded-full bg-primary p-4">
-                            <Check className="h-10 w-10 text-primary-foreground" strokeWidth={3} />
-                        </div>
-                    </div>
-                    <h1 className="text-3xl font-bold mb-2">{t('orderConfirmed')}</h1>
-                    <p className="text-muted-foreground">
-                        {t('thankYou')}{' '}
-                        <span className="font-semibold text-foreground">{order.code}</span>
-                    </p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        {t('emailConfirmation')}
-                    </p>
-                </div>
+                <StorefrontPageHeader
+                    variant="compact"
+                    title={(
+                        <span className="flex items-center gap-3">
+                            <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                                <Check className="size-5" strokeWidth={3} aria-hidden="true" />
+                            </span>
+                            {t('orderConfirmed')}
+                        </span>
+                    )}
+                    description={(
+                        <>
+                            <p>
+                                {t('thankYou')}{' '}
+                                <span className="font-semibold text-foreground">{order.code}</span>
+                            </p>
+                            <p className="mt-1 text-sm">{t('emailConfirmation')}</p>
+                        </>
+                    )}
+                />
 
                 <Card className="mb-6">
                     <CardHeader>

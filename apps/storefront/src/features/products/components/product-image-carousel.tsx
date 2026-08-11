@@ -22,7 +22,7 @@ export function ProductImageCarousel({ images }: ProductImageCarouselProps) {
 
     if (!images || images.length === 0) {
         return (
-            <div className="aspect-square bg-muted rounded-2xl flex items-center justify-center">
+            <div className="flex aspect-square items-center justify-center rounded-xl border border-border bg-muted">
                 <span className="text-muted-foreground">{t('noImagesAvailable')}</span>
             </div>
         );
@@ -39,7 +39,7 @@ export function ProductImageCarousel({ images }: ProductImageCarouselProps) {
     return (
         <div className="space-y-4">
             {/* Main Image */}
-            <div className="group relative aspect-square cursor-crosshair overflow-hidden rounded-2xl bg-muted shadow-[var(--shadow-e2)]">
+            <div className="group relative aspect-square cursor-crosshair overflow-hidden rounded-xl border border-border bg-muted">
                 <Image
                     src={images[currentIndex].source}
                     alt={t('productImage', {number: currentIndex + 1})}

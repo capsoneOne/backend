@@ -176,15 +176,15 @@ export function VisualSearchClient({initialProduct}: {initialProduct?: InitialPr
                             <p className="text-lg font-medium">{t('yourImage')}</p>
                             <p className="max-w-xs font-light text-muted-foreground">{t('previewHint')}</p>
                             <div className="flex flex-wrap justify-center gap-2 pt-1 sm:justify-start">
-                                <Button type="button" variant="default" size="sm" onClick={() => setCropping(true)} className="min-h-11 rounded-full">
+                                <Button type="button" variant="default" size="sm" onClick={() => setCropping(true)} className="min-h-11 rounded-lg">
                                     <Crop className="mr-2 size-4"/>
                                     {t('cropImage')}
                                 </Button>
-                                <Button type="button" variant="outline" size="sm" onClick={openPicker} className="min-h-11 rounded-full">
+                                <Button type="button" variant="outline" size="sm" onClick={openPicker} className="min-h-11 rounded-lg">
                                     <ImageUp className="mr-2 size-4"/>
                                     {t('replaceImage')}
                                 </Button>
-                                <Button type="button" variant="ghost" size="sm" onClick={reset} className="min-h-11 rounded-full">
+                                <Button type="button" variant="ghost" size="sm" onClick={reset} className="min-h-11 rounded-lg">
                                     <RotateCcw className="mr-2 size-4"/>
                                     {t('startOver')}
                                 </Button>
@@ -202,7 +202,7 @@ export function VisualSearchClient({initialProduct}: {initialProduct?: InitialPr
                             <p className="text-sm font-medium uppercase tracking-[0.16em] text-primary">{t('similarTo')}</p>
                             <p className="text-xl font-semibold">{initialProduct.name}</p>
                             <p className="font-light text-muted-foreground">{t('similarProductHint')}</p>
-                            <Button type="button" variant="outline" size="sm" onClick={openPicker} className="min-h-11 rounded-full">
+                            <Button type="button" variant="outline" size="sm" onClick={openPicker} className="min-h-11 rounded-lg">
                                 <ImageUp className="mr-2 size-4" />
                                 {t('searchWithOwnImage')}
                             </Button>
@@ -227,7 +227,7 @@ export function VisualSearchClient({initialProduct}: {initialProduct?: InitialPr
                             type="button"
                             size="lg"
                             onClick={openPicker}
-                            className="mt-7 h-12 rounded-full px-7 text-base elevate-2"
+                            className="mt-7 h-12 rounded-lg px-7 text-base elevate-2"
                         >
                             {t('chooseImage')}
                         </Button>
@@ -263,7 +263,7 @@ export function VisualSearchClient({initialProduct}: {initialProduct?: InitialPr
                         <p className="text-sm text-destructive">
                             {t(ERROR_KEYS[state.code], {max: VISUAL_SEARCH_MAX_FILE_MB})}
                         </p>
-                        <Button type="button" variant="outline" size="sm" onClick={openPicker} className="min-h-11 rounded-full">
+                        <Button type="button" variant="outline" size="sm" onClick={openPicker} className="min-h-11 rounded-lg">
                             {t('tryAnotherImage')}
                         </Button>
                     </div>
@@ -341,10 +341,10 @@ function Results({
                 <p className="font-medium">{t('noResults')}</p>
                 <p className="text-sm text-muted-foreground">{t('noResultsHint')}</p>
                 <div className="mt-1 flex flex-wrap justify-center gap-3">
-                    <Button type="button" variant="outline" size="lg" onClick={onRetry} className="min-h-11 rounded-full">
+                    <Button type="button" variant="outline" size="lg" onClick={onRetry} className="min-h-11 rounded-lg">
                         {t('tryAnotherImage')}
                     </Button>
-                    <Button nativeButton={false} render={<Link href="/search" />} size="lg" className="min-h-11 rounded-full">
+                    <Button nativeButton={false} render={<Link href="/search" />} size="lg" className="min-h-11 rounded-lg">
                         {t('browseCatalogue')}
                     </Button>
                 </div>
@@ -429,10 +429,10 @@ function Results({
                     <p className="font-medium">{t('noFilteredResults')}</p>
                     <p className="text-sm text-muted-foreground">{t('noFilteredResultsHint')}</p>
                     <div className="mt-1 flex flex-wrap justify-center gap-3">
-                        <Button type="button" variant="outline" size="lg" onClick={resetFilters} className="min-h-11 rounded-full">
+                        <Button type="button" variant="outline" size="lg" onClick={resetFilters} className="min-h-11 rounded-lg">
                             {t('resetFilters')}
                         </Button>
-                        <Button type="button" size="lg" onClick={onRetry} className="min-h-11 rounded-full">
+                        <Button type="button" size="lg" onClick={onRetry} className="min-h-11 rounded-lg">
                             {t('tryAnotherImage')}
                         </Button>
                     </div>

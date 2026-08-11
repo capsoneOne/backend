@@ -16,6 +16,7 @@ import {Brand} from '@/site/brand';
 import {getTranslations} from 'next-intl/server';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {PrimaryNavLink} from '@/site/navigation/primary-nav-link';
+import {ThemeSwitcher} from '@/site/navigation/navbar/theme-switcher';
 
 /**
  * Three-zone header: identity, a centred search field, and actions.
@@ -37,7 +38,7 @@ export async function Navbar() {
                         </Suspense>
                         <NavigationLink
                             href="/"
-                            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
+                            className="nav-brand inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
                         >
                             <Brand className="max-w-[11rem] md:max-w-none" />
                         </NavigationLink>
@@ -82,6 +83,10 @@ export async function Navbar() {
                             <Suspense fallback={<NavbarUserSkeleton />}>
                                 <NavbarUser/>
                             </Suspense>
+                        </span>
+                        <span className="mx-1 hidden h-5 w-px bg-border sm:block" />
+                        <span className="hidden md:inline-flex">
+                            <ThemeSwitcher />
                         </span>
                         <span className="inline-flex">
                             <Suspense><LanguagePicker /></Suspense>

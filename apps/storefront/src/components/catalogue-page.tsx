@@ -64,10 +64,14 @@ export function CataloguePageHeader({
     variant = 'display',
 }: CataloguePageHeaderProps) {
     return (
-        <header className="relative mb-8 overflow-hidden rounded-2xl border border-border/70 bg-card/70 px-5 py-7 shadow-[var(--shadow-e1)] backdrop-blur-sm md:mb-10 md:px-8 md:py-9">
-            <div aria-hidden="true" className="absolute -right-16 -top-20 size-56 rounded-full bg-primary/8 blur-3xl" />
+        <header className={cn(
+            'rounded-xl border border-border bg-secondary/20 px-6',
+            variant === 'display'
+                ? 'mb-8 py-8 md:mb-10 md:px-9 md:py-10'
+                : 'mb-6 py-6 md:mb-8 md:px-8 md:py-7',
+        )}>
             {breadcrumbs ? <div className="mb-7">{breadcrumbs}</div> : null}
-            <div className="relative flex flex-col justify-between gap-6 md:flex-row md:items-end">
+            <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
                 <div className="max-w-2xl">
                     {eyebrow ? (
                         <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">{eyebrow}</p>
@@ -95,7 +99,12 @@ export const StorefrontPageHeader = CataloguePageHeader;
 
 export function CataloguePageHeaderSkeleton({variant = 'display'}: {variant?: 'display' | 'compact'}) {
     return (
-        <div className="mb-10 border-b border-border pb-10">
+        <div className={cn(
+            'rounded-xl border border-border bg-secondary/20 px-6',
+            variant === 'display'
+                ? 'mb-10 py-8 md:px-9 md:py-10'
+                : 'mb-8 py-6 md:px-8 md:py-7',
+        )}>
             {variant === 'display' ? <div className="h-3 w-24 animate-pulse rounded bg-muted" /> : null}
             <div className={cn(
                 'w-72 animate-pulse rounded-lg bg-muted',

@@ -5,6 +5,11 @@ const withNextIntl = createNextIntlPlugin('./src/site/i18n/request.ts');
 
 const nextConfig: NextConfig = {
     cacheComponents: true,
+    experimental: {
+        // The locale is the root dynamic segment, so unmatched URLs bypass its
+        // not-found boundary unless Next renders a global 404 document.
+        globalNotFound: true,
+    },
     async redirects() {
         return [
             {

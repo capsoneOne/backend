@@ -45,21 +45,36 @@ export default function GlobalErrorBoundary({
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    background: '#fafafa',
-                    color: '#101010',
+                    background: '#f8faff',
+                    color: '#101828',
                     fontFamily: 'Ubuntu, system-ui, -apple-system, sans-serif',
                     padding: '2rem',
+                    boxSizing: 'border-box',
                 }}
             >
-                <main style={{maxWidth: '28rem', textAlign: 'center'}}>
-                    <h1 style={{fontSize: '1.75rem', fontWeight: 700, margin: 0}}>
+                <main
+                    style={{
+                        width: '100%',
+                        maxWidth: '36rem',
+                        padding: '3rem',
+                        border: '1px solid #d8e1ef',
+                        borderRadius: '1rem',
+                        background: 'rgba(255, 255, 255, 0.78)',
+                        textAlign: 'center',
+                        boxSizing: 'border-box',
+                    }}
+                >
+                    <p style={{margin: 0, color: '#0866d8', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase'}}>
+                        StyleMatch
+                    </p>
+                    <h1 style={{fontSize: '2.25rem', lineHeight: 1.15, fontWeight: 700, margin: '0.75rem 0 0'}}>
                         {copy.title}
                     </h1>
-                    <p style={{marginTop: '0.75rem', lineHeight: 1.6, color: '#555'}}>
+                    <p style={{marginTop: '1rem', lineHeight: 1.6, color: '#667085'}}>
                         {copy.message}
                     </p>
                     {error.digest ? (
-                        <p style={{marginTop: '1.25rem', fontSize: '0.75rem', color: '#888'}}>
+                        <p style={{marginTop: '1.25rem', fontSize: '0.75rem', color: '#7c8799'}}>
                             {copy.reference}: {error.digest}
                         </p>
                     ) : null}
@@ -68,7 +83,7 @@ export default function GlobalErrorBoundary({
                         style={{
                             marginTop: '1.75rem',
                             padding: '0.75rem 1.75rem',
-                            borderRadius: '999px',
+                            borderRadius: '0.5rem',
                             border: 'none',
                             background: '#0866d8',
                             color: '#fff',

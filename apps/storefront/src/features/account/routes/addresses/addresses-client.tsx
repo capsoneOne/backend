@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -22,7 +23,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Plus, MoreVertical, Home, CreditCard, Edit2, Trash2, MapPin } from 'lucide-react';
+import { Plus, MoreVertical, Home, CreditCard, Edit2, Trash2 } from 'lucide-react';
 import { AddressForm } from './address-form';
 import {AccountEmptyState} from '@/features/account/components/account-empty-state';
 import { createAddress, updateAddress, deleteAddress, setDefaultShippingAddress, setDefaultBillingAddress } from './actions';
@@ -146,16 +147,26 @@ export function AddressesClient({ addresses, countries }: AddressesClientProps) 
 
     return (
         <>
-            <div className="flex justify-end">
-                <Button onClick={handleAddNew} className="min-h-11 px-5">
-                    <Plus className="mr-2 h-4 w-4" />
-                    {t('addNewAddress')}
-                </Button>
-            </div>
+            {addresses.length > 0 ? (
+                <div className="flex justify-end">
+                    <Button onClick={handleAddNew} className="min-h-11 px-5">
+                        <Plus className="mr-2 h-4 w-4" />
+                        {t('addNewAddress')}
+                    </Button>
+                </div>
+            ) : null}
 
             {addresses.length === 0 ? (
                 <AccountEmptyState
-                    icon={MapPin}
+                    media={(
+                        <Image
+                            src="/storyset/current-location-pana.svg"
+                            alt={t('noAddressesSaved')}
+                            width={500}
+                            height={500}
+                            className="max-h-64 w-full max-w-xs object-contain"
+                        />
+                    )}
                     title={t('noAddressesSaved')}
                     description={t('noAddressesDescription')}
                     action={(

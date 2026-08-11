@@ -9,7 +9,7 @@ export function StorefrontSectionLink({href, children}: {href: string; children:
     return (
         <Link
             href={href}
-            className="group inline-flex h-11 items-center gap-2 rounded-full border border-border bg-card px-5 text-sm font-medium shadow-sm transition-[color,border-color,box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:border-primary/30 hover:text-primary hover:shadow-md active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="group inline-flex h-11 items-center gap-2 rounded-lg border border-border bg-card px-5 text-sm font-medium shadow-sm transition-[color,border-color,box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:border-primary/30 hover:text-primary hover:shadow-md active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
             {children}
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />

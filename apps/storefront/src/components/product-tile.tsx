@@ -54,7 +54,7 @@ export function ProductTile({
         <Link
             href={href}
             className={cn(
-                'group interactive-lift flex h-full flex-col rounded-2xl bg-card/40 p-2 outline-none',
+                'group interactive-lift animate-surface-enter flex h-full flex-col rounded-2xl bg-card/40 p-2 outline-none',
                 'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background',
                 className,
             )}

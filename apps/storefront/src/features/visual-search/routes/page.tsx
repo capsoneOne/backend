@@ -8,6 +8,7 @@ import {SITE_NAME, noIndexRobots} from '@/config/metadata';
 import {VisualSearchClient} from '@/features/visual-search/components/visual-search-client';
 import {GetVisualSearchSourceProductQuery} from '@/features/visual-search/graphql';
 import {query} from '@/platform/vendure/api';
+import {StorefrontHero, StorefrontHeroHeading} from '@/components/storefront-hero';
 
 export async function generateMetadata(): Promise<Metadata> {
     const locale = await getRouteLocale();
@@ -48,63 +49,49 @@ async function VisualSearchPageContent({
         ?? source?.featuredAsset;
 
     return (
-        <div className="mt-[4.5rem]">
-            <section className="border-b border-border bg-secondary/20">
-                <div className="container mx-auto grid items-center gap-10 px-4 py-12 md:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
-                    <div className="relative z-10 max-w-2xl">
-                        <p className="animate-fade-up text-xs font-bold uppercase tracking-[0.18em] text-primary">
-                            {t('eyebrow')}
-                        </p>
-                        <h1 className="animate-fade-up mt-4 text-balance text-4xl font-bold leading-[1.06] md:text-5xl [animation-delay:60ms]">
+        <div>
+            <StorefrontHero
+                artwork={(
+                    <Image
+                        src="/storyset/online-shopping-cuate.svg"
+                        alt={t('illustrationAlt')}
+                        width={500}
+                        height={500}
+                        priority
+                        className="h-auto w-full object-contain"
+                    />
+                )}
+            >
+                <StorefrontHeroHeading
+                    eyebrow={t('eyebrow')}
+                    title={(
+                        <>
                             {t('pageTitle')}{' '}
                             <span className="text-primary">{t('titleHighlight')}</span>
-                        </h1>
-                        <p className="animate-fade-up mt-6 max-w-xl text-pretty text-lg font-light leading-relaxed text-muted-foreground md:text-xl [animation-delay:120ms]">
-                            {t('pageSubtitle')}
-                        </p>
+                        </>
+                    )}
+                    description={t('pageSubtitle')}
+                />
 
-                        <div className="animate-fade-up mt-7 flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted-foreground [animation-delay:180ms]">
-                            {[t('benefitOne'), t('benefitTwo'), t('benefitThree')].map(benefit => (
-                                <span key={benefit} className="flex items-center gap-2">
-                                    <span className="flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                                        <Check className="size-3" aria-hidden="true" />
-                                    </span>
-                                    {benefit}
-                                </span>
-                            ))}
-                        </div>
-
-                        <a
-                            href="#visual-search-upload"
-                            className="animate-fade-up mt-8 inline-flex min-h-12 items-center rounded-lg bg-primary px-6 font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/30 [animation-delay:240ms]"
-                        >
-                            {t('heroCta')}
-                            <ArrowDown className="ml-2 size-4" aria-hidden="true" />
-                        </a>
-                    </div>
-
-                    <div className="animate-fade-up relative mx-auto w-full max-w-[29rem] rounded-xl border border-border bg-background/70 p-4 [animation-delay:100ms]">
-                        <Image
-                            src="/storyset/online-shopping-cuate.svg"
-                            alt={t('illustrationAlt')}
-                            width={500}
-                            height={500}
-                            priority
-                            className="h-auto w-full object-contain"
-                        />
-                        <p className="relative mt-1 text-center text-[0.6875rem] text-muted-foreground">
-                            <a
-                                href="https://storyset.com/illustration/online-shopping/cuate"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="underline decoration-border underline-offset-4 transition-colors hover:text-foreground"
-                            >
-                                {t('illustrationCredit')}
-                            </a>
-                        </p>
-                    </div>
+                <div className="animate-fade-up mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted-foreground [animation-delay:180ms]">
+                    {[t('benefitOne'), t('benefitTwo'), t('benefitThree')].map(benefit => (
+                        <span key={benefit} className="flex items-center gap-2">
+                            <span className="flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                                <Check className="size-3" aria-hidden="true" />
+                            </span>
+                            {benefit}
+                        </span>
+                    ))}
                 </div>
-            </section>
+
+                <a
+                    href="#visual-search-upload"
+                    className="animate-fade-up mt-9 inline-flex min-h-12 items-center rounded-lg bg-primary px-6 font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/30 [animation-delay:240ms]"
+                >
+                    {t('heroCta')}
+                    <ArrowDown className="ml-2 size-4" aria-hidden="true" />
+                </a>
+            </StorefrontHero>
 
             <section className="container mx-auto px-4 py-14 md:py-16">
                 <div className="reveal-section mx-auto mb-10 max-w-2xl text-center">
@@ -153,7 +140,7 @@ function VisualSearchPageSkeleton() {
     return (
         <div className="mt-[4.5rem]">
             <div className="border-b border-border bg-secondary/50">
-                <div className="container mx-auto grid min-h-[37rem] items-center gap-8 px-4 py-14 lg:grid-cols-2">
+                <div className="container mx-auto grid items-center gap-12 px-4 py-12 md:py-20 lg:min-h-[46rem] lg:grid-cols-2">
                     <div className="space-y-5">
                         <div className="h-8 w-36 animate-pulse rounded-full bg-muted" />
                         <div className="h-28 w-full max-w-xl animate-pulse rounded-xl bg-muted" />

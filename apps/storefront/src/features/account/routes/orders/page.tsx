@@ -1,4 +1,5 @@
 import type {Metadata} from 'next';
+import Image from 'next/image';
 import {query} from '@/platform/vendure/api';
 import {GetCustomerOrdersQuery} from '@/features/account/graphql';
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from '@/components/ui/table';
@@ -11,7 +12,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
-import {ArrowRightIcon, PackageOpen} from "lucide-react";
+import {ArrowRightIcon} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {Price} from '@/features/pricing/price';
 import {OrderStatusBadge} from '@/features/orders/order-status-badge';
@@ -70,7 +71,15 @@ export default async function OrdersPage(props: PageProps<'/[locale]/account/ord
 
             {orders.length === 0 ? (
                 <AccountEmptyState
-                    icon={PackageOpen}
+                    media={(
+                        <Image
+                            src="/storyset/checking-boxes-cuate.svg"
+                            alt={t('noOrders')}
+                            width={500}
+                            height={500}
+                            className="max-h-64 w-full max-w-xs object-contain"
+                        />
+                    )}
                     title={t('noOrders')}
                     description={t('noOrdersDescription')}
                     action={(

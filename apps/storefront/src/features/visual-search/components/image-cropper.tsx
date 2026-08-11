@@ -145,7 +145,7 @@ export function ImageCropper({
             <p className="text-center text-sm font-light text-muted-foreground">{t('cropHint')}</p>
 
             <div className="flex flex-wrap justify-center gap-2">
-                <Button type="button" onClick={() => onApply(rect)} className="rounded-full px-6">
+                <Button type="button" onClick={() => onApply(rect)} className="rounded-lg px-6">
                     <Check className="mr-2 size-4" />
                     {t('cropApply')}
                 </Button>
@@ -153,12 +153,12 @@ export function ImageCropper({
                     type="button"
                     variant="outline"
                     onClick={() => setRect({x: 0.1, y: 0.1, width: 0.8, height: 0.8})}
-                    className="rounded-full"
+                    className="rounded-lg"
                 >
                     <RotateCcw className="mr-2 size-4" />
                     {t('cropReset')}
                 </Button>
-                <Button type="button" variant="ghost" onClick={onCancel} className="rounded-full">
+                <Button type="button" variant="ghost" onClick={onCancel} className="rounded-lg">
                     {t('cropCancel')}
                 </Button>
             </div>

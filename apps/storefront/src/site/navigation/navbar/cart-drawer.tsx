@@ -81,15 +81,19 @@ export function CartDrawer({
 
                 {lines.length === 0 ? (
                     <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
-                        <div className="flex size-14 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-                            <ShoppingCart className="size-6" />
-                        </div>
-                        <p className="mt-2 text-lg font-medium">{t('empty')}</p>
+                        <Image
+                            src="/storyset/shopping-bag-cuate.svg"
+                            alt={t('illustrationAlt')}
+                            width={500}
+                            height={500}
+                            className="max-h-64 w-full max-w-72 object-contain"
+                        />
+                        <p className="text-lg font-medium">{t('empty')}</p>
                         <p className="font-light text-muted-foreground">{t('emptyMessage')}</p>
                         <Button
                             render={<Link href="/search" onClick={() => setOpen(false)} />}
                             nativeButton={false}
-                            className="mt-3 rounded-full px-6"
+                            className="mt-3 rounded-lg px-6"
                         >
                             {t('continueShopping')}
                         </Button>
@@ -148,7 +152,7 @@ export function CartDrawer({
                                     render={<Link href="/checkout" onClick={() => setOpen(false)} />}
                                     nativeButton={false}
                                     size="lg"
-                                    className="w-full rounded-full"
+                                    className="w-full rounded-lg"
                                 >
                                     {t('proceedToCheckout')}
                                     <ArrowRight className="ml-2 size-4" />
@@ -158,7 +162,7 @@ export function CartDrawer({
                                     nativeButton={false}
                                     variant="outline"
                                     size="lg"
-                                    className="w-full rounded-full"
+                                    className="w-full rounded-lg"
                                 >
                                     {t('title')}
                                 </Button>

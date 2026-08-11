@@ -130,7 +130,7 @@ export function VisualSearchQuickUpload({
                         <p className="mt-1 text-xs font-light text-muted-foreground">
                             {t('dropzoneHint', {max: VISUAL_SEARCH_MAX_FILE_MB})}
                         </p>
-                        <Button type="button" size="sm" onClick={chooseFile} className="mt-5 min-h-11 rounded-xl px-5">
+                        <Button type="button" size="sm" onClick={chooseFile} className="mt-5 min-h-11 rounded-lg px-5">
                             {t('chooseImage')}
                         </Button>
                     </div>
