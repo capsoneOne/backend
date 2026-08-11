@@ -6,6 +6,7 @@ import {
     VendureConfig,
 } from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
+import { json } from 'express';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
@@ -31,6 +32,23 @@ export const config: VendureConfig = {
         adminApiPath: 'admin-api',
         shopApiPath: 'shop-api',
         trustProxy: IS_DEV ? false : 1,
+        // Visual search sends the query image inline as base64, so a Shop API request
+        // is roughly 1.37x the photo's size. The default JSON body limit rejects
+        // anything much over a phone thumbnail, and it fails as an opaque 500 rather
+        // than a 413 — no message, nothing in the response to act on.
+        //
+        // This is the third of three ceilings the same upload has to clear; the other
+        // two are the browser check in features/visual-search/limits.ts and
+        // experimental.serverActions.bodySizeLimit in the storefront's next.config.ts.
+        // Keep this the most generous of the three so the browser always rejects first,
+        // with a message we control.
+        middleware: [
+            {
+                handler: json({limit: '12mb'}),
+                route: '/shop-api',
+                beforeListen: true,
+            },
+        ],
         // The following options are useful in development mode,
         // but are best turned off for production for security
         // reasons.

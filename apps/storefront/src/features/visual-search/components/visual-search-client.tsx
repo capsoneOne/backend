@@ -1,52 +1,63 @@
 'use client';
 
-import {useCallback, useRef, useState, useTransition} from 'react';
+import {useCallback, useEffect, useRef, useState, useTransition} from 'react';
 import Image from 'next/image';
-import {useTranslations} from 'next-intl';
+import {useLocale, useTranslations} from 'next-intl';
 import {Link} from '@/platform/i18n/navigation';
-import {readFragment, type FragmentOf} from '@/platform/vendure/graphql';
 import {Price} from '@/features/pricing/price';
-import {searchByImageAction, type VisualSearchState} from '../actions';
-import {VisualSearchCardFragment} from '../graphql';
+import {VISUAL_SEARCH_MAX_FILE_BYTES, VISUAL_SEARCH_MAX_FILE_MB} from '../limits';
+import type {VisualSearchErrorCode, VisualSearchHit, VisualSearchState} from '../types';
+import {searchByImageUpload} from '../upload';
 
-/**
- * Upload is capped client-side. A phone photo travels to the Shop API as base64
- * (~33% overhead) because the storefront transport is a plain JSON POST with no
- * multipart support, so an unbounded file would exceed the server's body limit.
- * The cap rejects loudly rather than failing with an opaque 413.
- */
-const MAX_BYTES = 4 * 1024 * 1024;
+/** Error codes are stable; the copy for them is translatable. */
+const ERROR_KEYS: Record<VisualSearchErrorCode, string> = {
+    NOT_IMAGE: 'errorNotImage',
+    TOO_LARGE: 'errorTooLarge',
+    READ_FAILED: 'errorRead',
+    EMPTY: 'errorEmpty',
+    UNAVAILABLE: 'errorUnavailable',
+    FAILED: 'errorFailed',
+};
 
 export function VisualSearchClient() {
     const t = useTranslations('VisualSearch');
+    const locale = useLocale();
     const [preview, setPreview] = useState<string | null>(null);
     const [state, setState] = useState<VisualSearchState>({status: 'idle'});
     const [pending, startTransition] = useTransition();
     const [dragging, setDragging] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
+    const previewRef = useRef<string | null>(null);
+
+    // Revoke the previous object URL whenever it is replaced, and on unmount. Without
+    // this every upload leaks the whole image for the lifetime of the page.
+    useEffect(() => () => {
+        if (previewRef.current) URL.revokeObjectURL(previewRef.current);
+    }, []);
 
     const handleFile = useCallback(
         (file: File) => {
             if (!file.type.startsWith('image/')) {
-                setState({status: 'error', message: t('errorNotImage')});
+                setState({status: 'error', code: 'NOT_IMAGE'});
                 return;
             }
-            if (file.size > MAX_BYTES) {
-                setState({status: 'error', message: t('errorTooLarge')});
+            if (file.size > VISUAL_SEARCH_MAX_FILE_BYTES) {
+                setState({status: 'error', code: 'TOO_LARGE'});
                 return;
             }
-            const reader = new FileReader();
-            reader.onload = () => {
-                const dataUrl = reader.result as string;
-                setPreview(dataUrl);
-                setState({status: 'idle'});
-                // The resolver strips the data: prefix, so it is sent as-is.
-                startTransition(async () => setState(await searchByImageAction(dataUrl)));
-            };
-            reader.onerror = () => setState({status: 'error', message: t('errorRead')});
-            reader.readAsDataURL(file);
+
+            // An object URL, not a base64 data URL. FileReader would pull the whole
+            // photo into a string ~37% larger than the file just to render a preview;
+            // the bytes now go to the server untouched as multipart.
+            if (previewRef.current) URL.revokeObjectURL(previewRef.current);
+            const objectUrl = URL.createObjectURL(file);
+            previewRef.current = objectUrl;
+            setPreview(objectUrl);
+            setState({status: 'idle'});
+
+            startTransition(async () => setState(await searchByImageUpload(file, locale)));
         },
-        [t],
+        [locale],
     );
 
     return (
@@ -87,7 +98,9 @@ export function VisualSearchClient() {
                 ) : (
                     <>
                         <p className="font-medium">{t('dropzoneTitle')}</p>
-                        <p className="text-sm text-muted-foreground mt-1">{t('dropzoneHint')}</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                            {t('dropzoneHint', {max: VISUAL_SEARCH_MAX_FILE_MB})}
+                        </p>
                     </>
                 )}
             </div>
@@ -95,7 +108,9 @@ export function VisualSearchClient() {
             {pending && <p className="text-center text-muted-foreground">{t('searching')}</p>}
 
             {state.status === 'error' && (
-                <p className="text-center text-destructive">{t('errorPrefix')}: {state.message}</p>
+                <p className="text-center text-destructive">
+                    {t(ERROR_KEYS[state.code], {max: VISUAL_SEARCH_MAX_FILE_MB})}
+                </p>
             )}
 
             {state.status === 'ok' && !pending && (
@@ -118,7 +133,7 @@ function Results({
     matchLabel,
     modelLabel,
 }: {
-    items: ReadonlyArray<{distance: number; product: FragmentOf<typeof VisualSearchCardFragment>}>;
+    items: ReadonlyArray<VisualSearchHit>;
     revision: string;
     emptyLabel: string;
     matchLabel: string;
@@ -136,7 +151,7 @@ function Results({
             </p>
             <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
                 {items.map(item => {
-                    const product = readFragment(VisualSearchCardFragment, item.product);
+                    const product = item.product;
                     const variant = product.variants[0];
                     // Cosine distance is in [0, 2]; present it as a similarity percentage.
                     const similarity = Math.max(0, Math.round((1 - item.distance / 2) * 100));

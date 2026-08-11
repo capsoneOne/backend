@@ -7,6 +7,7 @@ import {
 } from '@vendure/core';
 
 import { adminApiExtensions, shopApiExtensions } from './api/api-extensions';
+import { VisualSearchController } from './api/visual-search.controller';
 import { VisualSearchAdminResolver, VisualSearchShopResolver } from './api/visual-search.resolver';
 import { VISUAL_SEARCH_PLUGIN_OPTIONS } from './constants';
 import { ProductAssetEmbedding } from './entities/product-asset-embedding.entity';
@@ -23,6 +24,9 @@ import { VisualSearchPluginOptions } from './types';
 @VendurePlugin({
     imports: [PluginCommonModule],
     entities: [ProductAssetEmbedding],
+    // Binary upload path. Lives outside the Shop API because multipart does not
+    // belong in a GraphQL JSON body — see the controller for the reasoning.
+    controllers: [VisualSearchController],
     providers: [
         EmbedderService,
         VisualSearchService,

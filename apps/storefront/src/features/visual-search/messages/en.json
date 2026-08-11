@@ -4,15 +4,17 @@
     "pageSubtitle": "Upload a photo and find products that look like it.",
     "metaDescription": "Find products by uploading a photo on {siteName}.",
     "dropzoneTitle": "Drop an image here, or click to choose one",
-    "dropzoneHint": "JPEG, PNG or WebP, up to 4 MB",
+    "dropzoneHint": "JPEG, PNG or WebP, up to {max} MB",
     "yourImage": "Your image",
     "searching": "Searching…",
     "noResults": "No similar products found.",
     "match": "match",
     "modelLabel": "Model revision",
-    "errorPrefix": "Search failed",
-    "errorNotImage": "That file is not an image.",
-    "errorTooLarge": "That image is larger than 4 MB. Please choose a smaller one.",
-    "errorRead": "Could not read that file."
+    "errorNotImage": "That file is not an image. Choose a JPEG, PNG or WebP.",
+    "errorTooLarge": "That image is over {max} MB. Choose a smaller one, or retake the photo at a lower resolution.",
+    "errorRead": "Could not read that file. Try choosing it again.",
+    "errorEmpty": "No image was received. Please try again.",
+    "errorUnavailable": "Image search is warming up. Try again in a few seconds.",
+    "errorFailed": "Something went wrong searching for that image. Please try again."
   }
 }

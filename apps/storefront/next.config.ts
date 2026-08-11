@@ -20,9 +20,14 @@ const nextConfig: NextConfig = {
             }
         ],
     },
-    experimental: {
-        rootParams: true
-    }
+    // No `serverActions.bodySizeLimit` override is needed. Visual search used to post
+    // the query image through a server action as base64, which blew Next's 1 MB
+    // default; it now uploads binary multipart to the route handler at
+    // src/app/api/visual-search, which streams and has no such cap.
+    //
+    // `experimental.rootParams` was also removed — Next reports it "is no longer
+    // needed, because next/root-params is available by default", and it was the sole
+    // cause of the TS2353 error that made `npm run check-types` fail.
 };
 
 export default withNextIntl(nextConfig);

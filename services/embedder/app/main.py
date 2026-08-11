@@ -17,7 +17,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from . import model as m
+from .model_registry import active as m
 
 logger = logging.getLogger("embedder")
 

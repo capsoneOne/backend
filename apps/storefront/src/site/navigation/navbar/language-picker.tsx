@@ -22,6 +22,13 @@ export function LanguagePicker() {
         router.replace(pathname, {locale: newLocale});
     };
 
+    // Nothing to switch between with a single configured locale, so render nothing —
+    // same rule CurrencyPicker applies to a single-currency channel. Add a locale to
+    // routing.ts and the control reappears on its own.
+    if (routing.locales.length <= 1) {
+        return null;
+    }
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger render={<Button variant="ghost" size="sm" className="gap-1.5" aria-label={t('switchLanguage')} />}>
