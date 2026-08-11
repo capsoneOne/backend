@@ -9,9 +9,10 @@ import {useTranslations} from 'next-intl';
 interface ProductCardProps {
     product: FragmentOf<typeof ProductCardFragment>;
     priority?: boolean;
+    badgeLabel?: string;
 }
 
-export function ProductCard({product: productProp, priority}: ProductCardProps) {
+export function ProductCard({product: productProp, priority, badgeLabel}: ProductCardProps) {
     const t = useTranslations('Product');
     const product = readFragment(ProductCardFragment, productProp);
     const minPrice =
@@ -41,11 +42,13 @@ export function ProductCard({product: productProp, priority}: ProductCardProps) 
                             currencyCode: product.currencyCode,
                         }}
                     />
-                    <QuickAddButton
-                        slug={product.slug}
-                        productName={product.productName}
-                        productHref={`/product/${product.slug}`}
-                    />
+                    {product.inStock ? (
+                        <QuickAddButton
+                            slug={product.slug}
+                            productName={product.productName}
+                            productHref={`/product/${product.slug}`}
+                        />
+                    ) : null}
                 </>
             }
             footer={
@@ -64,9 +67,9 @@ export function ProductCard({product: productProp, priority}: ProductCardProps) 
                     ) : null}
                 </p>
             }
-            badge={!product.inStock ? (
+            badge={!product.inStock || badgeLabel ? (
                 <span className="rounded-full bg-background/90 px-2.5 py-1 text-xs font-semibold text-foreground elevate-1 backdrop-blur-md">
-                    {t('soldOut')}
+                    {!product.inStock ? t('soldOut') : badgeLabel}
                 </span>
             ) : undefined}
         />

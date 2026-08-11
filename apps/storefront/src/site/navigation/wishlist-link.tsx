@@ -22,7 +22,7 @@ export function WishlistLink() {
     return (
         <Link
             href="/wishlist"
-            className="relative inline-flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="relative inline-flex size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             title={t('navLabel')}
         >
             <Heart className="size-5" />

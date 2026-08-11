@@ -3,7 +3,8 @@
     "loading": "Loading...",
     "sending": "Sending...",
     "sku": "SKU",
-    "siteDescription": "Shop the best products at {siteName}. Quality products, competitive prices, and fast delivery."
+    "skipToContent": "Skip to main content",
+    "siteDescription": "Shop clothing, shoes, and accessories at {siteName}, with curated categories, new arrivals, wishlists, and easy checkout."
   },
   "Errors": {
     "fieldsRequired": "All fields are required",

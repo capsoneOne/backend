@@ -14,7 +14,7 @@ export async function SearchLink() {
     return (
         <NavigationLink
             href="/search"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground lg:hidden"
+            className="inline-flex size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground lg:hidden"
             title={t('searchProducts')}
         >
             <Search className="size-5" />

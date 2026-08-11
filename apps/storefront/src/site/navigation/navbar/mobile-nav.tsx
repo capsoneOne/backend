@@ -49,7 +49,7 @@ export function MobileNav({collections}: MobileNavProps) {
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden" />}>
+            <SheetTrigger render={<Button variant="ghost" size="icon" className="size-11 md:hidden" />}>
                 <Menu className="size-5" />
                 <span className="sr-only">{t('openMenu')}</span>
             </SheetTrigger>
@@ -65,7 +65,7 @@ export function MobileNav({collections}: MobileNavProps) {
                         <Input
                             type="search"
                             placeholder={t('searchProducts')}
-                            className="pl-9 w-full"
+                            className="h-11 w-full pl-9"
                             value={searchValue}
                             onChange={(e) => setSearchValue(e.target.value)}
                         />
@@ -75,7 +75,7 @@ export function MobileNav({collections}: MobileNavProps) {
                     <Link
                         href="/visual-search"
                         onClick={handleLinkClick}
-                        className="flex items-center gap-3 text-sm font-medium hover:text-primary"
+                        className="flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-medium hover:bg-accent hover:text-primary"
                     >
                         <Camera className="size-4" />
                         {t('searchByImage')}
@@ -87,7 +87,7 @@ export function MobileNav({collections}: MobileNavProps) {
                             render={
                                 <Link
                                     href="/search"
-                                    className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors"
+                                    className="flex min-h-11 items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
                                 />
                             }
                             nativeButton={false}
@@ -111,7 +111,7 @@ export function MobileNav({collections}: MobileNavProps) {
                                             render={
                                                 <Link
                                                     href={`/collection/${collection.slug}`}
-                                                    className="flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold hover:bg-accent"
+                                                    className="flex min-h-11 items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold hover:bg-accent"
                                                 />
                                             }
                                             nativeButton={false}
@@ -127,7 +127,7 @@ export function MobileNav({collections}: MobileNavProps) {
                                                         render={
                                                             <Link
                                                                 href={`/collection/${child.slug}`}
-                                                                className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
+                                                                className="flex min-h-11 items-center rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
                                                             />
                                                         }
                                                         nativeButton={false}
@@ -154,7 +154,7 @@ export function MobileNav({collections}: MobileNavProps) {
                                 render={
                                     <Link
                                         href="/account/profile"
-                                        className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors"
+                                        className="flex min-h-11 items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
                                     />
                                 }
                                 nativeButton={false}
@@ -167,7 +167,7 @@ export function MobileNav({collections}: MobileNavProps) {
                                 render={
                                     <Link
                                         href="/account/orders"
-                                        className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors"
+                                        className="flex min-h-11 items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
                                     />
                                 }
                                 nativeButton={false}
@@ -180,7 +180,7 @@ export function MobileNav({collections}: MobileNavProps) {
                                 render={
                                     <Link
                                         href="/account/addresses"
-                                        className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors"
+                                        className="flex min-h-11 items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
                                     />
                                 }
                                 nativeButton={false}

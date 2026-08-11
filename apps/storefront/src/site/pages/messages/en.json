@@ -1,34 +1,34 @@
 {
   "Pages": {
     "about": {
-      "title": "About Visual Search",
-      "lede": "A storefront built around the way people actually remember things they want to buy — by sight, not by keyword.",
+      "title": "About StyleMatch",
+      "lede": "A complete clothing storefront for browsing everyday essentials, seasonal collections, shoes, and accessories in one place.",
       "sections": [
         {
-          "heading": "Why search by image",
-          "body": "Text search asks you to name what you want. That works for a book title and fails for a chair you photographed in a café, a jacket you saw on someone in the street, or a part you need to replace but cannot describe. Visual Search closes that gap: upload the photo, and the catalogue is ranked by how close each product looks to it."
+          "heading": "A complete fashion storefront",
+          "body": "StyleMatch brings clothing, shoes, and accessories into one multi-category catalogue. You can browse collections, filter by product details and price, save favourites, manage a basket, and move through checkout like any modern clothing shop."
         },
         {
-          "heading": "How it works",
-          "body": "Every product image in the catalogue is converted into a vector — a numeric fingerprint of what the image looks like. When you upload a photo, it goes through the same model, and we compare the two by cosine distance. The percentage on each result is that distance expressed as a similarity score, so you can judge for yourself how confident the match is."
+          "heading": "Built for everyday style",
+          "body": "The catalogue is organised around how people actually shop for clothes: clear categories, useful filters, new-arrival edits, sale collections, product options, and stock-aware purchasing."
         },
         {
           "heading": "The catalogue",
           "body": "Products are managed in Vendure, an open-source headless commerce platform. Stock levels, prices and shipping options shown on the storefront come straight from it, so what you see on a product page is what the warehouse and the checkout agree on."
         },
         {
-          "heading": "Privacy of your uploads",
-          "body": "Photos you upload are used to compute a single search vector and are not added to the catalogue, attached to your account, or used to train anything. See the privacy page for the full detail."
+          "heading": "More ways to discover",
+          "body": "Browse by category, search by product name, filter the catalogue, or use a photo when that is the easiest starting point. Each route leads back to the same products, prices, options, and availability."
         },
         {
           "heading": "This is a student project",
-          "body": "Visual Search is a capstone project, not a live retailer. Orders placed here are processed against a test payment handler, no money changes hands, and nothing ships. Treat any product, price or delivery estimate on the site as sample data."
+          "body": "StyleMatch is a capstone project, not a live retailer. Orders placed here are processed against a test payment handler, no money changes hands, and nothing ships. Treat any product, price or delivery estimate on the site as sample data."
         }
       ]
     },
     "contact": {
       "title": "Contact",
-      "lede": "Questions about an order, a product, or how the image search works.",
+      "lede": "Questions about an order, delivery, returns, sizing, or a product in the catalogue.",
       "sections": [
         {
           "heading": "Order and account questions",
@@ -39,8 +39,8 @@
           "body": "Sizing, materials and compatibility details live on each product page. If what you need is not there, ask before ordering rather than after — it is much easier to answer a question than to process a return."
         },
         {
-          "heading": "Reporting a bad match",
-          "body": "If image search returned something clearly wrong, that is useful to know. Note what you uploaded and what came back, including the model revision shown under the results, since match quality is tied to the specific model that produced the vectors."
+          "heading": "Sizing and fit questions",
+          "body": "Check the available options and product details before ordering. If a measurement, material, or fit note is missing, include the product name and variant when you get in touch."
         },
         {
           "heading": "Response times",
@@ -110,7 +110,7 @@
       "sections": [
         {
           "heading": "About this service",
-          "body": "Visual Search is a student capstone project operated for educational purposes. It is not a commercial retailer. Products, prices, stock levels and delivery estimates shown on the site are sample data, and orders placed here are processed against a test payment handler — no money is taken and no goods are dispatched."
+          "body": "StyleMatch is a student capstone project operated for educational purposes. It is not a commercial retailer. Products, prices, stock levels and delivery estimates shown on the site are sample data, and orders placed here are processed against a test payment handler — no money is taken and no goods are dispatched."
         },
         {
           "heading": "Accounts",
@@ -139,16 +139,16 @@
       "lede": "Answers to the questions that come up most often.",
       "faq": [
         {
-          "question": "How does search by image work?",
-          "answer": "Upload or drop a photo on the search by image page. We convert it into a vector using the same model that indexed every product image, then rank the catalogue by how close each product is to your photo. The percentage on each result is that closeness expressed as a similarity score."
+          "question": "How do I choose the right size?",
+          "answer": "Check the available size options and product details on each item before adding it to your basket. When measurements are listed, compare them with a similar piece you already own rather than relying only on the size name."
         },
         {
-          "question": "Why are my image results poor?",
-          "answer": "The whole photo is compared, background included, so a cluttered shot dilutes the match. Crop tightly around the product, shoot against a plain surface, and fill the frame. A photo taken straight on usually beats one at a sharp angle."
+          "question": "How can I browse different clothing categories?",
+          "answer": "Open Collections from the navigation to browse the full category structure, or use the category cards on the homepage. Each collection can include more specific subcategories to narrow the catalogue."
         },
         {
-          "question": "What image formats and sizes can I upload?",
-          "answer": "JPEG, PNG and WebP, up to 6 MB. Photos straight from a phone camera are usually well within that; if yours is rejected as too large, retake it at a lower resolution or export a smaller copy."
+          "question": "How does the wishlist work?",
+          "answer": "Use the heart button on a product to save it for later. Your wishlist keeps products together while you compare styles, colours, and prices before deciding what belongs in your basket."
         },
         {
           "question": "What are your shipping options?",
@@ -168,7 +168,7 @@
         },
         {
           "question": "Is this a real shop?",
-          "answer": "No. Visual Search is a student capstone project. Orders run against a test payment handler, no money is taken, and nothing is dispatched. Treat the products, prices and delivery estimates as sample data."
+          "answer": "No. StyleMatch is a student capstone project. Orders run against a test payment handler, no money is taken, and nothing is dispatched. Treat the products, prices and delivery estimates as sample data."
         }
       ]
     }

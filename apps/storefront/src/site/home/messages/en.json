@@ -1,36 +1,39 @@
 {
   "Hero": {
-    "badge": "Search with a photo, not a phrase",
-    "title": "Find it by",
-    "titleHighlight": "looking",
-    "subtitle": "Point a photo at the catalogue and we surface the closest matches in seconds — or browse the collections the usual way.",
-    "shopNow": "Browse the catalogue",
+    "badge": "New season, made for every day",
+    "title": "Clothes you’ll reach for.",
+    "titleHighlight": "Style that feels like you.",
+    "subtitle": "Explore clothing, shoes, and accessories selected for everyday comfort, effortless layering, and your own way of dressing.",
+    "shopNow": "Shop all clothing",
     "searchByImage": "Search by image",
-    "viewCollections": "View Collections"
+    "viewCollections": "Explore categories",
+    "reassurance": "New arrivals · Everyday essentials · Seasonal styles",
+    "illustrationAlt": "A person choosing an outfit from a clothing rack",
+    "illustrationCredit": "Illustration by Storyset"
   },
   "Home": {
-    "categoriesEyebrow": "Explore the collection",
+    "categoriesEyebrow": "Shop your way",
     "shopByCategory": "Shop by category",
     "shopByCategoryDescription": "Find the right piece faster, from everyday essentials to the latest seasonal styles.",
     "viewAllCategories": "View all categories",
-    "pageTitle": "Clothing made easier to discover",
-    "description": "Explore clothing and accessories by category or upload a photo to find visually similar styles.",
-    "ogDescription": "Browse clothing collections or find a similar style with visual search.",
-    "whyShopWithUs": "Why Shop With Us",
+    "pageTitle": "Clothing, shoes, and accessories for every day",
+    "description": "Shop clothing, shoes, and accessories across multiple categories, from everyday essentials to seasonal new arrivals.",
+    "ogDescription": "Shop curated clothing, shoes, and accessories across collections for every day and every season.",
+    "whyShopWithUs": "Everything you need to shop confidently",
     "features": {
       "highQuality": {
-        "title": "High Quality",
-        "description": "Premium products carefully selected for you"
+        "title": "Curated quality",
+        "description": "Reliable everyday pieces selected with material, finish, and wearability in mind."
       },
       "bestPrices": {
-        "title": "Best Prices",
-        "description": "Competitive pricing on all our products"
+        "title": "Clear value",
+        "description": "Straightforward pricing across essentials, new arrivals, and seasonal edits."
       },
       "fastDelivery": {
-        "title": "Fast Delivery",
-        "description": "Quick and reliable shipping worldwide"
+        "title": "Reliable delivery",
+        "description": "Clear order updates and a dependable journey from checkout to your door."
       }
     },
-    "whyShopEyebrow": "Why shop here"
+    "whyShopEyebrow": "The StyleMatch difference"
   }
 }

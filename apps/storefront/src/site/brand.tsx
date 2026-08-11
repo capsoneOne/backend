@@ -1,33 +1,24 @@
 import {cn} from '@/lib/utils';
 import {SITE_NAME} from '@/config/metadata';
+import {Shirt} from 'lucide-react';
 
 /**
- * The Visual Search mark: an aperture ring with a focus dot, drawn rather than
- * imported so it inherits `currentColor` and stays crisp at every size.
+ * A clothing-first mark. Visual search remains a feature in navigation rather
+ * than the symbol used to define the entire store.
  *
  * The wordmark reads `NEXT_PUBLIC_SITE_NAME`, so renaming the store stays an env
- * change. It sets the two words on one line at different weights — Ubuntu's 300
- * against its 700 is the whole logotype.
+ * change. Multi-word names use a light-to-bold contrast; single-word names use
+ * the bold weight for a compact storefront wordmark.
  */
 export function BrandMark({className}: {className?: string}) {
     return (
         <span
             className={cn(
-                'relative flex size-9 shrink-0 items-center justify-center rounded-xl bg-foreground text-background',
+                'relative flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground elevate-1',
                 className,
             )}
         >
-            <svg viewBox="0 0 24 24" fill="none" className="size-5" aria-hidden="true">
-                <circle cx="10.5" cy="10.5" r="6.25" stroke="currentColor" strokeWidth="2" />
-                {/* The one spot of coral in the mark: the focus point. */}
-                <circle cx="10.5" cy="10.5" r="2" className="fill-primary" />
-                <path
-                    d="M15.4 15.4 20 20"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                />
-            </svg>
+            <Shirt className="size-5" aria-hidden="true" />
         </span>
     );
 }
@@ -52,7 +43,7 @@ export function Brand({
                     responsive && 'hidden sm:inline',
                 )}
             >
-                <span className="font-light">{first}</span>
+                <span className={second ? 'font-light' : 'font-bold'}>{first}</span>
                 {second ? <span className="font-bold">{' '}{second}</span> : null}
             </span>
             {responsive ? <span className="sr-only sm:hidden">{SITE_NAME}</span> : null}

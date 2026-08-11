@@ -80,8 +80,8 @@ export const viewport: Viewport = {
     themeColor: [
         // Matches --background in globals.css for each scheme, so the mobile browser
         // chrome blends into the page instead of framing it in plain black/white.
-        {media: "(prefers-color-scheme: light)", color: "#fafafa"},
-        {media: "(prefers-color-scheme: dark)", color: "#0c0c0c"},
+        {media: "(prefers-color-scheme: light)", color: "#f8faff"},
+        {media: "(prefers-color-scheme: dark)", color: "#0c1324"},
     ],
 };
 
@@ -94,6 +94,7 @@ export default async function LocaleLayout({children}: {children: React.ReactNod
 
     setRequestLocale(locale);
     const messages = await getMessages({locale});
+    const t = await getTranslations({locale, namespace: 'Common'});
 
     return (
         <html lang={locale} data-scroll-behavior="smooth" suppressHydrationWarning>
@@ -103,8 +104,16 @@ export default async function LocaleLayout({children}: {children: React.ReactNod
                 <NextIntlClientProvider locale={locale} messages={messages}>
                     <ThemeProvider>
                         <WishlistProvider>
+                            <a
+                                href="#main-content"
+                                className="fixed left-4 top-4 z-[100] -translate-y-24 rounded-lg bg-background px-4 py-3 font-medium text-foreground shadow-lg outline-none transition-transform focus:translate-y-0 focus:ring-2 focus:ring-ring"
+                            >
+                                {t('skipToContent')}
+                            </a>
                             <Navbar />
-                            {children}
+                            <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
+                                {children}
+                            </main>
                             <Footer/>
                             <Toaster/>
                         </WishlistProvider>

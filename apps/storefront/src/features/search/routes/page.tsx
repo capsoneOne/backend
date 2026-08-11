@@ -6,6 +6,7 @@ import {SearchResults} from "@/features/search/routes/search-results";
 import {SearchTerm, SearchTermSkeleton} from "@/features/search/routes/search-term";
 import {SearchResultsSkeleton} from "@/features/search/components/search-results-skeleton";
 import {SITE_NAME, noIndexRobots} from '@/config/metadata';
+import {SearchAutocomplete} from '@/features/search/search-autocomplete';
 
 export async function generateMetadata({
     searchParams,
@@ -34,6 +35,11 @@ export default async function SearchPage({searchParams}: PageProps<'/[locale]/se
             <Suspense fallback={<SearchTermSkeleton/>}>
                 <SearchTerm searchParams={searchParams}/>
             </Suspense>
+            <div className="mb-6 lg:hidden">
+                <Suspense fallback={<div className="h-11 w-full animate-pulse rounded-full bg-muted" />}>
+                    <SearchAutocomplete className="max-w-none" />
+                </Suspense>
+            </div>
             <Suspense fallback={<SearchResultsSkeleton />}>
                 <SearchResults searchParams={searchParams}/>
             </Suspense>

@@ -9,6 +9,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-ubuntu);
   --font-mono: var(--font-ubuntu-mono);
+  --color-illustration: var(--illustration);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -46,12 +47,10 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Visual Search — monochrome, with one accent.
+   Visual Search — crisp blue, quiet neutrals, and focused hierarchy.
 
-   Every ground token is pure neutral (chroma 0). The only saturated colour in
-   the system is --primary, a vivid coral, and it is rationed: calls to action,
-   prices under a match badge, focus rings. Nothing else. On a storefront the
-   product photography is the colour, and a tinted UI competes with it.
+   A cool white canvas and ink-blue type keep the catalogue calm. Cobalt is the
+   single interface accent, reserved for actions, prices, links, and focus.
 
    Typeface is Ubuntu, which ships 300/400/500/700 — there is no 600. Prefer
    font-medium and font-bold in components; font-semibold synthesises and looks
@@ -60,88 +59,86 @@
 :root {
   --radius: 0.75rem;
 
-  --background: oklch(0.984 0 0);
-  --foreground: oklch(0.185 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.185 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.185 0 0);
+  --background: oklch(0.985 0.006 245);
+  --foreground: oklch(0.20 0.025 255);
+  --card: oklch(0.998 0.003 245);
+  --card-foreground: oklch(0.20 0.025 255);
+  --popover: oklch(0.998 0.003 245);
+  --popover-foreground: oklch(0.20 0.025 255);
 
-  --primary: oklch(0.655 0.205 32);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.956 0 0);
-  --secondary-foreground: oklch(0.245 0 0);
-  --muted: oklch(0.958 0 0);
-  --muted-foreground: oklch(0.518 0 0);
-  --accent: oklch(0.944 0 0);
-  --accent-foreground: oklch(0.215 0 0);
-  /* Pushed off coral's hue so a destructive action never reads as a CTA. */
+  --primary: oklch(0.53 0.19 255);
+  --primary-foreground: oklch(0.99 0.004 245);
+  --secondary: oklch(0.945 0.035 245);
+  --secondary-foreground: oklch(0.27 0.08 255);
+  --muted: oklch(0.955 0.012 245);
+  --muted-foreground: oklch(0.47 0.03 255);
+  --accent: oklch(0.92 0.05 245);
+  --accent-foreground: oklch(0.26 0.09 255);
   --destructive: oklch(0.505 0.19 18);
 
-  --border: oklch(0.902 0 0);
-  --input: oklch(0.902 0 0);
-  --ring: oklch(0.655 0.205 32);
+  --border: oklch(0.88 0.02 250);
+  --input: oklch(0.88 0.02 250);
+  --ring: oklch(0.53 0.19 255);
+  --illustration: oklch(0.95 0.035 245);
 
-  --chart-1: oklch(0.655 0.205 32);
-  --chart-2: oklch(0.30 0 0);
-  --chart-3: oklch(0.50 0 0);
-  --chart-4: oklch(0.68 0 0);
-  --chart-5: oklch(0.80 0 0);
+  --chart-1: oklch(0.53 0.19 255);
+  --chart-2: oklch(0.62 0.14 225);
+  --chart-3: oklch(0.69 0.11 200);
+  --chart-4: oklch(0.47 0.12 275);
+  --chart-5: oklch(0.75 0.09 245);
 
-  --sidebar: oklch(0.972 0 0);
-  --sidebar-foreground: oklch(0.185 0 0);
-  --sidebar-primary: oklch(0.655 0.205 32);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.944 0 0);
-  --sidebar-accent-foreground: oklch(0.215 0 0);
-  --sidebar-border: oklch(0.902 0 0);
-  --sidebar-ring: oklch(0.655 0.205 32);
+  --sidebar: oklch(0.97 0.012 245);
+  --sidebar-foreground: oklch(0.20 0.025 255);
+  --sidebar-primary: oklch(0.53 0.19 255);
+  --sidebar-primary-foreground: oklch(0.99 0.004 245);
+  --sidebar-accent: oklch(0.92 0.05 245);
+  --sidebar-accent-foreground: oklch(0.26 0.09 255);
+  --sidebar-border: oklch(0.88 0.02 250);
+  --sidebar-ring: oklch(0.53 0.19 255);
 
-  /* Elevation is pure black at low alpha — a tinted shadow would reintroduce
-     hue through the back door. */
-  --shadow-e1: 0 1px 2px 0 oklch(0 0 0 / 6%);
-  --shadow-e2: 0 4px 16px -4px oklch(0 0 0 / 10%), 0 1px 3px 0 oklch(0 0 0 / 5%);
-  --shadow-e3: 0 18px 40px -12px oklch(0 0 0 / 18%), 0 2px 8px -2px oklch(0 0 0 / 8%);
+  --shadow-e1: 0 1px 2px 0 oklch(0.18 0.02 255 / 6%);
+  --shadow-e2: 0 5px 18px -5px oklch(0.18 0.02 255 / 10%), 0 1px 3px 0 oklch(0.18 0.02 255 / 5%);
+  --shadow-e3: 0 22px 52px -16px oklch(0.18 0.02 255 / 16%), 0 3px 10px -3px oklch(0.18 0.02 255 / 8%);
 }
 
-/* Dark lifts the coral rather than swapping it, and lifts --primary-foreground
-   with it — editing one without the other is what breaks a shadcn dark theme. */
+/* Dark mode preserves the same cobalt identity on a deep navy canvas. */
 .dark {
-  --background: oklch(0.155 0 0);
-  --foreground: oklch(0.965 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.965 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.965 0 0);
+  --background: oklch(0.15 0.03 255);
+  --foreground: oklch(0.955 0.015 88);
+  --card: oklch(0.20 0.035 255);
+  --card-foreground: oklch(0.955 0.015 88);
+  --popover: oklch(0.20 0.035 255);
+  --popover-foreground: oklch(0.955 0.015 88);
 
-  --primary: oklch(0.715 0.185 32);
-  --primary-foreground: oklch(0.155 0 0);
-  --secondary: oklch(0.262 0 0);
-  --secondary-foreground: oklch(0.965 0 0);
-  --muted: oklch(0.262 0 0);
-  --muted-foreground: oklch(0.715 0 0);
-  --accent: oklch(0.285 0 0);
-  --accent-foreground: oklch(0.965 0 0);
+  --primary: oklch(0.72 0.14 250);
+  --primary-foreground: oklch(0.14 0.03 255);
+  --secondary: oklch(0.28 0.06 255);
+  --secondary-foreground: oklch(0.955 0.015 88);
+  --muted: oklch(0.25 0.035 255);
+  --muted-foreground: oklch(0.73 0.035 245);
+  --accent: oklch(0.31 0.075 255);
+  --accent-foreground: oklch(0.965 0.012 88);
   --destructive: oklch(0.645 0.185 18);
 
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.715 0.185 32);
+  --border: oklch(0.88 0.03 245 / 16%);
+  --input: oklch(0.88 0.03 245 / 20%);
+  --ring: oklch(0.72 0.14 250);
+  --illustration: oklch(0.29 0.06 255);
 
-  --chart-1: oklch(0.715 0.185 32);
-  --chart-2: oklch(0.90 0 0);
-  --chart-3: oklch(0.72 0 0);
-  --chart-4: oklch(0.55 0 0);
-  --chart-5: oklch(0.38 0 0);
+  --chart-1: oklch(0.72 0.14 250);
+  --chart-2: oklch(0.75 0.11 225);
+  --chart-3: oklch(0.78 0.09 200);
+  --chart-4: oklch(0.70 0.10 275);
+  --chart-5: oklch(0.82 0.07 245);
 
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.965 0 0);
-  --sidebar-primary: oklch(0.715 0.185 32);
-  --sidebar-primary-foreground: oklch(0.155 0 0);
-  --sidebar-accent: oklch(0.285 0 0);
-  --sidebar-accent-foreground: oklch(0.965 0 0);
-  --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.715 0.185 32);
+  --sidebar: oklch(0.19 0.035 255);
+  --sidebar-foreground: oklch(0.955 0.015 88);
+  --sidebar-primary: oklch(0.72 0.14 250);
+  --sidebar-primary-foreground: oklch(0.14 0.03 255);
+  --sidebar-accent: oklch(0.31 0.075 255);
+  --sidebar-accent-foreground: oklch(0.965 0.012 88);
+  --sidebar-border: oklch(0.88 0.03 245 / 16%);
+  --sidebar-ring: oklch(0.72 0.14 250);
 
   --shadow-e1: 0 1px 2px 0 oklch(0 0 0 / 40%);
   --shadow-e2: 0 4px 16px -4px oklch(0 0 0 / 50%), 0 1px 3px 0 oklch(0 0 0 / 30%);
@@ -156,8 +153,6 @@
     @apply bg-background text-foreground;
     font-feature-settings: "kern" 1;
   }
-  /* Ubuntu's default tracking is loose at display sizes and cramped at caption
-     sizes. These two rules are the whole typographic correction. */
   h1, h2, h3 {
     letter-spacing: -0.02em;
   }
@@ -187,7 +182,7 @@
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(16px) scale(0.99);
   }
   to {
     opacity: 1;
@@ -195,6 +190,55 @@
   }
 }
 
-.animate-fade-up {
-  animation: fade-up 0.4s ease-out both;
+@keyframes float-art {
+  0%, 100% { transform: translateY(0) rotate(-0.4deg); }
+  50% { transform: translateY(-12px) rotate(0.6deg); }
+}
+
+@keyframes orbit-slow {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.45; transform: scale(0.92); }
+  50% { opacity: 0.9; transform: scale(1.08); }
+}
+
+@keyframes section-reveal {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-fade-up {
+    animation: fade-up 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .animate-float-art {
+    animation: float-art 6s ease-in-out infinite;
+  }
+
+  .animate-orbit-slow {
+    animation: orbit-slow 18s linear infinite;
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 3.4s ease-in-out infinite;
+  }
+
+  @supports (animation-timeline: view()) {
+    .reveal-section {
+      animation: section-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 24%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

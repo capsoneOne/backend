@@ -11,7 +11,13 @@
     "title": "Filters",
     "clearAll": "Clear all",
     "filtersButton": "Filters",
-    "inStockOnly": "In-stock styles only"
+    "inStockOnly": "In-stock styles only",
+    "description": "Choose several filters, then apply them together.",
+    "selectedCount": "{count, plural, one {# selected} other {# selected}}",
+    "applyFilters": "Apply {count, plural, =0 {filters} one {# filter} other {# filters}}",
+    "applying": "Applying...",
+    "activeFilters": "Active filters",
+    "removeFilter": "Remove {name} filter"
   },
   "Search": {
     "title": "Search",
@@ -20,5 +26,15 @@
     "resultsTitle": "Search results for \"{query}\"",
     "metaDescription": "Find products matching \"{query}\" at {siteName}",
     "metaCatalogDescription": "Search our product catalog at {siteName}"
+  },
+  "SearchSuggestions": {
+    "searchProducts": "Search products...",
+    "searching": "Searching…",
+    "noSuggestionsFor": "No product suggestions for “{query}”.",
+    "searchFor": "Search for “{query}”",
+    "clearSearch": "Clear search",
+    "suggestionsLabel": "Product suggestions",
+    "suggestionStatus": "{count, plural, =0 {No product suggestions} one {# product suggestion} other {# product suggestions}}",
+    "viewAllResults": "{count, plural, =0 {See all results} one {See # result} other {See all # results}}"
   }
 }

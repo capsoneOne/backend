@@ -14,7 +14,7 @@ export async function ShopByCategory() {
     if (collections.length === 0) return null;
 
     return (
-        <section className="border-b border-border py-16 md:py-24">
+        <section className="reveal-section border-b border-border py-16 md:py-24">
             <div className="container mx-auto px-4">
                 <div className="flex items-end justify-between gap-4">
                     <div>

@@ -1,5 +1,33 @@
 import {graphql} from '@/platform/vendure/graphql';
 
+export const MerchandiseProductFragment = graphql(`
+    fragment MerchandiseProduct on Product {
+        id
+        name
+        slug
+        featuredAsset {
+            id
+            preview
+        }
+        variants {
+            id
+            priceWithTax
+            currencyCode
+            stockLevel
+        }
+    }
+`);
+
+export const GetNewestProductsQuery = graphql(`
+    query GetNewestProducts($options: ProductListOptions) {
+        products(options: $options) {
+            items {
+                ...MerchandiseProduct
+            }
+        }
+    }
+`, [MerchandiseProductFragment]);
+
 export const ProductCardFragment = graphql(`
     fragment ProductCard on SearchResult {
         productId

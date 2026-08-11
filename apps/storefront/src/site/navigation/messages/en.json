@@ -18,6 +18,11 @@
     "searchByImage": "Search by image",
     "searching": "Searching…",
     "noSuggestions": "No matching products.",
+    "noSuggestionsFor": "No product suggestions for “{query}”.",
+    "searchFor": "Search for “{query}”",
+    "clearSearch": "Clear search",
+    "suggestionsLabel": "Product suggestions",
+    "suggestionStatus": "{count, plural, =0 {No product suggestions} one {# product suggestion} other {# product suggestions}}",
     "viewAllResults": "{count, plural, =0 {See all results} one {See # result} other {See all # results}}"
   }
 }

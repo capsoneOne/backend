@@ -9,7 +9,7 @@ import {getTranslations} from 'next-intl/server';
 
 const COPYRIGHT_YEAR = 2026;
 
-const linkClass = 'font-light text-muted-foreground transition-colors hover:text-foreground';
+const linkClass = 'inline-flex min-h-11 min-w-11 items-center font-light text-muted-foreground transition-colors hover:text-foreground';
 const headingClass = 'text-xs font-medium uppercase tracking-[0.14em] text-foreground';
 
 async function Copyright() {
@@ -37,11 +37,11 @@ export async function Footer() {
     const collections = await getTopCollections(locale);
 
     return (
-        <footer className="mt-auto border-t border-border bg-muted/30">
+        <footer className="mt-auto border-t border-border bg-secondary/35">
             <div className="container mx-auto px-4 py-16">
                 <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr_1fr]">
                     <div className="max-w-sm">
-                        <NavigationLink href="/" className="inline-block">
+                        <NavigationLink href="/" className="inline-flex min-h-11 items-center">
                             <Brand responsive={false} />
                         </NavigationLink>
                         <p className="mt-5 text-balance font-light leading-relaxed text-muted-foreground">
@@ -124,11 +124,11 @@ export async function Footer() {
                     </div>
                     <div className="flex items-center gap-2">
                         <span>{t('poweredBy')}</span>
-                        <a href="https://vendure.io" target="_blank" rel="noopener noreferrer" className="opacity-70 transition-opacity hover:opacity-100">
+                        <a href="https://vendure.io" target="_blank" rel="noopener noreferrer" className="inline-flex size-11 items-center justify-center opacity-70 transition-opacity hover:opacity-100">
                             <Image src="/vendure.svg" alt="Vendure" width={40} height={27} className="h-4 w-auto dark:invert" />
                         </a>
                         <span aria-hidden="true">&amp;</span>
-                        <a href="https://nextjs.org" target="_blank" rel="noopener noreferrer" className="opacity-70 transition-opacity hover:opacity-100">
+                        <a href="https://nextjs.org" target="_blank" rel="noopener noreferrer" className="inline-flex size-11 items-center justify-center opacity-70 transition-opacity hover:opacity-100">
                             <Image src="/next.svg" alt="Next.js" width={16} height={16} className="h-4 w-auto dark:invert" />
                         </a>
                     </div>

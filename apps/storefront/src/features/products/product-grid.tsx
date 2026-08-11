@@ -8,6 +8,7 @@ import {getTranslations} from 'next-intl/server';
 import {Button} from '@/components/ui/button';
 import {Link} from '@/platform/i18n/navigation';
 import {Camera, PackageSearch} from 'lucide-react';
+import {Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from '@/components/ui/empty';
 
 interface ProductGridProps {
     productDataPromise: Promise<{
@@ -16,9 +17,10 @@ interface ProductGridProps {
     }>;
     currentPage: number;
     take: number;
+    searchTerm?: string;
 }
 
-export async function ProductGrid({productDataPromise, currentPage, take}: ProductGridProps) {
+export async function ProductGrid({productDataPromise, currentPage, take, searchTerm}: ProductGridProps) {
     const locale = await getRouteLocale();
     const t = await getTranslations({locale, namespace: 'Product'});
     const result = await productDataPromise;
@@ -28,24 +30,28 @@ export async function ProductGrid({productDataPromise, currentPage, take}: Produ
 
     if (!searchResult.items.length) {
         return (
-            <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-border px-6 py-16 text-center">
-                <div className="rounded-full bg-muted p-4">
+            <Empty className="rounded-2xl border border-border px-6 py-16" role="status">
+                <EmptyHeader>
+                <EmptyMedia variant="icon" className="size-14 rounded-full">
                     <PackageSearch className="size-7 text-muted-foreground"/>
-                </div>
-                <div className="space-y-1">
-                    <p className="font-medium">{t('noProductsFound')}</p>
-                    <p className="text-sm text-muted-foreground">{t('noProductsFoundHint')}</p>
-                </div>
-                <div className="flex flex-wrap justify-center gap-3 pt-2">
-                    <Button nativeButton={false} render={<Link href="/search"/>}>
+                </EmptyMedia>
+                <EmptyTitle role="heading" aria-level={2}>
+                    {searchTerm ? t('noProductsFor', {query: searchTerm}) : t('noProductsFound')}
+                </EmptyTitle>
+                <EmptyDescription>{t('noProductsFoundHint')}</EmptyDescription>
+                </EmptyHeader>
+                <EmptyContent>
+                <div className="flex flex-wrap justify-center gap-3">
+                    <Button nativeButton={false} render={<Link href="/search"/>} size="lg" className="min-h-11 rounded-full">
                         {t('viewAllProducts')}
                     </Button>
-                    <Button nativeButton={false} render={<Link href="/visual-search"/>} variant="outline">
+                    <Button nativeButton={false} render={<Link href="/visual-search"/>} variant="outline" size="lg" className="min-h-11 rounded-full">
                         <Camera className="mr-2 size-4"/>
                         {t('tryVisualSearch')}
                     </Button>
                 </div>
-            </div>
+                </EmptyContent>
+            </Empty>
         );
     }
 

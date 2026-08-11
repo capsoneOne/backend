@@ -12,7 +12,7 @@ export async function VisualSearchLink() {
     return (
         <NavigationLink
             href="/visual-search"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="inline-flex size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             title={t('searchByImage')}
         >
             <Camera className="size-5" />

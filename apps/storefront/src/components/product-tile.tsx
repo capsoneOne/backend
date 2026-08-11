@@ -54,19 +54,19 @@ export function ProductTile({
         <Link
             href={href}
             className={cn(
-                'group flex h-full flex-col rounded-2xl outline-none',
+                'group flex h-full flex-col rounded-2xl outline-none transition-transform duration-300 ease-out hover:-translate-y-1',
                 'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background',
                 className,
             )}
         >
-            <div className="relative aspect-square overflow-hidden rounded-2xl bg-muted transition-all duration-500 group-hover:elevate-3">
+            <div className="relative aspect-square overflow-hidden rounded-2xl bg-muted transition-[box-shadow,transform] duration-500 group-hover:shadow-[0_20px_45px_-20px_color-mix(in_oklch,var(--color-primary)_35%,transparent)]">
                 {imageUrl ? (
                     <Image
                         src={imageUrl}
                         alt={imageAlt}
                         fill
                         priority={priority}
-                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                         sizes={sizes}
                     />
                 ) : (

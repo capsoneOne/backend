@@ -2,7 +2,7 @@ import type {Metadata} from "next";
 import {Suspense} from "react";
 import {getRouteLocale} from "@/platform/i18n/server";
 import {HeroSection} from "@/site/home/hero-section";
-import {FeaturedProducts} from '@/features/products/featured-products';
+import {NewArrivalsSection, SaleSection} from '@/features/products/home-merchandising';
 import {SITE_NAME, SITE_URL, buildCanonicalUrl} from "@/config/metadata";
 import {BadgeCheck, Tag, Zap} from "lucide-react";
 import {getTranslations} from 'next-intl/server';
@@ -45,14 +45,17 @@ export default async function Home() {
     return (
         <div className="flex min-h-screen flex-col">
             <HeroSection/>
-            <Suspense>
+            <Suspense fallback={<HomepageSectionSkeleton cards={6}/>}>
                 <ShopByCategory/>
             </Suspense>
-            <Suspense>
-                <FeaturedProducts/>
+            <Suspense fallback={<HomepageSectionSkeleton cards={4}/>}>
+                <NewArrivalsSection/>
+            </Suspense>
+            <Suspense fallback={<HomepageSectionSkeleton cards={4}/>}>
+                <SaleSection/>
             </Suspense>
 
-            <section className="border-t border-border bg-muted/40 py-20 md:py-28">
+            <section className="reveal-section border-t border-border bg-secondary/30 py-20 md:py-28">
                 <div className="container mx-auto px-4">
                     <div className="mx-auto max-w-2xl text-center">
                         <p className="text-sm font-medium uppercase tracking-[0.18em] text-primary">
@@ -85,5 +88,26 @@ export default async function Home() {
                 </div>
             </section>
         </div>
+    );
+}
+
+function HomepageSectionSkeleton({cards}: {cards: number}) {
+    return (
+        <section className="border-b border-border py-16 md:py-24" aria-hidden="true">
+            <div className="container mx-auto px-4">
+                <div className="h-4 w-36 animate-pulse rounded bg-muted"/>
+                <div className="mt-3 h-10 w-72 animate-pulse rounded-lg bg-muted"/>
+                <div className="mt-3 h-5 w-full max-w-lg animate-pulse rounded bg-muted"/>
+                <div className="mt-10 grid grid-cols-2 gap-5 lg:grid-cols-4">
+                    {Array.from({length: cards}).map((_, index) => (
+                        <div key={index} className={index > 3 ? 'hidden lg:block' : ''}>
+                            <div className="aspect-square animate-pulse rounded-2xl bg-muted"/>
+                            <div className="mt-4 h-4 w-3/4 animate-pulse rounded bg-muted"/>
+                            <div className="mt-2 h-5 w-1/3 animate-pulse rounded bg-muted"/>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
     );
 }

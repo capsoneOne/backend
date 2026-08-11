@@ -52,7 +52,7 @@ export function CartDrawer({
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger
                 render={
-                    <Button variant="ghost" size="icon" className="relative">
+                    <Button variant="ghost" size="icon" className="relative size-11">
                         <ShoppingCart className="size-5" />
                         {itemCount > 0 && (
                             <span className="absolute -right-0.5 -top-0.5 flex min-w-4.5 items-center justify-center rounded-full bg-primary px-1 text-[0.625rem] font-bold leading-4.5 text-primary-foreground">

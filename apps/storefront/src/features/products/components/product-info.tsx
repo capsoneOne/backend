@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect, useState, useMemo, useTransition} from 'react';
+import {useEffect, useState, useMemo, useRef, useTransition} from 'react';
 import {useSearchParams} from 'next/navigation';
 import {usePathname, useRouter} from '@/platform/i18n/navigation';
 import {Button} from '@/components/ui/button';
@@ -92,6 +92,7 @@ export function ProductInfo({
     const currentSearchParams = useSearchParams();
     const [isPending, startTransition] = useTransition();
     const [isAdded, setIsAdded] = useState(false);
+    const optionsRef = useRef<HTMLDivElement>(null);
 
     // Initialize selected options from URL
     const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() => {
@@ -203,6 +204,30 @@ export function ProductInfo({
     const isInStock = selectedVariant && selectedVariant.stockLevel !== 'OUT_OF_STOCK';
     const canAddToCart = selectedVariant && isInStock;
     const similarAssetId = selectedVariant?.assets[0]?.id ?? findSimilarAssetId;
+    const stickyActionDisabled = isPending || (
+        selectedVariant
+            ? !isInStock
+            : product.optionGroups.length === 0
+    );
+
+    const handleStickyAction = () => {
+        if (!selectedVariant && product.optionGroups.length > 0) {
+            optionsRef.current?.scrollIntoView({behavior: 'smooth', block: 'center'});
+            return;
+        }
+
+        void handleAddToCart();
+    };
+
+    const purchaseLabel = isAdded
+        ? t('addedToCart')
+        : isPending
+            ? t('adding')
+            : !selectedVariant && product.optionGroups.length > 0
+                ? t('selectOptions')
+                : !isInStock
+                    ? t('outOfStock')
+                    : t('addToCart');
 
     return (
         <div className="space-y-6">
@@ -231,7 +256,7 @@ export function ProductInfo({
 
             {/* Option Groups */}
             {product.optionGroups.length > 0 && (
-                <div className="space-y-5">
+                <div ref={optionsRef} className="scroll-mt-24 space-y-5">
                     {product.optionGroups.map((group) => (
                         <div key={group.id} className="space-y-3">
                             <div className="flex items-center justify-between gap-3">
@@ -316,13 +341,7 @@ export function ProductInfo({
                     ) : (
                         <>
                             <ShoppingCart className="mr-2 h-5 w-5"/>
-                            {isPending
-                                ? t('adding')
-                                : !selectedVariant && product.optionGroups.length > 0
-                                    ? t('selectOptions')
-                                    : !isInStock
-                                        ? t('outOfStock')
-                                        : t('addToCart')}
+                            {purchaseLabel}
                         </>
                     )}
                 </Button>
@@ -344,6 +363,36 @@ export function ProductInfo({
                     {t('sku', {sku: selectedVariant.sku})}
                 </div>
             )}
+
+            <div className="h-24 md:hidden" aria-hidden="true" />
+            <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/95 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] shadow-[0_-10px_30px_rgba(0,0,0,0.08)] backdrop-blur-xl md:hidden">
+                <div className="mx-auto flex max-w-lg items-center gap-3">
+                    <div className="min-w-0 shrink-0">
+                        <p className="max-w-28 truncate text-xs text-muted-foreground">{product.name}</p>
+                        <p className="font-bold tracking-tight">
+                            {selectedVariant ? (
+                                <Price value={selectedVariant.priceWithTax} currencyCode={currencyCode}/>
+                            ) : priceRange ? (
+                                <>
+                                    {priceRange.min !== priceRange.max ? (
+                                        <span className="mr-1 text-xs font-normal text-muted-foreground">{t('from')}</span>
+                                    ) : null}
+                                    <Price value={priceRange.min} currencyCode={currencyCode}/>
+                                </>
+                            ) : null}
+                        </p>
+                    </div>
+                    <Button
+                        size="lg"
+                        className="h-12 min-w-0 flex-1 rounded-xl text-base font-semibold"
+                        disabled={stickyActionDisabled}
+                        onClick={handleStickyAction}
+                    >
+                        {isAdded ? <CheckCircle2 className="size-5"/> : <ShoppingCart className="size-5"/>}
+                        <span className="truncate">{purchaseLabel}</span>
+                    </Button>
+                </div>
+            </div>
         </div>
     );
 }
