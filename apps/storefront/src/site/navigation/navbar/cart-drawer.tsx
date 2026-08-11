@@ -15,6 +15,7 @@ import {
 import {Link, usePathname} from '@/platform/i18n/navigation';
 import {Price} from '@/features/pricing/price';
 import {cn} from '@/lib/utils';
+import {navbarActiveClass, navbarIconClass} from '@/site/navigation/navigation-styles';
 
 export interface CartDrawerLine {
     id: string;
@@ -58,7 +59,7 @@ export function CartDrawer({
                     <Button
                         variant="ghost"
                         size="icon"
-                        className={cn('relative size-11', active && 'bg-primary/10 text-primary')}
+                        className={cn(navbarIconClass, active && navbarActiveClass)}
                         aria-current={active ? 'page' : undefined}
                         title={tNav('cart')}
                     >

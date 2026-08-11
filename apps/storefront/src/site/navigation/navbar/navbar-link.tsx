@@ -8,6 +8,7 @@ import {
     navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import {cn} from '@/lib/utils';
+import {navbarActiveClass, navbarPrimaryClass} from '@/site/navigation/navigation-styles';
 
 export function NavbarLink({href, ...rest}: ComponentProps<typeof Link>) {
     const selectedLayoutSegment = useSelectedLayoutSegment();
@@ -17,7 +18,7 @@ export function NavbarLink({href, ...rest}: ComponentProps<typeof Link>) {
     return (
         <NavigationMenuLink render={<Link
                 aria-current={isActive ? 'page' : undefined}
-                className={cn(navigationMenuTriggerStyle(), 'bg-transparent')}
+                className={cn(navigationMenuTriggerStyle(), navbarPrimaryClass, 'bg-transparent', isActive && navbarActiveClass)}
                 href={href}
                 {...rest}
             />} active={isActive} />

@@ -18,6 +18,7 @@ import {homeMessageLoaders} from '@/site/home/messages';
 import {navigationMessageLoaders} from '@/site/navigation/messages';
 import {pagesMessageLoaders} from '@/site/pages/messages';
 import {siteMessageLoaders} from '@/site/messages';
+import {chatAssistantMessageLoaders} from '@/site/chat-assistant/messages';
 
 const registrations: MessageLoaders[] = [
     accountMessageLoaders,
@@ -35,6 +36,7 @@ const registrations: MessageLoaders[] = [
     navigationMessageLoaders,
     pagesMessageLoaders,
     siteMessageLoaders,
+    chatAssistantMessageLoaders,
 ];
 
 const loaders: Record<string, MessageLoader[]> = {};

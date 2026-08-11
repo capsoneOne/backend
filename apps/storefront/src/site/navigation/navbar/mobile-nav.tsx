@@ -16,6 +16,7 @@ import {useTranslations} from 'next-intl';
 import {VisualSearchQuickUpload} from '@/features/visual-search';
 import {getCollectionPath} from '@/features/collections/paths';
 import {SearchCategoryFilter} from '@/features/search/search-category-filter';
+import {navbarIconClass} from '@/site/navigation/navigation-styles';
 
 interface Collection {
     id: string;
@@ -55,7 +56,7 @@ export function MobileNav({collections}: MobileNavProps) {
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger render={<Button variant="ghost" size="icon" className="size-11 md:hidden" />}>
+            <SheetTrigger render={<Button variant="ghost" size="icon" className={`${navbarIconClass} md:hidden`} />}>
                 <Menu className="size-5" />
                 <span className="sr-only">{t('openMenu')}</span>
             </SheetTrigger>

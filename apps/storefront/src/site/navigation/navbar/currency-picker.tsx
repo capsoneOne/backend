@@ -12,6 +12,7 @@ import {
 import {useRouter} from '@/platform/i18n/navigation';
 import {switchCurrency} from '@/features/currency/switch-currency';
 import {useTransition} from 'react';
+import {navbarInteractiveClass} from '@/site/navigation/navigation-styles';
 
 interface CurrencyPickerProps {
     availableCurrencyCodes: string[];
@@ -36,7 +37,7 @@ export function CurrencyPicker({availableCurrencyCodes, activeCurrencyCode}: Cur
 
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger render={<Button variant="ghost" size="sm" className="gap-1.5" aria-label={t('switchCurrency')} />}>
+            <DropdownMenuTrigger render={<Button variant="ghost" size="sm" className={`${navbarInteractiveClass} rounded-lg px-3 text-muted-foreground`} aria-label={t('switchCurrency')} />}>
                 <Coins className="size-4" />
                 <span className="hidden sm:inline">{activeCurrencyCode}</span>
             </DropdownMenuTrigger>

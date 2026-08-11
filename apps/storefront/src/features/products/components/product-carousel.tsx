@@ -5,8 +5,7 @@ import {Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious,
 import {FragmentOf} from "@/platform/vendure/graphql";
 import {ProductCardFragment} from '@/features/products/graphql';
 import {useId} from "react";
-import {Link} from '@/platform/i18n/navigation';
-import {ArrowRight} from 'lucide-react';
+import {StorefrontSectionHeader, StorefrontSectionLink} from '@/components/storefront-section';
 
 interface ProductCarouselClientProps {
     title: string;
@@ -30,27 +29,15 @@ export function ProductCarousel({
     const id = useId();
 
     return (
-        <section className="py-16 md:py-24">
+        <section className="py-16 md:py-20">
             <div className="container mx-auto px-4">
-                <div className="mb-10 flex items-end justify-between gap-6">
-                    <div>
-                        {eyebrow ? (
-                            <p className="text-sm font-medium uppercase tracking-[0.18em] text-primary">{eyebrow}</p>
-                        ) : null}
-                        <h2 className={eyebrow ? 'mt-3 text-3xl font-bold md:text-4xl' : 'text-2xl font-bold md:text-3xl'}>
-                            {title}
-                        </h2>
-                        {description ? (
-                            <p className="mt-3 max-w-xl font-light text-muted-foreground">{description}</p>
-                        ) : null}
-                    </div>
-                    {href && linkLabel ? (
-                        <Link href={href} className="hidden items-center gap-2 text-sm font-medium text-primary hover:underline md:flex">
-                            {linkLabel}
-                            <ArrowRight className="size-4"/>
-                        </Link>
-                    ) : null}
-                </div>
+                <StorefrontSectionHeader
+                    eyebrow={eyebrow}
+                    title={title}
+                    description={description}
+                    href={href}
+                    linkLabel={linkLabel}
+                />
                 <Carousel
                     opts={{
                         align: "start",
@@ -74,10 +61,9 @@ export function ProductCarousel({
                     ) : null}
                 </Carousel>
                 {href && linkLabel ? (
-                    <Link href={href} className="mt-8 flex items-center justify-center gap-2 text-sm font-medium text-primary hover:underline md:hidden">
-                        {linkLabel}
-                        <ArrowRight className="size-4"/>
-                    </Link>
+                    <div className="mt-8 flex justify-center md:hidden">
+                        <StorefrontSectionLink href={href}>{linkLabel}</StorefrontSectionLink>
+                    </div>
                 ) : null}
             </div>
         </section>

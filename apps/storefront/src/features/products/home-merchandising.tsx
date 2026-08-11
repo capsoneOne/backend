@@ -1,16 +1,19 @@
 import {cacheLife, cacheTag} from 'next/cache';
-import {ArrowRight} from 'lucide-react';
 import {getTranslations} from 'next-intl/server';
 
 import {GetCollectionProductsQuery} from '@/features/collections/graphql';
 import {getCollectionPath} from '@/features/collections/paths';
 import {getActiveCurrencyCode} from '@/features/currency/currency-server';
 import {GetNewestProductsQuery} from '@/features/products/graphql';
-import {Link} from '@/platform/i18n/navigation';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {query} from '@/platform/vendure/api';
 import {MerchandiseProductCarousel} from './components/merchandise-product-carousel';
 import {ProductCarousel} from './components/product-carousel';
+import {
+    StorefrontSectionHeader,
+    StorefrontSectionLink,
+    storefrontSectionClass,
+} from '@/components/storefront-section';
 
 const SALE_COLLECTION_SLUG = process.env.NEXT_PUBLIC_SALE_COLLECTION_SLUG ?? 'sale';
 
@@ -67,30 +70,21 @@ export async function NewArrivalsSection() {
     };
 
     return (
-        <section className="reveal-section border-b border-border py-16 md:py-24">
+        <section className={`reveal-section ${storefrontSectionClass} bg-secondary/15`}>
             <div className="container mx-auto px-4">
-                <div className="mb-10 flex items-end justify-between gap-6">
-                    <div>
-                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
-                            {t('newArrivalsEyebrow')}
-                        </p>
-                        <h2 className="mt-3 text-3xl font-bold md:text-4xl">{t('newArrivals')}</h2>
-                        <p className="mt-3 max-w-xl font-light text-muted-foreground">
-                            {t('newArrivalsDescription')}
-                        </p>
-                    </div>
-                    <Link href="/search" className="hidden items-center gap-2 text-sm font-medium text-primary hover:underline md:flex">
-                        {t('browseAll')}
-                        <ArrowRight className="size-4"/>
-                    </Link>
-                </div>
+                <StorefrontSectionHeader
+                    eyebrow={t('newArrivalsEyebrow')}
+                    title={t('newArrivals')}
+                    description={t('newArrivalsDescription')}
+                    href="/search"
+                    linkLabel={t('browseAll')}
+                />
 
                 <MerchandiseProductCarousel products={products} labels={labels}/>
 
-                <Link href="/search" className="mt-8 flex items-center justify-center gap-2 text-sm font-medium text-primary hover:underline md:hidden">
-                    {t('browseAll')}
-                    <ArrowRight className="size-4"/>
-                </Link>
+                <div className="mt-8 flex justify-center md:hidden">
+                    <StorefrontSectionLink href="/search">{t('browseAll')}</StorefrontSectionLink>
+                </div>
             </div>
         </section>
     );
@@ -110,7 +104,7 @@ export async function SaleSection() {
     if (!collection || products.length === 0) return null;
 
     return (
-        <div className="reveal-section border-b border-border bg-secondary/30">
+        <div className="reveal-section border-b border-border bg-background">
             <ProductCarousel
                 eyebrow={t('saleEyebrow')}
                 title={collection.name || t('saleTitle')}

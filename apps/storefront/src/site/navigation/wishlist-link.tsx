@@ -5,6 +5,7 @@ import {useTranslations} from 'next-intl';
 import {Link, usePathname} from '@/platform/i18n/navigation';
 import {useWishlist} from '@/features/wishlist/wishlist-context';
 import {cn} from '@/lib/utils';
+import {navbarActiveClass, navbarIconClass} from '@/site/navigation/navigation-styles';
 
 /**
  * Header entry point for the wishlist, with a count badge.
@@ -27,8 +28,8 @@ export function WishlistLink() {
             href="/wishlist"
             aria-current={active ? 'page' : undefined}
             className={cn(
-                'relative inline-flex size-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground',
-                active && 'bg-primary/10 text-primary',
+                navbarIconClass,
+                active && navbarActiveClass,
             )}
             title={t('navLabel')}
         >

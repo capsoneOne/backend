@@ -13,6 +13,7 @@ import {Footer} from "@/site/footer";
 import {ThemeProvider} from "@/site/providers/theme-provider";
 import {WishlistProvider} from "@/features/wishlist/wishlist-context";
 import {SITE_NAME, SITE_URL} from "@/config/metadata";
+import {ChatAssistant} from '@/site/chat-assistant/chat-assistant';
 
 // Ubuntu has no 600. Loading 300/400/500/700 explicitly keeps the browser from
 // synthesising a semibold, which is what makes Ubuntu look smeared in headings.
@@ -122,6 +123,7 @@ export default async function LocaleLayout({children}: {children: React.ReactNod
                                 {children}
                             </main>
                             <Footer/>
+                            <ChatAssistant/>
                             <Toaster/>
                         </WishlistProvider>
                     </ThemeProvider>

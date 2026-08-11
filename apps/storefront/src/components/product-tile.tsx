@@ -54,7 +54,7 @@ export function ProductTile({
         <Link
             href={href}
             className={cn(
-                'group flex h-full flex-col rounded-xl outline-none',
+                'group interactive-lift flex h-full flex-col rounded-2xl bg-card/40 p-2 outline-none',
                 'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background',
                 className,
             )}
@@ -66,7 +66,7 @@ export function ProductTile({
                         alt={imageAlt}
                         fill
                         priority={priority}
-                        className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.025]"
+                        className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.06]"
                         sizes={sizes}
                     />
                 ) : (
@@ -76,18 +76,19 @@ export function ProductTile({
                 )}
 
                 {/* Inner hairline keeps pale product shots from bleeding into a pale page. */}
+                <span className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-t from-foreground/[0.08] via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                 <span className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-foreground/[0.06]" />
 
                 {badge ? <div className="absolute left-3 top-3 z-10">{badge}</div> : null}
 
                 {actions ? (
-                    <div className="absolute right-3 top-3 z-10 flex flex-col gap-2 transition-opacity duration-200 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
+                    <div className="absolute right-3 top-3 z-10 flex translate-x-0 flex-col gap-2 transition-all duration-300 sm:translate-x-2 sm:opacity-0 sm:group-hover:translate-x-0 sm:group-hover:opacity-100 sm:group-focus-within:translate-x-0 sm:group-focus-within:opacity-100">
                         {actions}
                     </div>
                 ) : null}
             </div>
 
-            <div className="flex flex-1 flex-col gap-1 px-0.5 pb-1 pt-3.5">
+            <div className="flex flex-1 flex-col gap-1 px-1 pb-1 pt-3.5">
                 <h3 className="line-clamp-2 text-[0.9375rem] leading-snug transition-colors group-hover:text-primary">
                     {title}
                 </h3>

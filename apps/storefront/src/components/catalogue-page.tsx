@@ -13,7 +13,7 @@ import {getCollectionPath} from '@/features/collections/paths';
 
 export function StorefrontPageShell({children, className}: {children: ReactNode; className?: string}) {
     return (
-        <div className={cn('container mx-auto mt-[4.5rem] px-4 py-12 md:py-16', className)}>
+        <div className={cn('animate-page-enter container mx-auto mt-[4.5rem] px-4 py-12 md:py-16', className)}>
             {children}
         </div>
     );
@@ -64,9 +64,10 @@ export function CataloguePageHeader({
     variant = 'display',
 }: CataloguePageHeaderProps) {
     return (
-        <header className="mb-8 border-b border-border pb-8 md:mb-10 md:pb-10">
+        <header className="relative mb-8 overflow-hidden rounded-2xl border border-border/70 bg-card/70 px-5 py-7 shadow-[var(--shadow-e1)] backdrop-blur-sm md:mb-10 md:px-8 md:py-9">
+            <div aria-hidden="true" className="absolute -right-16 -top-20 size-56 rounded-full bg-primary/8 blur-3xl" />
             {breadcrumbs ? <div className="mb-7">{breadcrumbs}</div> : null}
-            <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+            <div className="relative flex flex-col justify-between gap-6 md:flex-row md:items-end">
                 <div className="max-w-2xl">
                     {eyebrow ? (
                         <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">{eyebrow}</p>

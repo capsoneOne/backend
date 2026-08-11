@@ -8,6 +8,7 @@ import {BadgeCheck, Tag, Zap} from "lucide-react";
 import {getTranslations} from 'next-intl/server';
 import {toOgLocale} from '@/platform/i18n/locale-utils';
 import {ShopByCategory} from '@/site/home/shop-by-category';
+import {storefrontSectionClass} from '@/components/storefront-section';
 
 export async function generateMetadata(): Promise<Metadata> {
     const locale = await getRouteLocale();
@@ -43,7 +44,7 @@ export default async function Home() {
     const t = await getTranslations({locale, namespace: 'Home'});
 
     return (
-        <div className="flex min-h-screen flex-col">
+        <div className="flex min-h-screen flex-col overflow-hidden">
             <HeroSection/>
             <Suspense fallback={<HomepageSectionSkeleton cards={6}/>}>
                 <ShopByCategory/>
@@ -55,32 +56,34 @@ export default async function Home() {
                 <SaleSection/>
             </Suspense>
 
-            <section className="border-t border-border bg-secondary/20 py-16 md:py-24">
+            <section className={storefrontSectionClass}>
                 <div className="container mx-auto px-4">
-                    <div className="mx-auto max-w-2xl text-center">
-                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
-                            {t('whyShopEyebrow')}
-                        </p>
-                        <h2 className="mt-3 text-3xl font-bold md:text-4xl">
-                            {t('whyShopWithUs')}
-                        </h2>
-                    </div>
-
-                    <div className="mt-12 grid gap-5 md:grid-cols-3">
-                        {featureKeys.map((feature) => (
-                            <div
-                                key={feature.key}
-                                className="rounded-xl border border-border bg-card p-7"
-                            >
-                                <div className="flex size-11 items-center justify-center rounded-lg bg-secondary text-primary">
-                                    <feature.icon className="size-5.5" />
-                                </div>
-                                <h3 className="mt-6 text-lg font-medium">{t(`features.${feature.key}.title`)}</h3>
-                                <p className="mt-2 font-light leading-relaxed text-muted-foreground">
-                                    {t(`features.${feature.key}.description`)}
+                    <div className="relative overflow-hidden rounded-[2rem] bg-primary px-6 py-10 text-primary-foreground shadow-[var(--shadow-e3)] md:px-10 md:py-12 lg:px-14">
+                        <div aria-hidden="true" className="absolute -right-20 -top-32 size-96 rounded-full border border-white/15" />
+                        <div aria-hidden="true" className="absolute -right-8 -top-20 size-64 rounded-full border border-white/15" />
+                        <div className="relative grid gap-10 lg:grid-cols-[.8fr_1.2fr] lg:items-center">
+                            <div>
+                                <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary-foreground/70">
+                                    {t('whyShopEyebrow')}
                                 </p>
+                                <h2 className="mt-3 max-w-lg text-3xl font-bold md:text-4xl">
+                                    {t('whyShopWithUs')}
+                                </h2>
                             </div>
-                        ))}
+                            <div className="grid gap-4 sm:grid-cols-3">
+                                {featureKeys.map((feature) => (
+                                    <div key={feature.key} className="group rounded-2xl border border-white/15 bg-white/8 p-5 backdrop-blur-sm transition-colors hover:bg-white/12">
+                                        <div className="flex size-10 items-center justify-center rounded-xl bg-white/12 transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-110">
+                                            <feature.icon className="size-5" />
+                                        </div>
+                                        <h3 className="mt-5 font-medium">{t(`features.${feature.key}.title`)}</h3>
+                                        <p className="mt-2 text-sm font-light leading-relaxed text-primary-foreground/70">
+                                            {t(`features.${feature.key}.description`)}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -90,7 +93,7 @@ export default async function Home() {
 
 function HomepageSectionSkeleton({cards}: {cards: number}) {
     return (
-        <section className="border-b border-border py-16 md:py-24" aria-hidden="true">
+        <section className={storefrontSectionClass} aria-hidden="true">
             <div className="container mx-auto px-4">
                 <div className="h-4 w-36 animate-pulse rounded bg-muted"/>
                 <div className="mt-3 h-10 w-72 animate-pulse rounded-lg bg-muted"/>

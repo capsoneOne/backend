@@ -152,6 +152,9 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "kern" 1;
+    background-image:
+      radial-gradient(circle at 8% -10%, color-mix(in oklch, var(--primary) 7%, transparent) 0, transparent 28rem),
+      radial-gradient(circle at 94% 12%, color-mix(in oklch, var(--chart-2) 6%, transparent) 0, transparent 24rem);
   }
   h1, h2, h3 {
     letter-spacing: -0.02em;
@@ -216,6 +219,29 @@ html[lang="km"] p:not([class*="leading-"]) {
   }
 }
 
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes shimmer-line {
+  from { transform: translateX(-140%) skewX(-18deg); }
+  to { transform: translateX(420%) skewX(-18deg); }
+}
+
+@keyframes scan-art {
+  0%, 16% { opacity: 0; transform: translateY(-1rem); }
+  28%, 72% { opacity: 0.7; }
+  84%, 100% { opacity: 0; transform: translateY(28rem); }
+}
+
+@keyframes scroll-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
 @keyframes float-art {
   0%, 100% { transform: translateY(0) rotate(-0.4deg); }
   50% { transform: translateY(-12px) rotate(0.6deg); }
@@ -235,6 +261,11 @@ html[lang="km"] p:not([class*="leading-"]) {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes robot-hover {
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50% { transform: translateY(-7px) rotate(1.5deg); }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .animate-fade-up {
     animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -252,6 +283,33 @@ html[lang="km"] p:not([class*="leading-"]) {
     animation: pulse-soft 3.4s ease-in-out infinite;
   }
 
+  .animate-robot-hover {
+    animation: robot-hover 3s ease-in-out infinite;
+  }
+
+  .animate-page-enter {
+    animation: page-enter 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .animate-scan-art {
+    animation: scan-art 7s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+
+  .shine-on-hover::after {
+    animation: none;
+  }
+
+  .shine-on-hover:hover::after {
+    animation: shimmer-line 0.9s ease-out;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .scroll-progress {
+      animation: scroll-progress linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+
   @supports (animation-timeline: view()) {
     .reveal-section {
       animation: section-reveal linear both;
@@ -261,10 +319,43 @@ html[lang="km"] p:not([class*="leading-"]) {
   }
 }
 
+@layer utilities {
+  .interactive-lift {
+    transition:
+      transform 350ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 350ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 250ms ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .interactive-lift:hover {
+      transform: translateY(-5px);
+      border-color: color-mix(in oklch, var(--primary) 24%, var(--border));
+      box-shadow: var(--shadow-e3);
+    }
+  }
+
+  .shine-on-hover {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .shine-on-hover::after {
+    position: absolute;
+    inset: -40% auto -40% -30%;
+    width: 22%;
+    content: "";
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 24%), transparent);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

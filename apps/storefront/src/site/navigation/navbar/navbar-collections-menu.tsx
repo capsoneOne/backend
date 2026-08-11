@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/navigation-menu';
 import {cn} from '@/lib/utils';
 import {Link, usePathname} from '@/platform/i18n/navigation';
+import {navbarActiveClass, navbarPrimaryClass} from '@/site/navigation/navigation-styles';
 
 interface CollectionItem {
     id: string;
@@ -36,7 +37,7 @@ export function NavbarCollectionsMenu({
         <NavigationMenu className="z-50">
             <NavigationMenuList>
                 <NavigationMenuItem>
-                    <NavigationMenuTrigger className={cn('bg-transparent', active && 'bg-primary/10 text-primary')}>
+                    <NavigationMenuTrigger className={cn(navbarPrimaryClass, 'bg-transparent', active && navbarActiveClass)}>
                         {categoriesLabel}
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>

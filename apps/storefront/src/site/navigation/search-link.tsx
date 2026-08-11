@@ -1,6 +1,7 @@
 import {Search} from 'lucide-react';
 import {getTranslations} from 'next-intl/server';
 import {NavigationLink} from '@/site/navigation/navigation-link';
+import {navbarIconClass} from '@/site/navigation/navigation-styles';
 
 /**
  * Compact text-search entry point for viewports too narrow for the full input.
@@ -14,7 +15,7 @@ export async function SearchLink() {
     return (
         <NavigationLink
             href="/search"
-            className="inline-flex size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground lg:hidden"
+            className={`${navbarIconClass} lg:hidden`}
             title={t('searchProducts')}
         >
             <Search className="size-5" />

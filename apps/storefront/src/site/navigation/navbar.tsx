@@ -28,7 +28,7 @@ export async function Navbar() {
     const t = await getTranslations({locale, namespace: 'Navigation'});
 
     return (
-        <header className="fixed inset-x-0 top-0 z-50 border-b border-border/70 bg-background/80 shadow-[0_8px_30px_-28px_color-mix(in_oklch,var(--color-primary)_60%,transparent)] backdrop-blur-xl">
+        <header className="fixed inset-x-0 top-0 z-50 border-b border-border/60 bg-background/75 shadow-[0_12px_36px_-30px_color-mix(in_oklch,var(--color-primary)_75%,transparent)] backdrop-blur-2xl supports-[backdrop-filter]:bg-background/70">
             <div className="container mx-auto px-4">
                 <div className="flex h-[4.5rem] items-center gap-4">
                     <div className="flex min-w-0 shrink-0 items-center gap-2 md:gap-6">
@@ -92,6 +92,10 @@ export async function Navbar() {
                     </div>
                 </div>
             </div>
+            <span
+                aria-hidden="true"
+                className="scroll-progress absolute inset-x-0 bottom-[-1px] h-0.5 origin-left scale-x-0 bg-gradient-to-r from-primary via-cyan-400 to-primary"
+            />
         </header>
     );
 }

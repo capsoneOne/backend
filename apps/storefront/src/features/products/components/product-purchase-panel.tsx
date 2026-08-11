@@ -19,17 +19,19 @@ export function ProductPurchasePanel({product, searchParams, currencyCode}: Prod
     const images = variant?.assets?.length ? variant.assets : product.assets;
 
     return (
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.08fr_.92fr] lg:gap-14">
             <div className="lg:sticky lg:top-20 lg:self-start">
                 <ProductImageCarousel images={images} />
             </div>
-            <ProductInfo
-                product={product}
-                searchParams={searchParams}
-                currencyCode={currencyCode}
-                onVariantChange={setVariant}
-                findSimilarAssetId={product.featuredAsset?.id}
-            />
+            <div className="rounded-2xl border border-border/70 bg-card/70 p-5 shadow-[var(--shadow-e1)] backdrop-blur-sm md:p-7">
+                <ProductInfo
+                    product={product}
+                    searchParams={searchParams}
+                    currencyCode={currencyCode}
+                    onVariantChange={setVariant}
+                    findSimilarAssetId={product.featuredAsset?.id}
+                />
+            </div>
         </div>
     );
 }

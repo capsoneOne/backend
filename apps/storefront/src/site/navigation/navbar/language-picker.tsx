@@ -5,6 +5,7 @@ import {useRouter, usePathname} from '@/platform/i18n/navigation';
 import {useSearchParams} from 'next/navigation';
 import {Languages} from 'lucide-react';
 import {Button} from '@/components/ui/button';
+import {navbarIconClass} from '@/site/navigation/navigation-styles';
 
 export function LanguagePicker() {
     const locale = useLocale();
@@ -25,7 +26,7 @@ export function LanguagePicker() {
             type="button"
             variant="ghost"
             size="icon"
-            className="relative size-11 text-muted-foreground hover:text-foreground"
+            className={navbarIconClass}
             onClick={toggleLocale}
             aria-label={label}
             title={label}

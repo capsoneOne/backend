@@ -38,7 +38,8 @@ export async function Footer() {
     const collections = await getTopCollections(locale);
 
     return (
-        <footer className="mt-auto border-t border-border bg-background">
+        <footer className="relative mt-auto overflow-hidden border-t border-border bg-background">
+            <div aria-hidden="true" className="absolute -bottom-48 -left-24 size-96 rounded-full bg-primary/8 blur-3xl" />
             <div className="border-b border-border bg-secondary/25">
                 <div className="container mx-auto grid px-4 sm:grid-cols-3">
                     <div className="flex items-center gap-3 border-border py-5 sm:border-r sm:pr-6">
