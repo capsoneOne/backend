@@ -135,11 +135,20 @@ function BrandLogo({brand}: {brand: MarketplaceBrand}) {
             );
         case 'tommy':
             return (
-                <span className="flex items-center gap-3 text-xl font-bold uppercase tracking-[0.08em]">
-                    <span className="grid h-7 w-12 grid-cols-2 overflow-hidden border border-[#101f3c]" aria-hidden="true">
-                        <span className="bg-white" /><span className="bg-[#d71920]" />
+                <span className="flex items-center gap-3.5 text-[#101b33] dark:text-white">
+                    <span
+                        className="flex h-9 w-14 shrink-0 flex-col overflow-hidden rounded-[3px] bg-[#101f3c] p-[3px] shadow-[0_2px_8px_rgba(16,31,60,0.14)]"
+                        aria-hidden="true"
+                    >
+                        <span className="grid flex-1 grid-cols-2 overflow-hidden rounded-[1px]">
+                            <span className="bg-white" />
+                            <span className="bg-[#d71920]" />
+                        </span>
                     </span>
-                    <span>Tommy Hilfiger</span>
+                    <span className="flex flex-col text-[1.05rem] font-semibold uppercase leading-[1.02] tracking-[0.15em]">
+                        <span>Tommy</span>
+                        <span className="mt-1.5">Hilfiger</span>
+                    </span>
                 </span>
             );
         case 'calvin-klein':
@@ -182,15 +191,15 @@ function MarketplaceBrandMarquee({
                                 {brands.map((brand) => (
                                     <div
                                         key={`${copyIndex}-${brand.name}`}
-                                        className="group relative flex h-28 w-60 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-border/80 bg-card/80 px-6 shadow-[var(--shadow-e1)] transition-colors hover:border-primary/30 hover:bg-card sm:w-64"
+                                        className="group relative flex h-28 w-60 shrink-0 items-center justify-center overflow-hidden rounded-[1.25rem] border border-border/70 bg-card px-6 shadow-[var(--shadow-e1)] transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-[var(--shadow-e2)] sm:w-64"
                                         role="img"
                                         aria-label={`${brand.name} logo, ${categoryLabels[brand.category]}`}
                                     >
-                                        <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-[size:18px_18px] opacity-20 [mask-image:linear-gradient(to_bottom,black,transparent)]" />
-                                        <span className="absolute left-4 top-3 text-[0.55rem] font-bold uppercase tracking-[0.16em] text-muted-foreground/70">
+                                        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_88%_10%,color-mix(in_oklch,var(--primary)_8%,transparent),transparent_42%)]" />
+                                        <span className="absolute left-4 top-3 rounded-full border border-primary/10 bg-primary/[0.06] px-2 py-1 text-[0.5rem] font-bold uppercase tracking-[0.16em] text-primary/75">
                                             {categoryLabels[brand.category]}
                                         </span>
-                                        <div className="relative flex items-center justify-center transition-transform duration-300 group-hover:scale-105"><BrandLogo brand={brand} /></div>
+                                        <div className="relative flex translate-y-1.5 items-center justify-center transition-transform duration-300 group-hover:scale-[1.03]"><BrandLogo brand={brand} /></div>
                                     </div>
                                 ))}
                             </div>
