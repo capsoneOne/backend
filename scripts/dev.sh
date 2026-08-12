@@ -55,6 +55,47 @@ cleanup() {
     printf '▸ done\n'
 }
 
+# --- preflight -------------------------------------------------------------
+# Refuse to start on top of a running stack. Without this, the second instance's
+# Next.js fails with EADDRINUSE, concurrently's --kill-others then tears down the
+# *first* instance's server too, and you end up with nothing running and a
+# confusing error — which is worse than either outcome on its own.
+blocked=0
+for port in "${PORTS[@]}"; do
+    holder=$(lsof -ti "tcp:${port}" -sTCP:LISTEN 2>/dev/null || true)
+    if [[ -n "$holder" ]]; then
+        name=$(ps -p "$(echo "$holder" | head -1)" -o comm= 2>/dev/null || echo "?")
+        printf '  port %s already in use — pid %s (%s)\n' "$port" "$(echo "$holder" | tr '\n' ' ')" "$name"
+        blocked=1
+    fi
+done
+if (( blocked )); then
+    cat <<'MSG'
+
+The dev stack appears to be running already. Nothing was started or stopped.
+
+  npm run status    show what is up
+  npm run stop      stop it, then run dev again
+MSG
+    trap - EXIT          # nothing was started, so skip cleanup
+    exit 1
+fi
+
+# --- infrastructure --------------------------------------------------------
+# Start Postgres + the embedder if they are not already healthy. `--wait` blocks
+# until both report healthy, which removes the race where Vendure boots first and
+# fails against a database that is not accepting connections yet.
+if [[ -z "$(docker compose -f "$COMPOSE_FILE" ps --status running -q 2>/dev/null)" ]]; then
+    printf '▸ starting Postgres + embedder\n'
+    if ! docker compose -f "$COMPOSE_FILE" up -d --wait; then
+        printf '  could not start containers — is Docker running?\n'
+        trap - EXIT
+        exit 1
+    fi
+fi
+
+printf '▸ server :3000   storefront :3001   (Ctrl-C stops everything)\n'
+
 trap cleanup INT TERM EXIT
 
 # Job control: makes the background job below its own process group leader.

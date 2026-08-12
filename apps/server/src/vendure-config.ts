@@ -7,7 +7,7 @@ import {
 } from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
 import { json } from 'express';
-import { AssetServerPlugin } from '@vendure/asset-server-plugin';
+import { AssetServerPlugin, configureS3AssetStorage } from '@vendure/asset-server-plugin';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 import 'dotenv/config';
@@ -24,6 +24,33 @@ const serverPort = +process.env.PORT || +process.env.VENDURE_SERVER_PORT || 3000
 // every route with a locale, so both parts matter — a link missing /<locale> 404s.
 const STOREFRONT_URL = process.env.STOREFRONT_URL ?? 'http://localhost:3001';
 const DEFAULT_LOCALE = process.env.STOREFRONT_DEFAULT_LOCALE ?? 'en';
+
+/**
+ * Object storage for product images.
+ *
+ * Enabled by the presence of the R2 vars, not by APP_ENV. That way a deploy without
+ * credentials falls back to local disk loudly at boot instead of writing every upload
+ * to a container filesystem that disappears on restart — and a developer can point at
+ * a real bucket locally to reproduce a storage bug without faking the environment.
+ *
+ * R2 is S3-compatible, so Vendure's built-in strategy works unchanged. Two details are
+ * R2-specific: region must be the literal 'auto', and path-style addressing is required
+ * because R2 does not support virtual-hosted-style bucket subdomains.
+ */
+const R2_ENABLED = Boolean(
+    process.env.R2_ACCOUNT_ID &&
+        process.env.R2_BUCKET &&
+        process.env.R2_ACCESS_KEY_ID &&
+        process.env.R2_SECRET_ACCESS_KEY,
+);
+
+if (!R2_ENABLED && !IS_DEV) {
+    // eslint-disable-next-line no-console
+    console.warn(
+        '[assets] R2 is not configured — falling back to local disk. On a container host ' +
+            'every uploaded image will be lost on the next restart.',
+    );
+}
 
 export const config: VendureConfig = {
     apiOptions: {
@@ -92,11 +119,30 @@ export const config: VendureConfig = {
         GraphiqlPlugin.init(),
         AssetServerPlugin.init({
             route: 'assets',
+            // Still required even on R2: this is the temp/working dir, and the local
+            // fallback path uses it when R2 vars are absent.
             assetUploadDir: path.join(__dirname, '../static/assets'),
-            // For local dev, the correct value for assetUrlPrefix should
-            // be guessed correctly, but for production it will usually need
-            // to be set manually to match your production url.
-            assetUrlPrefix: IS_DEV ? undefined : 'https://www.my-shop.com/assets/',
+            // Serve straight from the bucket's public URL rather than proxying every
+            // image through Vendure. Trailing slash matters — Vendure concatenates.
+            assetUrlPrefix: R2_ENABLED
+                ? `${process.env.R2_PUBLIC_URL.replace(/\/$/, '')}/`
+                : undefined,
+            ...(R2_ENABLED
+                ? {
+                      storageStrategyFactory: configureS3AssetStorage({
+                          bucket: process.env.R2_BUCKET,
+                          credentials: {
+                              accessKeyId: process.env.R2_ACCESS_KEY_ID,
+                              secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+                          },
+                          nativeS3Configuration: {
+                              endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+                              region: 'auto',
+                              forcePathStyle: true,
+                          },
+                      }),
+                  }
+                : {}),
         }),
         DefaultSchedulerPlugin.init(),
         DefaultJobQueuePlugin.init({ useDatabaseForBuffer: true }),

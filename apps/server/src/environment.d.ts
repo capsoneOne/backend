@@ -17,6 +17,16 @@ declare global {
             DB_USERNAME: string;
             DB_PASSWORD: string;
             DB_SCHEMA: string;
+            EMBEDDER_URL: string;
+            STOREFRONT_URL: string;
+            STOREFRONT_DEFAULT_LOCALE: string;
+            // Cloudflare R2. Present in production only; dev uses local disk.
+            R2_ACCOUNT_ID: string;
+            R2_BUCKET: string;
+            R2_ACCESS_KEY_ID: string;
+            R2_SECRET_ACCESS_KEY: string;
+            /** Public base URL of the bucket, e.g. https://assets.example.com */
+            R2_PUBLIC_URL: string;
         }
     }
 }
