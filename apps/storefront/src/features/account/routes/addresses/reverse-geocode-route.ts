@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
   try {
     const response = await scheduleRequest(() => fetch(url, {
       headers: {
-        'User-Agent': process.env.GEOCODING_USER_AGENT || 'StyleMatch/1.0 (address location picker)',
+        'User-Agent': process.env.GEOCODING_USER_AGENT || 'Lumé/1.0 (address location picker)',
         Accept: 'application/json',
       },
       cache: 'no-store',

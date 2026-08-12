@@ -1,6 +1,6 @@
 {
   "ChatAssistant": {
-    "name": "StyleMatch Assistant",
+    "name": "Lumé Assistant",
     "status": "Online now",
     "open": "Open shopping assistant",
     "close": "Close shopping assistant",
@@ -15,7 +15,7 @@
     },
     "placeholder": "Ask about products, delivery, or returns…",
     "send": "Send message",
-    "typing": "StyleMatch Assistant is typing",
+    "typing": "Lumé Assistant is typing",
     "sources": "Sources",
     "error": "I couldn’t reach the shopping service just now. Please try again in a moment.",
     "rateLimited": "You’re sending messages too quickly. Please wait a moment and try again.",

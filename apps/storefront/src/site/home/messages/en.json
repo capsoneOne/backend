@@ -11,6 +11,14 @@
     "illustrationAlt": "An ecommerce website surrounded by shopping bags and gifts"
   },
   "Home": {
+    "welcome": {
+      "fallback": "Welcome back, {name}",
+      "morning": "Good morning, {name}",
+      "afternoon": "Good afternoon, {name}",
+      "evening": "Good evening, {name}",
+      "message": "Ready to discover something you’ll love?",
+      "action": "Explore for you"
+    },
     "categoriesEyebrow": "Shop your way",
     "shopByCategory": "Shop by category",
     "shopByCategoryDescription": "Jump straight to what you need, from everyday essentials to the latest products.",
@@ -28,7 +36,7 @@
     "campaignBrandsRightCaption": "Everyday choice",
     "campaignStoriesEyebrow": "One marketplace. More choice.",
     "campaignStoriesTitle": "Brands for every part of life",
-    "campaignStoriesDescription": "Discover trusted names across technology, fashion, beauty, home, sports, and toys—all together on StyleMatch.",
+    "campaignStoriesDescription": "Discover trusted names across technology, fashion, beauty, home, sports, and toys—all together on Lumé.",
     "campaignCategoriesLabel": "Marketplace categories",
     "campaignCategories": {
       "technology": "Technology",
@@ -41,12 +49,12 @@
     "testimonials": {
       "eyebrow": "Testimonials",
       "title": "What our users say",
-      "description": "See what StyleMatch shoppers say about finding the right products across the marketplace.",
+      "description": "See what Lumé shoppers say about finding the right products across the marketplace.",
       "reviewerLabel": "Verified shopper",
       "ratingLabel": "5 out of 5 stars"
     },
     "memberEyebrow": "Keep your shopping together",
-    "memberTitle": "Make shopping easier with a StyleMatch account",
+    "memberTitle": "Make shopping easier with a Lumé account",
     "memberDescription": "Save products you love, follow every order, and keep delivery details ready for a faster checkout next time.",
     "memberBenefits": {
       "wishlist": "Save favourites",
@@ -56,7 +64,7 @@
     "memberPrimary": "Create an account",
     "memberSecondary": "Already a member? Sign in",
     "memberSignedInEyebrow": "Welcome back",
-    "memberSignedInTitle": "Your StyleMatch account, all in one place",
+    "memberSignedInTitle": "Your Lumé account, all in one place",
     "memberSignedInDescription": "Jump back into your saved products, check an order, or update your delivery details whenever you need.",
     "memberSignedInPrimary": "Open your account",
     "memberSignedInSecondary": "Continue shopping",
@@ -75,6 +83,6 @@
         "description": "Clear order updates and a dependable journey from checkout to your door."
       }
     },
-    "whyShopEyebrow": "The StyleMatch difference"
+    "whyShopEyebrow": "The Lumé difference"
   }
 }
