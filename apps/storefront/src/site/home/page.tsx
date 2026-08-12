@@ -2,13 +2,18 @@ import type {Metadata} from "next";
 import {Suspense} from "react";
 import {getRouteLocale} from "@/platform/i18n/server";
 import {HeroSection} from "@/site/home/hero-section";
-import {NewArrivalsSection, SaleSection} from '@/features/products/home-merchandising';
+import {NewArrivalsSection} from '@/features/products/home-merchandising';
+import {FeaturedProducts} from '@/features/products/featured-products';
 import {SITE_NAME, SITE_URL, buildCanonicalUrl} from "@/config/metadata";
 import {BadgeCheck, Tag, Zap} from "lucide-react";
 import {getTranslations} from 'next-intl/server';
 import {toOgLocale} from '@/platform/i18n/locale-utils';
 import {ShopByCategory} from '@/site/home/shop-by-category';
 import {storefrontSectionClass} from '@/components/storefront-section';
+import {
+    MemberBenefitsSection,
+    SeasonalCampaignSection,
+} from '@/site/home/home-campaign-sections';
 
 export async function generateMetadata(): Promise<Metadata> {
     const locale = await getRouteLocale();
@@ -49,11 +54,12 @@ export default async function Home() {
             <Suspense fallback={<HomepageSectionSkeleton cards={6}/>}>
                 <ShopByCategory/>
             </Suspense>
-            <Suspense fallback={<HomepageSectionSkeleton cards={4}/>}>
-                <NewArrivalsSection/>
+            <Suspense fallback={<HomepageSectionSkeleton cards={4}/> }>
+                <FeaturedProducts/>
             </Suspense>
-            <Suspense fallback={<HomepageSectionSkeleton cards={4}/>}>
-                <SaleSection/>
+            <SeasonalCampaignSection/>
+            <Suspense fallback={<HomepageSectionSkeleton cards={4}/> }>
+                <NewArrivalsSection/>
             </Suspense>
 
             <section className={storefrontSectionClass}>
@@ -87,7 +93,20 @@ export default async function Home() {
                     </div>
                 </div>
             </section>
+            <Suspense fallback={<MemberBenefitsSkeleton/>}>
+                <MemberBenefitsSection/>
+            </Suspense>
         </div>
+    );
+}
+
+function MemberBenefitsSkeleton() {
+    return (
+        <section className={storefrontSectionClass} aria-hidden="true">
+            <div className="container mx-auto px-4">
+                <div className="h-72 animate-pulse rounded-3xl border border-border bg-muted/60"/>
+            </div>
+        </section>
     );
 }
 

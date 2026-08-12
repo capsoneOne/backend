@@ -18,6 +18,26 @@
     "pageTitle": "Clothing, shoes, and accessories for every day",
     "description": "Shop clothing, shoes, and accessories across multiple categories, from everyday essentials to seasonal new arrivals.",
     "ogDescription": "Shop curated clothing, shoes, and accessories across collections for every day and every season.",
+    "campaignTitle": "Easy layers. Fresh colour. Everyday confidence.",
+    "campaignDescription": "Build a wardrobe that works harder with versatile pieces made for changing days, effortless combinations, and your own way of dressing.",
+    "campaignPrimary": "Shop the edit",
+    "campaignSecondary": "Browse all styles",
+    "campaignAlt": "A person choosing clothes from a wardrobe",
+    "memberEyebrow": "Keep your style together",
+    "memberTitle": "Make shopping easier with a StyleMatch account",
+    "memberDescription": "Save the pieces you love, follow every order, and keep delivery details ready for a faster checkout next time.",
+    "memberBenefits": {
+      "wishlist": "Save favourites",
+      "orders": "Track orders",
+      "addresses": "Faster checkout"
+    },
+    "memberPrimary": "Create an account",
+    "memberSecondary": "Already a member? Sign in",
+    "memberSignedInEyebrow": "Welcome back",
+    "memberSignedInTitle": "Your StyleMatch account, all in one place",
+    "memberSignedInDescription": "Jump back into your saved pieces, check an order, or update your delivery details whenever you need.",
+    "memberSignedInPrimary": "Open your account",
+    "memberSignedInSecondary": "Continue shopping",
     "whyShopWithUs": "Everything you need to shop confidently",
     "features": {
       "highQuality": {
