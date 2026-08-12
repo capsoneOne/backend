@@ -4,7 +4,9 @@ import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { KeyRound, Lock, Mail, Phone, User, UserRound } from 'lucide-react';
 import { registerAction } from './actions';
+import { AuthField } from '@/components/ui/auth-field';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
@@ -84,43 +86,51 @@ export function RegistrationForm({ redirectTo }: RegistrationFormProps) {
         : '/sign-in';
 
     return (
-        <Card>
+        <Card data-size="sm">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-3">
                         <FormField
                             control={form.control}
                             name="emailAddress"
                             render={({ field }) => (
-                                <FormItem>
+                                <FormItem className="animate-field-rise" style={{ animationDelay: '60ms' }}>
                                     <FormLabel>{t('emailAddressLabel')}</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            type="email"
-                                            placeholder="you@example.com"
-                                            disabled={isPending}
-                                            {...field}
-                                        />
+                                        <AuthField icon={Mail}>
+                                            <Input
+                                                type="email"
+                                                autoComplete="email"
+                                                placeholder="you@example.com"
+                                                disabled={isPending}
+                                                className="pl-10"
+                                                {...field}
+                                            />
+                                        </AuthField>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-3">
                             <FormField
                                 control={form.control}
                                 name="firstName"
                                 render={({ field }) => (
-                                    <FormItem>
+                                    <FormItem className="animate-field-rise" style={{ animationDelay: '120ms' }}>
                                         <FormLabel>{t('firstNameLabel')}</FormLabel>
                                         <FormControl>
-                                            <Input
-                                                type="text"
-                                                placeholder={t('firstNamePlaceholder')}
-                                                disabled={isPending}
-                                                {...field}
-                                            />
+                                            <AuthField icon={User}>
+                                                <Input
+                                                    type="text"
+                                                    autoComplete="given-name"
+                                                    placeholder={t('firstNamePlaceholder')}
+                                                    disabled={isPending}
+                                                    className="pl-10"
+                                                    {...field}
+                                                />
+                                            </AuthField>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -131,15 +141,19 @@ export function RegistrationForm({ redirectTo }: RegistrationFormProps) {
                                 control={form.control}
                                 name="lastName"
                                 render={({ field }) => (
-                                    <FormItem>
+                                    <FormItem className="animate-field-rise" style={{ animationDelay: '160ms' }}>
                                         <FormLabel>{t('lastNameLabel')}</FormLabel>
                                         <FormControl>
-                                            <Input
-                                                type="text"
-                                                placeholder={t('lastNamePlaceholder')}
-                                                disabled={isPending}
-                                                {...field}
-                                            />
+                                            <AuthField icon={UserRound}>
+                                                <Input
+                                                    type="text"
+                                                    autoComplete="family-name"
+                                                    placeholder={t('lastNamePlaceholder')}
+                                                    disabled={isPending}
+                                                    className="pl-10"
+                                                    {...field}
+                                                />
+                                            </AuthField>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -151,15 +165,19 @@ export function RegistrationForm({ redirectTo }: RegistrationFormProps) {
                             control={form.control}
                             name="phoneNumber"
                             render={({ field }) => (
-                                <FormItem>
+                                <FormItem className="animate-field-rise" style={{ animationDelay: '200ms' }}>
                                     <FormLabel>{t('phoneNumberLabel')}</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            type="tel"
-                                            placeholder="+1 (555) 000-0000"
-                                            disabled={isPending}
-                                            {...field}
-                                        />
+                                        <AuthField icon={Phone}>
+                                            <Input
+                                                type="tel"
+                                                autoComplete="tel"
+                                                placeholder="+1 (555) 000-0000"
+                                                disabled={isPending}
+                                                className="pl-10"
+                                                {...field}
+                                            />
+                                        </AuthField>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -170,14 +188,18 @@ export function RegistrationForm({ redirectTo }: RegistrationFormProps) {
                             control={form.control}
                             name="password"
                             render={({ field }) => (
-                                <FormItem>
+                                <FormItem className="animate-field-rise" style={{ animationDelay: '240ms' }}>
                                     <FormLabel>{t('passwordLabel')}</FormLabel>
                                     <FormControl>
-                                        <PasswordInput
-                                            placeholder="••••••••"
-                                            disabled={isPending}
-                                            {...field}
-                                        />
+                                        <AuthField icon={Lock}>
+                                            <PasswordInput
+                                                autoComplete="new-password"
+                                                placeholder="••••••••"
+                                                disabled={isPending}
+                                                className="pl-10"
+                                                {...field}
+                                            />
+                                        </AuthField>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -188,14 +210,18 @@ export function RegistrationForm({ redirectTo }: RegistrationFormProps) {
                             control={form.control}
                             name="confirmPassword"
                             render={({ field }) => (
-                                <FormItem>
+                                <FormItem className="animate-field-rise" style={{ animationDelay: '280ms' }}>
                                     <FormLabel>{t('confirmPasswordLabel')}</FormLabel>
                                     <FormControl>
-                                        <PasswordInput
-                                            placeholder="••••••••"
-                                            disabled={isPending}
-                                            {...field}
-                                        />
+                                        <AuthField icon={KeyRound}>
+                                            <PasswordInput
+                                                autoComplete="new-password"
+                                                placeholder="••••••••"
+                                                disabled={isPending}
+                                                className="pl-10"
+                                                {...field}
+                                            />
+                                        </AuthField>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -203,16 +229,21 @@ export function RegistrationForm({ redirectTo }: RegistrationFormProps) {
                         />
 
                         {serverError && (
-                            <div className="text-sm text-destructive">
+                            <div role="alert" className="animate-field-rise text-sm text-destructive">
                                 {serverError}
                             </div>
                         )}
 
-                        <Button type="submit" className="w-full" disabled={isPending}>
+                        <Button
+                            type="submit"
+                            className="animate-field-rise w-full"
+                            style={{ animationDelay: '320ms' }}
+                            disabled={isPending}
+                        >
                             {isPending ? t('creatingAccount') : t('createAccount')}
                         </Button>
                     </CardContent>
-                    <CardFooter className="flex flex-col space-y-4 mt-4">
+                    <CardFooter className="flex flex-col space-y-4 mt-1">
 
                         <div className="text-sm text-center text-muted-foreground">
                             {t('alreadyHaveAccount')}{' '}

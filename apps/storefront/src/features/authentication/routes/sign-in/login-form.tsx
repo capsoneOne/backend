@@ -4,7 +4,9 @@ import {useState, useTransition} from 'react';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import {Lock, Mail} from 'lucide-react';
 import {loginAction} from './actions';
+import {AuthField} from '@/components/ui/auth-field';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {PasswordInput} from '@/components/ui/password-input';
@@ -67,23 +69,27 @@ export function LoginForm({redirectTo}: LoginFormProps) {
         : '/register';
 
     return (
-        <Card>
+        <Card data-size="sm">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-3">
                         <FormField
                             control={form.control}
                             name="username"
                             render={({field}) => (
-                                <FormItem>
+                                <FormItem className="animate-field-rise" style={{animationDelay: '60ms'}}>
                                     <FormLabel>{t('email')}</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            type="email"
-                                            placeholder="you@example.com"
-                                            disabled={isPending}
-                                            {...field}
-                                        />
+                                        <AuthField icon={Mail}>
+                                            <Input
+                                                type="email"
+                                                autoComplete="email"
+                                                placeholder="you@example.com"
+                                                disabled={isPending}
+                                                className="pl-10"
+                                                {...field}
+                                            />
+                                        </AuthField>
                                     </FormControl>
                                     <FormMessage/>
                                 </FormItem>
@@ -94,7 +100,7 @@ export function LoginForm({redirectTo}: LoginFormProps) {
                             control={form.control}
                             name="password"
                             render={({field}) => (
-                                <FormItem>
+                                <FormItem className="animate-field-rise" style={{animationDelay: '140ms'}}>
                                     <div className="flex items-center justify-between">
                                         <FormLabel>{t('password')}</FormLabel>
                                         <Link
@@ -106,11 +112,15 @@ export function LoginForm({redirectTo}: LoginFormProps) {
                                     </div>
 
                                     <FormControl>
-                                        <PasswordInput
-                                            placeholder="••••••••"
-                                            disabled={isPending}
-                                            {...field}
-                                        />
+                                        <AuthField icon={Lock}>
+                                            <PasswordInput
+                                                autoComplete="current-password"
+                                                placeholder="••••••••"
+                                                disabled={isPending}
+                                                className="pl-10"
+                                                {...field}
+                                            />
+                                        </AuthField>
                                     </FormControl>
                                     <FormMessage/>
                                 </FormItem>
@@ -118,15 +128,20 @@ export function LoginForm({redirectTo}: LoginFormProps) {
                         />
 
                         {serverError && (
-                            <div className="text-sm text-destructive">
+                            <div role="alert" className="animate-field-rise text-sm text-destructive">
                                 {serverError}
                             </div>
                         )}
-                        <Button type="submit" className="w-full" disabled={isPending}>
+                        <Button
+                            type="submit"
+                            className="animate-field-rise w-full"
+                            style={{animationDelay: '220ms'}}
+                            disabled={isPending}
+                        >
                             {isPending ? t('signingIn') : t('signIn')}
                         </Button>
                     </CardContent>
-                    <CardFooter className="flex flex-col space-y-4 mt-2">
+                    <CardFooter className="flex flex-col space-y-4 mt-1">
                         <div className="text-muted-foreground text-sm text-center">
                             {t('noAccount')}{' '}
                             <Link href={registerHref} className="hover:text-primary underline">
