@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "leaflet/dist/leaflet.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -524,4 +525,34 @@ header button:not(.theme-toggle) svg,
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+.leaflet-container {
+  z-index: 0;
+  background: var(--muted);
+  font-family: var(--font-sans);
+}
+
+.leaflet-control-attribution {
+  border-radius: 0.5rem 0 0;
+  color: #334155;
+}
+
+.address-map-marker {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border: 3px solid white;
+  border-radius: 50% 50% 50% 0;
+  background: var(--primary);
+  box-shadow: 0 8px 18px rgb(15 23 42 / 28%);
+  rotate: -45deg;
+}
+
+.address-map-marker > span {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 999px;
+  background: white;
 }
