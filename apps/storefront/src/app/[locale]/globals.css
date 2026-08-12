@@ -385,6 +385,82 @@ html[lang="km"] p:not([class*="leading-"]) {
   animation-duration: var(--infinite-slider-hover-duration);
 }
 
+/* --- Authentication fields -------------------------------------------------
+   Each field is a `.auth-field` wrapper holding a leading icon, the control,
+   and an underline. The wrapper owns the state so the icon and underline can
+   react to focus without any JS: `:focus-within` covers the input *and* the
+   password reveal button, and `data-invalid` is mirrored from react-hook-form.
+   Transitions are safe to declare unguarded — the reduce block near the end of
+   this file collapses every duration to ~0. */
+
+@keyframes field-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Deliberately small: this fires on a validation failure, so it has to read as
+   "look here" rather than as the form breaking. */
+@keyframes field-shake {
+  20% { transform: translateX(-3px); }
+  40% { transform: translateX(3px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+}
+
+.auth-field-underline {
+  transform: scaleX(0);
+  transform-origin: center;
+  opacity: 0;
+  transition:
+    transform var(--motion-base) var(--ease-emphasized),
+    opacity var(--motion-base) var(--ease-emphasized);
+}
+
+.auth-field:focus-within .auth-field-underline {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+/* Chrome paints autofilled inputs with an opaque blue of its own that ignores
+   the theme entirely — light in dark mode, and clashing with the card surface in
+   light mode. The colour is not directly settable, but clipping that background
+   to the glyphs makes it disappear and lets the field's own surface show. This
+   is preferred over the usual `inset 0 0 0 100px` box-shadow trick, which would
+   paint over the focus ring (also a box-shadow) and kill the focus state. */
+.auth-field input:-webkit-autofill,
+.auth-field input:-webkit-autofill:hover,
+.auth-field input:-webkit-autofill:focus,
+.auth-field input:-webkit-autofill:active {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: var(--foreground);
+  caret-color: var(--foreground);
+}
+
+/* The icon is a static affordance — no transition, no movement on focus. The
+   underline carries the focus feedback on its own; animating the glyph as well
+   made the field busier than every other input in the app. Only the error
+   colour changes, and that is a state, not an animation. */
+.auth-field[data-invalid="true"] .auth-field-icon {
+  color: var(--destructive);
+}
+
+.auth-field[data-invalid="true"] .auth-field-underline {
+  background: var(--destructive);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Fields cascade in rather than appearing as a block; the per-field delay is
+     set inline from the field's index so the order matches the tab order. */
+  .animate-field-rise {
+    animation: field-rise 460ms var(--ease-emphasized) backwards;
+  }
+
+  .auth-field[data-invalid="true"] {
+    animation: field-shake 380ms var(--ease-standard);
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
