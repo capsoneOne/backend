@@ -22,3 +22,31 @@ export const SearchProductsQuery = graphql(`
         }
     }
 `, [ProductCardFragment]);
+
+/** Lightweight autocomplete lookup — enough to render a suggestion row. */
+export const SearchSuggestionsQuery = graphql(`
+    query SearchSuggestions($input: SearchInput!) {
+        search(input: $input) {
+            totalItems
+            items {
+                productId
+                productName
+                slug
+                productAsset {
+                    id
+                    preview
+                }
+                priceWithTax {
+                    __typename
+                    ... on PriceRange {
+                        min
+                    }
+                    ... on SinglePrice {
+                        value
+                    }
+                }
+                currencyCode
+            }
+        }
+    }
+`);

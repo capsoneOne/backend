@@ -245,7 +245,7 @@ export default function ShippingAddressStep({ onComplete }: ShippingAddressStepP
               </label>
             </div>
 
-            <Button type="submit" disabled={loading} className="w-full mt-4">
+            <Button type="submit" disabled={loading} className="mt-4 min-h-11 w-full px-5">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('continue')}
             </Button>
@@ -259,13 +259,13 @@ export default function ShippingAddressStep({ onComplete }: ShippingAddressStepP
     <div className="space-y-6">
       {addresses.length > 0 && (
         <div className="space-y-4">
-          <h3 className="font-semibold">{t('selectSavedAddress')}</h3>
+          <h3 className="font-medium">{t('selectSavedAddress')}</h3>
           <RadioGroup value={selectedAddressId || ''} onValueChange={setSelectedAddressId}>
             {addresses.map((address) => (
               <div key={address.id} className="flex items-start space-x-3">
                 <RadioGroupItem value={address.id} id={address.id} className="mt-1" />
                 <Label htmlFor={address.id} className="flex-1 cursor-pointer">
-                  <Card className="p-4">
+                  <Card className="gap-0 border-border p-4 transition-colors hover:border-primary/30">
                     <div className="leading-tight space-y-0">
                       <p className="font-medium">{address.fullName}</p>
                       {address.company && <p className="text-sm text-muted-foreground">{address.company}</p>}
@@ -303,14 +303,14 @@ export default function ShippingAddressStep({ onComplete }: ShippingAddressStepP
             <Button
               onClick={handleSelectExistingAddress}
               disabled={!selectedAddressId || loading}
-              className="flex-1"
+              className="min-h-11 flex-1 px-5"
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('continueWithSelected')}
             </Button>
 
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-              <DialogTrigger render={<Button type="button" variant="outline" />}>
+              <DialogTrigger render={<Button type="button" variant="outline" className="min-h-11 px-4" />}>
                 {t('addNewAddress')}
               </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -427,7 +427,7 @@ export default function ShippingAddressStep({ onComplete }: ShippingAddressStepP
 
       {addresses.length === 0 && (
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger render={<Button type="button" className="w-full" />}>
+          <DialogTrigger render={<Button type="button" className="min-h-11 w-full px-5" />}>
             {t('addShippingAddress')}
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -527,7 +527,7 @@ export default function ShippingAddressStep({ onComplete }: ShippingAddressStepP
               </FieldGroup>
 
               <DialogFooter>
-                <Button type="submit" disabled={saving} className="w-full">
+                <Button type="submit" disabled={saving} className="min-h-11 w-full px-5">
                   {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {t('saveAddress')}
                 </Button>

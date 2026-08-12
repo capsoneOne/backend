@@ -11,6 +11,7 @@ import {CheckoutProvider} from './checkout-provider';
 import {noIndexRobots} from '@/config/metadata';
 import {getActiveCustomer} from '@/features/account/customer';
 import {getAvailableCountriesCached} from '@/features/checkout/countries';
+import {StorefrontPageHeader, StorefrontPageShell} from '@/components/catalogue-page';
 
 export async function generateMetadata(): Promise<Metadata> {
     const locale = await getRouteLocale();
@@ -55,18 +56,24 @@ export default async function CheckoutPage() {
         paymentMethodsRes.data.eligiblePaymentMethods?.filter((m) => m.isEligible) || [];
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-8">{t('pageTitle')}</h1>
-            <CheckoutProvider
-                order={activeOrder}
-                addresses={addresses}
-                countries={countries}
-                shippingMethods={shippingMethods}
-                paymentMethods={paymentMethods}
-                isGuest={isGuest}
-            >
-                <CheckoutFlow/>
-            </CheckoutProvider>
-        </div>
+        <StorefrontPageShell>
+            <div className="mx-auto max-w-6xl">
+                <StorefrontPageHeader
+                    eyebrow={t('eyebrow')}
+                    title={t('pageTitle')}
+                    description={t('description')}
+                />
+                <CheckoutProvider
+                    order={activeOrder}
+                    addresses={addresses}
+                    countries={countries}
+                    shippingMethods={shippingMethods}
+                    paymentMethods={paymentMethods}
+                    isGuest={isGuest}
+                >
+                    <CheckoutFlow/>
+                </CheckoutProvider>
+            </div>
+        </StorefrontPageShell>
     );
 }

@@ -1,15 +1,17 @@
 import { Skeleton } from '@/components/ui/skeleton';
+import {CataloguePageHeaderSkeleton, StorefrontPageShell} from '@/components/catalogue-page';
 
 export default function CheckoutLoading() {
     return (
-        <div className="container mx-auto px-4 py-8">
-            <Skeleton className="h-9 w-32 mb-8" />
+        <StorefrontPageShell>
+            <div className="mx-auto max-w-6xl">
+                <CataloguePageHeaderSkeleton />
 
-            <div className="grid lg:grid-cols-3 gap-8">
+                <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-10">
                 {/* Checkout Steps */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="order-2 space-y-6 lg:order-1">
                     {/* Step Indicator */}
-                    <div className="flex items-center justify-between mb-8">
+                    <div className="mb-6 hidden items-center justify-between rounded-xl border border-border bg-card px-6 py-5 sm:flex">
                         {Array.from({ length: 4 }).map((_, i) => (
                             <div key={i} className="flex items-center">
                                 <Skeleton className="h-8 w-8 rounded-full" />
@@ -19,7 +21,7 @@ export default function CheckoutLoading() {
                     </div>
 
                     {/* Shipping Address Form */}
-                    <div className="border rounded-lg p-6 space-y-4">
+                    <div className="space-y-4 rounded-xl border border-border bg-card p-6">
                         <Skeleton className="h-6 w-40" />
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
@@ -49,8 +51,8 @@ export default function CheckoutLoading() {
                 </div>
 
                 {/* Order Summary */}
-                <div className="lg:col-span-1">
-                    <div className="border rounded-lg p-6 space-y-4 sticky top-24">
+                <div className="order-1 lg:order-2">
+                    <div className="sticky top-24 space-y-4 rounded-xl border border-border bg-card p-6">
                         <Skeleton className="h-6 w-32" />
 
                         {/* Order Items */}
@@ -84,7 +86,8 @@ export default function CheckoutLoading() {
                         </div>
                     </div>
                 </div>
+                </div>
             </div>
-        </div>
+        </StorefrontPageShell>
     );
 }

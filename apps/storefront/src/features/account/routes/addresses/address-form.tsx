@@ -7,6 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { Loader2 } from 'lucide-react';
 import { CountrySelect } from '@/components/ui/country-select';
 import {useTranslations} from 'next-intl';
+import {AddressLocationPicker, type ResolvedMapAddress} from './address-location-picker';
 
 interface Country {
   id: string;
@@ -51,7 +52,7 @@ interface AddressFormProps {
 
 export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitting }: AddressFormProps) {
   const t = useTranslations('Account');
-  const { register, handleSubmit, formState: { errors }, control } = useForm<AddressFormData>({
+  const { register, handleSubmit, formState: { errors }, control, setValue } = useForm<AddressFormData>({
     defaultValues: address ? {
       fullName: address.fullName || '',
       company: address.company || '',
@@ -71,10 +72,24 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
     await onSubmit(address ? { ...data, id: address.id } : data);
   };
 
+  const applyMapAddress = (mapAddress: ResolvedMapAddress) => {
+    const fields = ['streetLine1', 'city', 'province', 'postalCode'] as const;
+    fields.forEach(field => {
+      const value = mapAddress[field];
+      if (value) setValue(field, value, {shouldDirty: true, shouldValidate: true});
+    });
+
+    if (mapAddress.countryCode && countries.some(country => country.code === mapAddress.countryCode)) {
+      setValue('countryCode', mapAddress.countryCode, {shouldDirty: true, shouldValidate: true});
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
       <FieldGroup className="my-6">
         <div className="grid grid-cols-2 gap-4">
+          <AddressLocationPicker onAddressResolved={applyMapAddress} disabled={isSubmitting}/>
+
           <Field className="col-span-2">
             <FieldLabel htmlFor="fullName">{t('fullName')}</FieldLabel>
             <Input
@@ -166,11 +181,11 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
         </div>
       </FieldGroup>
 
-      <div className="flex gap-3 justify-end">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+      <div className="flex justify-end gap-3">
+        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting} className="min-h-11 px-4">
           {t('cancel')}
         </Button>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting} className="min-h-11 px-5">
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {address ? t('updateAddress') : t('saveAddress')}
         </Button>

@@ -37,3 +37,24 @@ export async function searchByImageUpload(
         return {status: 'error', code: 'UNAVAILABLE'};
     }
 }
+
+export async function searchSimilarProduct(
+    productId: string,
+    assetId: string | undefined,
+    locale: string,
+    take = 12,
+): Promise<VisualSearchState> {
+    try {
+        const res = await fetch(
+            `/api/visual-search?productId=${encodeURIComponent(productId)}${assetId ? `&assetId=${encodeURIComponent(assetId)}` : ''}&take=${take}&languageCode=${encodeURIComponent(locale)}`,
+        );
+        const body: unknown = await res.json().catch(() => null);
+        if (!res.ok) {
+            const code = (body as {code?: VisualSearchErrorCode} | null)?.code;
+            return {status: 'error', code: code ?? 'FAILED'};
+        }
+        return {status: 'ok', result: body as VisualSearchResponse};
+    } catch {
+        return {status: 'error', code: 'UNAVAILABLE'};
+    }
+}

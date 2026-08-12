@@ -38,7 +38,7 @@ export default function ReviewStep({ onEditStep }: ReviewStepProps) {
 
   return (
     <div className="space-y-6">
-      <h3 className="font-semibold text-lg">{t('reviewYourOrder')}</h3>
+      <h3 className="text-lg font-medium">{t('reviewYourOrder')}</h3>
 
       <div className={`grid grid-cols-1 gap-6 ${isGuest ? 'md:grid-cols-2 lg:grid-cols-4' : 'md:grid-cols-3'}`}>
         {isGuest && order.customer && (
@@ -163,7 +163,7 @@ export default function ReviewStep({ onEditStep }: ReviewStepProps) {
         onClick={handlePlaceOrder}
         disabled={loading || !order.shippingAddress || !order.shippingLines?.length || !selectedPaymentMethodCode}
         size="lg"
-        className="w-full"
+        className="min-h-11 w-full px-5"
       >
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         {t('placeOrder')}

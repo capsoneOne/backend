@@ -1,0 +1,176 @@
+{
+  "Pages": {
+    "about": {
+      "title": "About StyleMatch",
+      "lede": "A complete clothing storefront for browsing everyday essentials, seasonal collections, shoes, and accessories in one place.",
+      "sections": [
+        {
+          "heading": "A complete fashion storefront",
+          "body": "StyleMatch brings clothing, shoes, and accessories into one multi-category catalogue. You can browse collections, filter by product details and price, save favourites, manage a basket, and move through checkout like any modern clothing shop."
+        },
+        {
+          "heading": "Built for everyday style",
+          "body": "The catalogue is organised around how people actually shop for clothes: clear categories, useful filters, new-arrival edits, sale collections, product options, and stock-aware purchasing."
+        },
+        {
+          "heading": "The catalogue",
+          "body": "Products are managed in Vendure, an open-source headless commerce platform. Stock levels, prices and shipping options shown on the storefront come straight from it, so what you see on a product page is what the warehouse and the checkout agree on."
+        },
+        {
+          "heading": "More ways to discover",
+          "body": "Browse by category, search by product name, filter the catalogue, or use a photo when that is the easiest starting point. Each route leads back to the same products, prices, options, and availability."
+        },
+        {
+          "heading": "This is a student project",
+          "body": "StyleMatch is a capstone project, not a live retailer. Orders placed here are processed against a test payment handler, no money changes hands, and nothing ships. Treat any product, price or delivery estimate on the site as sample data."
+        }
+      ]
+    },
+    "contact": {
+      "title": "Contact",
+      "lede": "Questions about an order, delivery, returns, sizing, or a product in the catalogue.",
+      "sections": [
+        {
+          "heading": "Order and account questions",
+          "body": "The fastest route is your account: sign in and open the order from your order history, where you will find its current status, items and delivery address. If something looks wrong there, reply to your order confirmation email and include the order code so it can be traced."
+        },
+        {
+          "heading": "Product questions",
+          "body": "Sizing, materials and compatibility details live on each product page. If what you need is not there, ask before ordering rather than after — it is much easier to answer a question than to process a return."
+        },
+        {
+          "heading": "Sizing and fit questions",
+          "body": "Check the available options and product details before ordering. If a measurement, material, or fit note is missing, include the product name and variant when you get in touch."
+        },
+        {
+          "heading": "Response times",
+          "body": "This is a student project maintained by one person, not a staffed support desk. Expect a reply in days rather than hours, and no cover on weekends or holidays."
+        }
+      ]
+    },
+    "shippingReturns": {
+      "title": "Shipping & Returns",
+      "lede": "How orders are dispatched, what delivery costs, and how to send something back.",
+      "sections": [
+        {
+          "heading": "Delivery options",
+          "body": "Standard delivery arrives in five to seven business days. Express arrives in two to three. Next-day delivery is offered in selected areas and is shown at checkout only when your address qualifies. Every available option, with its exact cost, appears at the delivery step before you pay."
+        },
+        {
+          "heading": "Free shipping threshold",
+          "body": "Standard delivery is free on orders over $50 after discounts and before tax. If a promotion takes your basket under the threshold, the shipping cost reappears at checkout — the total shown on the review step is always the amount you will be charged."
+        },
+        {
+          "heading": "Tracking your order",
+          "body": "You will receive an email with a tracking number once your parcel is dispatched. You can also open the order at any time from your account, where its status is updated as it moves through packing, dispatch and delivery."
+        },
+        {
+          "heading": "Returns window",
+          "body": "Items can be returned within 30 days of delivery, unused and in their original packaging. Start a return by contacting us with your order code; you will receive a prepaid label. Refunds are issued to the original payment method once the item arrives back and passes inspection."
+        },
+        {
+          "heading": "Exceptions",
+          "body": "Personalised items, and anything sealed for hygiene reasons where the seal is broken, cannot be returned unless faulty. Faulty goods are covered regardless of the 30-day window under your statutory rights."
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "lede": "What data this storefront collects, why, and how long it is kept.",
+      "sections": [
+        {
+          "heading": "What we collect",
+          "body": "If you create an account: your name, email address, and any delivery addresses you save. If you place an order: the contents of that order and the address it ships to. If you browse without an account: a session cookie that holds your basket. Payment card details are never collected or stored by this storefront."
+        },
+        {
+          "heading": "Images you upload",
+          "body": "An uploaded photo is sent to the search service, converted into a vector, and used to rank the catalogue for that one request. The image is not stored against your account, not added to the catalogue, and not used as training data. The vector is computed for the request and discarded with it."
+        },
+        {
+          "heading": "Cookies",
+          "body": "The storefront sets a session cookie so your basket survives page loads, and stores your language, currency and theme preference so the site does not reset every visit. There is no advertising or third-party analytics tracking on this site."
+        },
+        {
+          "heading": "Who else sees your data",
+          "body": "Order and account data is held in this project's own database. It is not sold, and it is not shared with third parties for marketing. Email delivery and hosting providers process data strictly to run the service."
+        },
+        {
+          "heading": "How long it is kept",
+          "body": "Account and order records are kept for as long as the account exists, and afterwards only where a legal or accounting obligation requires it. Session data expires when the session does."
+        },
+        {
+          "heading": "Your rights",
+          "body": "You can view and correct your details from your account at any time, and you can request a copy of your data or its deletion by getting in touch. Deleting an account removes personal details from order records where retention rules allow."
+        }
+      ]
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "lede": "The terms you agree to when you use this storefront or place an order.",
+      "sections": [
+        {
+          "heading": "About this service",
+          "body": "StyleMatch is a student capstone project operated for educational purposes. It is not a commercial retailer. Products, prices, stock levels and delivery estimates shown on the site are sample data, and orders placed here are processed against a test payment handler — no money is taken and no goods are dispatched."
+        },
+        {
+          "heading": "Accounts",
+          "body": "You are responsible for keeping your password confidential and for activity under your account. Give accurate details when registering, and keep your delivery address current. Accounts used for abuse, fraud or automated scraping may be suspended without notice."
+        },
+        {
+          "heading": "Orders and pricing",
+          "body": "An order is an offer to buy, accepted when the order confirmation is issued. Prices include tax where shown and exclude delivery unless stated. Where a price or stock level is listed in error, an affected order may be cancelled and refunded rather than fulfilled at the wrong price."
+        },
+        {
+          "heading": "Acceptable use",
+          "body": "Do not upload images you have no right to use, images of other people without their consent, or unlawful content. Do not attempt to overload, probe or reverse-engineer the search service, and do not use automated tools to bulk-query the catalogue."
+        },
+        {
+          "heading": "Search results",
+          "body": "Image search returns visually similar products ranked by a similarity score. It is a best-effort ranking, not a guarantee of an exact or equivalent match. Always check the product page before ordering — the description, options and price there are what govern the sale."
+        },
+        {
+          "heading": "Liability",
+          "body": "The service is provided as is, without warranty. To the extent permitted by law, this project accepts no liability for loss arising from use of the site or reliance on its search results. Nothing here limits rights that cannot be limited by law."
+        }
+      ]
+    },
+    "help": {
+      "title": "Help Centre",
+      "lede": "Answers to the questions that come up most often.",
+      "faq": [
+        {
+          "question": "How do I choose the right size?",
+          "answer": "Check the available size options and product details on each item before adding it to your basket. When measurements are listed, compare them with a similar piece you already own rather than relying only on the size name."
+        },
+        {
+          "question": "How can I browse different clothing categories?",
+          "answer": "Open Collections from the navigation to browse the full category structure, or use the category cards on the homepage. Each collection can include more specific subcategories to narrow the catalogue."
+        },
+        {
+          "question": "How does the wishlist work?",
+          "answer": "Use the heart button on a product to add it to your wishlist. Your wishlist keeps products together while you compare styles, colours, and prices before deciding what belongs in your basket."
+        },
+        {
+          "question": "What are your shipping options?",
+          "answer": "Standard delivery takes five to seven business days, express two to three, and next-day delivery is available in selected areas. Standard delivery is free on orders over $50. The exact options and costs for your address appear at checkout."
+        },
+        {
+          "question": "What is your return policy?",
+          "answer": "Return anything within 30 days of delivery, unused and in its original packaging. Contact us with your order code to start a return and receive a prepaid label. Refunds go back to the original payment method once the item is received and inspected."
+        },
+        {
+          "question": "How do I track my order?",
+          "answer": "You will get an email with a tracking number when your order ships. You can also sign in and open the order from your order history at any time to see its current status."
+        },
+        {
+          "question": "Do I need an account to order?",
+          "answer": "You can fill a basket and check out by entering your details at the contact step. Creating an account is optional, but it keeps your addresses on file and gives you order history and tracking in one place."
+        },
+        {
+          "question": "Is this a real shop?",
+          "answer": "No. StyleMatch is a student capstone project. Orders run against a test payment handler, no money is taken, and nothing is dispatched. Treat the products, prices and delivery estimates as sample data."
+        }
+      ]
+    }
+  }
+}

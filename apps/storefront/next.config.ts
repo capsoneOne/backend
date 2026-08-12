@@ -23,6 +23,45 @@ const assetHostname = (() => {
 
 const nextConfig: NextConfig = {
     cacheComponents: true,
+    experimental: {
+        // The locale is the root dynamic segment, so unmatched URLs bypass its
+        // not-found boundary unless Next renders a global 404 document.
+        globalNotFound: true,
+    },
+    async redirects() {
+        return [
+            {
+                source: '/collection/featured',
+                destination: '/featured',
+                permanent: true,
+            },
+            {
+                source: '/:locale/collection/featured',
+                destination: '/:locale/featured',
+                permanent: true,
+            },
+            {
+                source: '/collections',
+                destination: '/categories',
+                permanent: true,
+            },
+            {
+                source: '/:locale/collections',
+                destination: '/:locale/categories',
+                permanent: true,
+            },
+            {
+                source: '/account/notifications',
+                destination: '/notifications',
+                permanent: true,
+            },
+            {
+                source: '/:locale/account/notifications',
+                destination: '/:locale/notifications',
+                permanent: true,
+            },
+        ];
+    },
     images: {
         // This is necessary to display images from your local Vendure instance
         dangerouslyAllowLocalIP: true,

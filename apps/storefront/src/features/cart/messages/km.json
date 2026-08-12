@@ -1,0 +1,29 @@
+{
+  "Cart": {
+    "eyebrow": "ការបញ្ជាទិញរបស់អ្នក",
+    "title": "រទេះទិញទំនិញ",
+    "description": "ពិនិត្យទំនិញ កែចំនួន ហើយបន្តពេលអ្វីៗត្រឹមត្រូវ។",
+    "emptyEyebrow": "រួចរាល់ពេលអ្នករួចរាល់",
+    "empty": "រទេះរបស់អ្នកទទេ",
+    "emptyMessage": "ស្វែងរកសម្លៀកបំពាក់ ស្បែកជើង និងគ្រឿងបន្ថែម រួចបន្ថែមទំនិញដែលអ្នកស្រឡាញ់។",
+    "illustrationAlt": "អ្នកទិញទំនិញកំពុងកាន់ថង់ទំនិញ",
+    "continueShopping": "បន្តទិញទំនិញ",
+    "each": "ក្នុងមួយ",
+    "orderSummary": "សង្ខេបការបញ្ជាទិញ",
+    "subtotal": "សរុបរង",
+    "shipping": "ការដឹកជញ្ជូន",
+    "calculatedAtCheckout": "គណនានៅពេលទូទាត់",
+    "total": "សរុប",
+    "proceedToCheckout": "បន្តទៅការទូទាត់",
+    "secureCheckout": "ការទូទាត់មានសុវត្ថិភាព",
+    "promotionCode": "លេខកូដបញ្ចុះតម្លៃ",
+    "enterDiscountCode": "បញ្ចូលលេខកូដបញ្ចុះតម្លៃខាងក្រោម",
+    "remove": "លុប",
+    "enterCode": "បញ្ចូលលេខកូដ",
+    "apply": "ប្រើ",
+    "sku": "លេខកូដទំនិញ៖ {sku}",
+    "decreaseQuantity": "បន្ថយចំនួន {name}",
+    "increaseQuantity": "បង្កើនចំនួន {name}",
+    "removeItem": "លុប {name} ចេញពីរទេះ"
+  }
+}

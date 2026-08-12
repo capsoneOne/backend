@@ -1,6 +1,8 @@
 {
   "Checkout": {
     "pageTitle": "Checkout",
+    "eyebrow": "Secure checkout",
+    "description": "Complete your delivery and payment details, then review everything before placing your order.",
     "steps": {
       "contact": "Contact",
       "address": "Address",

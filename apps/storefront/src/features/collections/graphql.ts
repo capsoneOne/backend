@@ -8,6 +8,45 @@ export const GetTopCollectionsQuery = graphql(`
                 id
                 name
                 slug
+                description
+                featuredAsset {
+                    id
+                    preview
+                }
+                children {
+                    id
+                    name
+                    slug
+                }
+            }
+        }
+    }
+`);
+
+/** Every collection with its imagery, for the collections index. */
+export const GetAllCollectionsQuery = graphql(`
+    query GetAllCollections {
+        collections(options: { take: 100, filter: { parentId: { eq: "1" } } }) {
+            items {
+                id
+                name
+                slug
+                description
+                featuredAsset {
+                    id
+                    preview
+                }
+                productVariants {
+                    totalItems
+                }
+                children {
+                    id
+                    name
+                    slug
+                    productVariants {
+                        totalItems
+                    }
+                }
             }
         }
     }

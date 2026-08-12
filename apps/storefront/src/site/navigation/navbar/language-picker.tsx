@@ -2,52 +2,39 @@
 
 import {useLocale, useTranslations} from 'next-intl';
 import {useRouter, usePathname} from '@/platform/i18n/navigation';
-import {routing, localeNames} from '@/platform/i18n/routing';
-import {Globe} from 'lucide-react';
+import {useSearchParams} from 'next/navigation';
+import {Languages} from 'lucide-react';
 import {Button} from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import {navbarIconClass} from '@/site/navigation/navigation-styles';
 
 export function LanguagePicker() {
     const locale = useLocale();
     const t = useTranslations('Navigation');
     const router = useRouter();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const nextLocale = locale === 'en' ? 'km' : 'en';
+    const label = nextLocale === 'km' ? t('switchToKhmer') : t('switchToEnglish');
 
-    const handleLocaleChange = (newLocale: string) => {
-        router.replace(pathname, {locale: newLocale});
+    const toggleLocale = () => {
+        const query = searchParams.toString();
+        router.replace(`${pathname}${query ? `?${query}` : ''}`, {locale: nextLocale});
     };
 
-    // Nothing to switch between with a single configured locale, so render nothing —
-    // same rule CurrencyPicker applies to a single-currency channel. Add a locale to
-    // routing.ts and the control reappears on its own.
-    if (routing.locales.length <= 1) {
-        return null;
-    }
-
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger render={<Button variant="ghost" size="sm" className="gap-1.5" aria-label={t('switchLanguage')} />}>
-                <Globe className="size-4" />
-                {/* Label is icon-only below sm: "English" and especially "ភាសាខ្មែរ" are wide
-                    enough to overflow the 430px navbar and clip the sign-in button. */}
-                <span className="hidden sm:inline">{localeNames[locale as keyof typeof localeNames] ?? locale.toUpperCase()}</span>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                {routing.locales.map((loc) => (
-                    <DropdownMenuItem
-                        key={loc}
-                        onClick={() => handleLocaleChange(loc)}
-                    >
-                        <span>{localeNames[loc] ?? loc.toUpperCase()}</span>
-                        {locale === loc && <span className="ml-auto text-xs">✓</span>}
-                    </DropdownMenuItem>
-                ))}
-            </DropdownMenuContent>
-        </DropdownMenu>
+        <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className={navbarIconClass}
+            onClick={toggleLocale}
+            aria-label={label}
+            title={label}
+        >
+            <Languages className="size-5" aria-hidden="true" />
+            <span className="absolute bottom-0.5 right-0.5 rounded bg-primary px-1 text-[0.55rem] font-bold leading-3 text-primary-foreground" aria-hidden="true">
+                {nextLocale === 'km' ? 'ខ្មែរ' : 'EN'}
+            </span>
+        </Button>
     );
 }

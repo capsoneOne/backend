@@ -19,13 +19,14 @@ export function SortDropdown() {
     const router = useRouter();
 
     const sortOptions = [
+        ...(searchParams.get('q') ? [{value: 'relevance', label: t('relevance')}] : []),
         {value: 'name-asc', label: t('nameAsc')},
         {value: 'name-desc', label: t('nameDesc')},
         {value: 'price-asc', label: t('priceAsc')},
         {value: 'price-desc', label: t('priceDesc')},
     ];
 
-    const currentSort = searchParams.get('sort') || 'name-asc';
+    const currentSort = searchParams.get('sort') || (searchParams.get('q') ? 'relevance' : 'name-asc');
 
     const handleSortChange = (value: string | null) => {
         if (!value) return;

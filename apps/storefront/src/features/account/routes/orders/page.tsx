@@ -1,4 +1,5 @@
 import type {Metadata} from 'next';
+import Image from 'next/image';
 import {query} from '@/platform/vendure/api';
 import {GetCustomerOrdersQuery} from '@/features/account/graphql';
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from '@/components/ui/table';
@@ -19,6 +20,8 @@ import {formatDate} from '@/platform/i18n/format';
 import { Link, redirect } from '@/platform/i18n/navigation';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {getTranslations} from 'next-intl/server';
+import {AccountEmptyState} from '@/features/account/components/account-empty-state';
+import {AccountPageHeader} from '@/features/account/components/account-page-header';
 
 export async function generateMetadata(): Promise<Metadata> {
     const locale = await getRouteLocale();
@@ -64,24 +67,39 @@ export default async function OrdersPage(props: PageProps<'/[locale]/account/ord
 
     return (
         <div>
-            <h1 className="text-3xl font-bold mb-6">{t('myOrders')}</h1>
+            <AccountPageHeader title={t('myOrders')} description={t('ordersDescription')} />
 
             {orders.length === 0 ? (
-                <div className="text-center py-12">
-                    <p className="text-gray-500">{t('noOrders')}</p>
-                </div>
+                <AccountEmptyState
+                    media={(
+                        <Image
+                            src="/storyset/checking-boxes-cuate.svg"
+                            alt={t('noOrders')}
+                            width={500}
+                            height={500}
+                            className="max-h-64 w-full max-w-xs object-contain"
+                        />
+                    )}
+                    title={t('noOrders')}
+                    description={t('noOrdersDescription')}
+                    action={(
+                        <Button render={<Link href="/search" />} nativeButton={false} className="min-h-11 px-5">
+                            {t('startShopping')}
+                        </Button>
+                    )}
+                />
             ) : (
                 <>
                     {/* Mobile: Card-based layout */}
-                    <div className="md:hidden space-y-3">
+                    <div className="space-y-3 md:hidden">
                         {orders.map((order) => (
                             <Link
                                 key={order.id}
                                 href={`/account/orders/${order.code}`}
-                                className="block border rounded-xl p-4 bg-card hover:bg-muted/30 transition-colors duration-200"
+                                className="block rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/30 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             >
-                                <div className="flex items-center justify-between mb-3">
-                                    <span className="font-semibold">#{order.code}</span>
+                                <div className="mb-3 flex items-center justify-between">
+                                    <span className="font-medium">#{order.code}</span>
                                     <OrderStatusBadge state={order.state}/>
                                 </div>
                                 <div className="flex items-center justify-between text-sm">
@@ -90,7 +108,7 @@ export default async function OrdersPage(props: PageProps<'/[locale]/account/ord
                                         <Price value={order.totalWithTax} currencyCode={order.currencyCode}/>
                                     </span>
                                 </div>
-                                <div className="flex items-center justify-between mt-2">
+                                <div className="mt-2 flex items-center justify-between">
                                     <span className="text-xs text-muted-foreground">
                                         {order.lines.length} {order.lines.length === 1 ? t('item') : t('items')}
                                     </span>
@@ -101,9 +119,9 @@ export default async function OrdersPage(props: PageProps<'/[locale]/account/ord
                     </div>
 
                     {/* Desktop: Table layout */}
-                    <div className="hidden md:block border rounded-lg">
+                    <div className="hidden overflow-hidden rounded-xl border border-border bg-card md:block">
                         <Table>
-                            <TableHeader className="bg-muted">
+                            <TableHeader className="bg-muted/60">
                                 <TableRow>
                                     <TableHead>{t('orderNumber')}</TableHead>
                                     <TableHead>{t('date')}</TableHead>
@@ -115,10 +133,13 @@ export default async function OrdersPage(props: PageProps<'/[locale]/account/ord
                             <TableBody>
                                 {orders.map((order) => (
                                     <TableRow key={order.id} className="hover:bg-muted/50">
-                                        <TableCell className="font-medium">
-                                            <Button nativeButton={false} render={<Link href={`/account/orders/${order.code}`} />} variant="outline">
-                                                    {order.code} <ArrowRightIcon/>
-                                            </Button>
+                                        <TableCell>
+                                            <Link
+                                                href={`/account/orders/${order.code}`}
+                                                className="inline-flex min-h-10 items-center gap-2 font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                            >
+                                                #{order.code} <ArrowRightIcon className="size-4" aria-hidden="true" />
+                                            </Link>
                                         </TableCell>
                                         <TableCell>
                                             {formatDate(order.createdAt, 'short', locale)}

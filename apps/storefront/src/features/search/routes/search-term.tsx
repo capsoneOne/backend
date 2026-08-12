@@ -1,5 +1,6 @@
 import {getRouteLocale} from '@/platform/i18n/server';
 import {getTranslations} from 'next-intl/server';
+import {CataloguePageHeader, CataloguePageHeaderSkeleton} from '@/components/catalogue-page';
 
 interface SearchTermProps {
     searchParams: Promise<{
@@ -14,18 +15,14 @@ export async function SearchTerm({searchParams}: SearchTermProps) {
     const t = await getTranslations({locale, namespace: 'Search'});
 
     return (
-        <div className="mb-6">
-            <h1 className="text-3xl font-bold">
-                {searchTerm ? t('resultsFor', {query: searchTerm}) : t('title')}
-            </h1>
-        </div>
+        <CataloguePageHeader
+            eyebrow={searchTerm ? t('resultsEyebrow') : t('catalogueEyebrow')}
+            title={searchTerm ? t('resultsFor', {query: searchTerm}) : t('shopAll')}
+            description={searchTerm ? t('resultsDescription') : t('catalogueDescription')}
+        />
     )
 }
 
 export function SearchTermSkeleton() {
-    return (
-        <div className="mb-6">
-            <div className="h-9 w-64 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-        </div>
-    )
+    return <CataloguePageHeaderSkeleton />;
 }

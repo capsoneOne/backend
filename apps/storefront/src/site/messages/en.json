@@ -1,4 +1,11 @@
 {
+  "ErrorPage": {
+    "title": "Something went wrong",
+    "message": "We could not load this page. This is usually temporary—try again in a moment, or return to the home page.",
+    "reference": "Reference: {digest}",
+    "tryAgain": "Try again",
+    "goHome": "Go home"
+  },
   "NotFound": {
     "title": "Page Not Found",
     "message": "The page you are looking for does not exist, has been moved, or is temporarily unavailable.",
@@ -7,17 +14,31 @@
     "popularCollections": "Popular Collections"
   },
   "Footer": {
-    "description": "A modern, headless e-commerce storefront built with Vendure and Next.js. Fast, flexible, and ready for production.",
+    "description": "Clothing, shoes, and accessories for every day, from dependable essentials to fresh seasonal styles.",
+    "storeTagline": "Everyday style, made simple",
+    "deliveryTitle": "Free standard delivery",
+    "deliveryDescription": "On orders over $50",
+    "returnsTitle": "Easy 30-day returns",
+    "returnsDescription": "Simple and straightforward",
+    "wishlistTitle": "Build your wishlist",
+    "wishlistDescription": "Keep favourite styles together",
     "categories": "Categories",
-    "customer": "Customer",
+    "shop": "Shop",
+    "support": "Support",
     "shopAll": "Shop All",
+    "savedItems": "Wishlist",
+    "notifications": "Notifications",
     "orders": "Orders",
     "account": "Account",
-    "vendure": "Vendure",
-    "github": "GitHub",
-    "documentation": "Documentation",
-    "sourceCode": "Source Code",
-    "copyright": "Vendure Store. All rights reserved.",
-    "poweredBy": "Powered by"
+    "copyright": "{siteName}. All rights reserved.",
+    "closingLine": "Clothing for every day and every season.",
+    "company": "Company",
+    "about": "About",
+    "contact": "Contact",
+    "help": "Help Centre",
+    "shippingReturns": "Shipping & Returns",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "allCollections": "All categories"
   }
 }

@@ -1,0 +1,26 @@
+{
+  "Wishlist": {
+    "eyebrow": "Your personal edit",
+    "title": "Wishlist",
+    "description": "Keep the pieces you love in one place, compare your favourites, and come back when you’re ready.",
+    "navLabel": "Wishlist",
+    "loading": "Loading your wishlist…",
+    "count": "{count, plural, =0 {Wishlist empty} one {# wishlist item} other {# wishlist items}}",
+    "clearAll": "Clear all",
+    "clearConfirm": "Remove every item from your wishlist?",
+    "emptyEyebrow": "Start your edit",
+    "emptyTitle": "Your next favourite is waiting",
+    "emptyBody": "Tap the heart on clothing, shoes, or accessories you love. They’ll stay together here while you compare and decide.",
+    "illustrationAlt": "A shopper adding fashion items to an online wishlist",
+    "browse": "Explore clothing",
+    "exploreCategories": "Browse categories",
+    "deviceNote": "Your wishlist is stored privately on this device.",
+    "noImage": "No image",
+    "add": "Add {name} to wishlist",
+    "remove": "Remove {name} from wishlist",
+    "addShort": "Add to wishlist",
+    "removeShort": "Remove from wishlist",
+    "addedToast": "Added to wishlist",
+    "removedToast": "Removed from wishlist"
+  }
+}

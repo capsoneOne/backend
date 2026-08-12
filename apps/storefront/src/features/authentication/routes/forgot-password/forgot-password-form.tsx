@@ -61,7 +61,7 @@ export function ForgotPasswordForm() {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>{t('checkYourEmail')}</CardTitle>
+                    <CardTitle><h2>{t('checkYourEmail')}</h2></CardTitle>
                     <CardDescription>
                         {t('checkYourEmailDescription')}
                     </CardDescription>
@@ -79,15 +79,9 @@ export function ForgotPasswordForm() {
 
     return (
         <Card>
-            <CardHeader>
-                <CardTitle>{t('forgotPasswordTitle')}</CardTitle>
-                <CardDescription>
-                    {t('forgotPasswordDescription')}
-                </CardDescription>
-            </CardHeader>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
-                    <CardContent>
+                    <CardContent className="pt-6">
                         <FormField
                             control={form.control}
                             name="emailAddress"

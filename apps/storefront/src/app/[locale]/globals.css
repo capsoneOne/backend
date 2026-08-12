@@ -1,14 +1,16 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "leaflet/dist/leaflet.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-ubuntu), var(--font-kantumruy), sans-serif;
+  --font-mono: var(--font-ubuntu-mono);
+  --color-illustration: var(--illustration);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -42,98 +44,182 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 10px);
 }
 
-/* Indigo + gold. Hue 275 carries structure, hue 90 carries emphasis.
-   Chroma stays low on every ground token so product photography — the actual
-   content of a visual-search storefront — is never competing with the UI. */
+/* ---------------------------------------------------------------------------
+   StyleMatch — crisp blue, quiet neutrals, and focused hierarchy.
+
+   A cool white canvas and ink-blue type keep the catalogue calm. Cobalt is the
+   single interface accent, reserved for actions, prices, links, and focus.
+
+   Typeface is Ubuntu, which ships 300/400/500/700 — there is no 600. Prefer
+   font-medium and font-bold in components; font-semibold synthesises and looks
+   smeared at display sizes.
+   --------------------------------------------------------------------------- */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(0.99 0.005 275);
-  --foreground: oklch(0.20 0.045 275);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.20 0.045 275);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.20 0.045 275);
-  --primary: oklch(0.38 0.13 275);
-  --primary-foreground: oklch(0.98 0.01 90);
-  --secondary: oklch(0.96 0.012 275);
-  --secondary-foreground: oklch(0.28 0.06 275);
-  --muted: oklch(0.96 0.012 275);
-  --muted-foreground: oklch(0.52 0.04 275);
-  --accent: oklch(0.94 0.06 90);
-  --accent-foreground: oklch(0.28 0.06 275);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.012 275);
-  --input: oklch(0.92 0.012 275);
-  --ring: oklch(0.55 0.15 90);
-  --chart-1: oklch(0.38 0.13 275);
-  --chart-2: oklch(0.55 0.15 90);
-  --chart-3: oklch(0.50 0.10 310);
-  --chart-4: oklch(0.70 0.13 60);
-  --chart-5: oklch(0.45 0.09 240);
-  --sidebar: oklch(0.975 0.01 275);
-  --sidebar-foreground: oklch(0.20 0.045 275);
-  --sidebar-primary: oklch(0.38 0.13 275);
-  --sidebar-primary-foreground: oklch(0.98 0.01 90);
-  --sidebar-accent: oklch(0.94 0.06 90);
-  --sidebar-accent-foreground: oklch(0.28 0.06 275);
-  --sidebar-border: oklch(0.92 0.012 275);
-  --sidebar-ring: oklch(0.55 0.15 90);
+  --radius: 0.75rem;
+
+  /* Shared motion language: quick feedback, calm entrances, no elastic bounce. */
+  --motion-fast: 160ms;
+  --motion-base: 320ms;
+  --motion-slow: 520ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --background: oklch(0.985 0.006 245);
+  --foreground: oklch(0.20 0.025 255);
+  --card: oklch(0.998 0.003 245);
+  --card-foreground: oklch(0.20 0.025 255);
+  --popover: oklch(0.998 0.003 245);
+  --popover-foreground: oklch(0.20 0.025 255);
+
+  --primary: oklch(0.53 0.19 255);
+  --primary-foreground: oklch(0.99 0.004 245);
+  --secondary: oklch(0.945 0.035 245);
+  --secondary-foreground: oklch(0.27 0.08 255);
+  --muted: oklch(0.955 0.012 245);
+  --muted-foreground: oklch(0.47 0.03 255);
+  --accent: oklch(0.92 0.05 245);
+  --accent-foreground: oklch(0.26 0.09 255);
+  --destructive: oklch(0.505 0.19 18);
+
+  --border: oklch(0.88 0.02 250);
+  --input: oklch(0.88 0.02 250);
+  --ring: oklch(0.53 0.19 255);
+  --illustration: oklch(0.95 0.035 245);
+
+  --chart-1: oklch(0.53 0.19 255);
+  --chart-2: oklch(0.62 0.14 225);
+  --chart-3: oklch(0.69 0.11 200);
+  --chart-4: oklch(0.47 0.12 275);
+  --chart-5: oklch(0.75 0.09 245);
+
+  --sidebar: oklch(0.97 0.012 245);
+  --sidebar-foreground: oklch(0.20 0.025 255);
+  --sidebar-primary: oklch(0.53 0.19 255);
+  --sidebar-primary-foreground: oklch(0.99 0.004 245);
+  --sidebar-accent: oklch(0.92 0.05 245);
+  --sidebar-accent-foreground: oklch(0.26 0.09 255);
+  --sidebar-border: oklch(0.88 0.02 250);
+  --sidebar-ring: oklch(0.53 0.19 255);
+
+  --shadow-e1: 0 1px 2px 0 oklch(0.18 0.02 255 / 6%);
+  --shadow-e2: 0 4px 14px -6px oklch(0.18 0.02 255 / 9%), 0 1px 2px 0 oklch(0.18 0.02 255 / 4%);
+  --shadow-e3: 0 16px 36px -18px oklch(0.18 0.02 255 / 14%), 0 2px 6px -3px oklch(0.18 0.02 255 / 6%);
 }
 
-/* Dark inverts the emphasis: gold becomes primary because indigo has nowhere
-   left to go against a dark indigo ground. Lightness flips on --primary and
-   --primary-foreground together — editing one without the other is what
-   breaks a shadcn dark theme. */
+/* Dark mode preserves the same cobalt identity on a deep navy canvas. */
 .dark {
-  --background: oklch(0.16 0.03 275);
-  --foreground: oklch(0.96 0.01 90);
-  --card: oklch(0.21 0.04 275);
-  --card-foreground: oklch(0.96 0.01 90);
-  --popover: oklch(0.21 0.04 275);
-  --popover-foreground: oklch(0.96 0.01 90);
-  --primary: oklch(0.80 0.12 90);
-  --primary-foreground: oklch(0.20 0.05 275);
-  --secondary: oklch(0.28 0.045 275);
-  --secondary-foreground: oklch(0.96 0.01 90);
-  --muted: oklch(0.28 0.045 275);
-  --muted-foreground: oklch(0.72 0.035 275);
-  --accent: oklch(0.30 0.05 275);
-  --accent-foreground: oklch(0.94 0.05 90);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.72 0.12 90);
-  --chart-1: oklch(0.62 0.15 275);
-  --chart-2: oklch(0.80 0.12 90);
-  --chart-3: oklch(0.66 0.13 310);
-  --chart-4: oklch(0.72 0.14 60);
-  --chart-5: oklch(0.58 0.12 240);
-  --sidebar: oklch(0.21 0.04 275);
-  --sidebar-foreground: oklch(0.96 0.01 90);
-  --sidebar-primary: oklch(0.80 0.12 90);
-  --sidebar-primary-foreground: oklch(0.20 0.05 275);
-  --sidebar-accent: oklch(0.30 0.05 275);
-  --sidebar-accent-foreground: oklch(0.94 0.05 90);
-  --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.72 0.12 90);
+  --background: oklch(0.15 0.03 255);
+  --foreground: oklch(0.955 0.015 88);
+  --card: oklch(0.20 0.035 255);
+  --card-foreground: oklch(0.955 0.015 88);
+  --popover: oklch(0.20 0.035 255);
+  --popover-foreground: oklch(0.955 0.015 88);
+
+  --primary: oklch(0.72 0.14 250);
+  --primary-foreground: oklch(0.14 0.03 255);
+  --secondary: oklch(0.28 0.06 255);
+  --secondary-foreground: oklch(0.955 0.015 88);
+  --muted: oklch(0.25 0.035 255);
+  --muted-foreground: oklch(0.73 0.035 245);
+  --accent: oklch(0.31 0.075 255);
+  --accent-foreground: oklch(0.965 0.012 88);
+  --destructive: oklch(0.645 0.185 18);
+
+  --border: oklch(0.88 0.03 245 / 16%);
+  --input: oklch(0.88 0.03 245 / 20%);
+  --ring: oklch(0.72 0.14 250);
+  --illustration: oklch(0.29 0.06 255);
+
+  --chart-1: oklch(0.72 0.14 250);
+  --chart-2: oklch(0.75 0.11 225);
+  --chart-3: oklch(0.78 0.09 200);
+  --chart-4: oklch(0.70 0.10 275);
+  --chart-5: oklch(0.82 0.07 245);
+
+  --sidebar: oklch(0.19 0.035 255);
+  --sidebar-foreground: oklch(0.955 0.015 88);
+  --sidebar-primary: oklch(0.72 0.14 250);
+  --sidebar-primary-foreground: oklch(0.14 0.03 255);
+  --sidebar-accent: oklch(0.31 0.075 255);
+  --sidebar-accent-foreground: oklch(0.965 0.012 88);
+  --sidebar-border: oklch(0.88 0.03 245 / 16%);
+  --sidebar-ring: oklch(0.72 0.14 250);
+
+  --shadow-e1: 0 1px 2px 0 oklch(0 0 0 / 40%);
+  --shadow-e2: 0 4px 16px -4px oklch(0 0 0 / 50%), 0 1px 3px 0 oklch(0 0 0 / 30%);
+  --shadow-e3: 0 18px 40px -12px oklch(0 0 0 / 60%), 0 2px 8px -2px oklch(0 0 0 / 40%);
 }
 
 @layer base {
-  html {}
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "kern" 1;
+    background-image:
+      radial-gradient(circle at 8% -10%, color-mix(in oklch, var(--primary) 7%, transparent) 0, transparent 28rem),
+      radial-gradient(circle at 94% 12%, color-mix(in oklch, var(--chart-2) 6%, transparent) 0, transparent 24rem);
   }
+  h1, h2, h3 {
+    letter-spacing: -0.02em;
+  }
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+}
+
+/* Khmer letterforms already carry their own internal rhythm. Latin display
+   tracking and uppercase transforms create visible gaps between clusters, so
+   neutralize those utilities only when the active storefront locale is Khmer. */
+html[lang="km"] [class*="tracking-"] {
+  letter-spacing: normal;
+}
+
+html[lang="km"] [class*="uppercase"] {
+  text-transform: none;
+}
+
+html[lang="km"] h1 {
+  letter-spacing: normal;
+  line-height: 1.2;
+}
+
+html[lang="km"] h2,
+html[lang="km"] h3 {
+  letter-spacing: normal;
+  line-height: 1.35;
+}
+
+html[lang="km"] p:not([class*="leading-"]) {
+  line-height: 1.55;
+}
+
+@utility elevate-1 {
+  box-shadow: var(--shadow-e1);
+}
+@utility elevate-2 {
+  box-shadow: var(--shadow-e2);
+}
+@utility elevate-3 {
+  box-shadow: var(--shadow-e3);
+}
+
+/* The page-level texture: a faint dot field that reads as "canvas" behind the
+   hero and the upload panel without competing with product images. */
+@utility bg-dotfield {
+  background-image: radial-gradient(circle at center, var(--color-border) 1px, transparent 1px);
+  background-size: 22px 22px;
 }
 
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -141,6 +227,332 @@
   }
 }
 
-.animate-fade-up {
-  animation: fade-up 0.4s ease-out both;
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes surface-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.992);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes nav-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer-line {
+  from { transform: translateX(-140%) skewX(-18deg); }
+  to { transform: translateX(420%) skewX(-18deg); }
+}
+
+@keyframes scan-art {
+  0%, 16% { opacity: 0; transform: translateY(-1rem); }
+  28%, 72% { opacity: 0.7; }
+  84%, 100% { opacity: 0; transform: translateY(28rem); }
+}
+
+@keyframes scroll-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes float-art {
+  0%, 100% { transform: translateY(0) rotate(-0.4deg); }
+  50% { transform: translateY(-12px) rotate(0.6deg); }
+}
+
+@keyframes orbit-slow {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.45; transform: scale(0.92); }
+  50% { opacity: 0.9; transform: scale(1.08); }
+}
+
+@keyframes section-reveal {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes robot-hover {
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50% { transform: translateY(-7px) rotate(1.5deg); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Every route gets the same quiet entrance, including nested account pages. */
+  #main-content > *,
+  #main-content main > * {
+    animation: page-enter var(--motion-slow) var(--ease-emphasized) both;
+  }
+
+  body > header {
+    animation: nav-enter 420ms var(--ease-emphasized) both;
+  }
+
+  .animate-fade-up {
+    animation: fade-up var(--motion-slow) var(--ease-emphasized) both;
+  }
+
+  .animate-float-art {
+    animation: float-art 6s ease-in-out infinite;
+  }
+
+  .animate-orbit-slow {
+    animation: orbit-slow 18s linear infinite;
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 3.4s ease-in-out infinite;
+  }
+
+  .animate-robot-hover {
+    animation: robot-hover 3s ease-in-out infinite;
+  }
+
+  .animate-page-enter {
+    animation: page-enter var(--motion-slow) var(--ease-emphasized) both;
+  }
+
+  .animate-surface-enter,
+  #main-content [data-slot="card"] {
+    animation: surface-enter 460ms var(--ease-emphasized) backwards;
+  }
+
+  .grid > .animate-surface-enter:nth-child(2),
+  .grid > [data-slot="card"]:nth-child(2) { animation-delay: 45ms; }
+  .grid > .animate-surface-enter:nth-child(3),
+  .grid > [data-slot="card"]:nth-child(3) { animation-delay: 90ms; }
+  .grid > .animate-surface-enter:nth-child(4),
+  .grid > [data-slot="card"]:nth-child(4) { animation-delay: 135ms; }
+  .grid > .animate-surface-enter:nth-child(n + 5),
+  .grid > [data-slot="card"]:nth-child(n + 5) { animation-delay: 180ms; }
+
+  .animate-scan-art {
+    animation: scan-art 7s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+
+  .shine-on-hover::after {
+    animation: none;
+  }
+
+  .shine-on-hover:hover::after {
+    animation: shimmer-line 0.9s ease-out;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .scroll-progress {
+      animation: scroll-progress linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    .reveal-section,
+    #main-content section:not(:first-child),
+    body > footer {
+      animation: section-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 24%;
+    }
+  }
+}
+
+/* One interaction language for shadcn buttons and native storefront actions.
+   Individual components keep their own colors, shapes, and layout transforms. */
+button,
+[role="button"],
+.navbar-interactive {
+  transform-origin: center;
+  -webkit-tap-highlight-color: transparent;
+  transition-property: color, background-color, border-color, box-shadow, opacity, filter, transform, translate, scale;
+  transition-duration: var(--motion-base);
+  transition-timing-function: var(--ease-emphasized);
+}
+
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  button:not(:disabled):not([aria-disabled="true"]):hover,
+  [role="button"]:not([aria-disabled="true"]):hover,
+  .navbar-interactive:not([aria-disabled="true"]):hover {
+    translate: 0 -0.1875rem;
+    scale: 1.025;
+    filter: brightness(1.04);
+  }
+}
+
+button:not(:disabled):not([aria-disabled="true"]):active,
+[role="button"]:not([aria-disabled="true"]):active,
+.navbar-interactive:not([aria-disabled="true"]):active {
+  translate: 0 0;
+  scale: 0.96;
+  filter: brightness(0.985);
+  transition-duration: 130ms;
+}
+
+button:disabled,
+button[aria-disabled="true"],
+[role="button"][aria-disabled="true"],
+.navbar-interactive[aria-disabled="true"] {
+  translate: none;
+  scale: 1;
+  filter: none;
+}
+
+/* Navbar controls and icons share a visibly smoother, coordinated response. */
+.nav-brand {
+  transition-property: opacity, translate, scale;
+  transition-duration: var(--motion-base);
+  transition-timing-function: var(--ease-emphasized);
+}
+
+.navbar-interactive:not(.theme-toggle) svg,
+header button:not(.theme-toggle) svg,
+.mobile-nav-item svg,
+[data-slot="dropdown-menu-item"] svg,
+[data-slot="navigation-menu-link"] svg {
+  transition-property: color, opacity, translate, scale, rotate;
+  transition-duration: 360ms;
+  transition-timing-function: var(--ease-emphasized);
+}
+
+.theme-toggle svg {
+  transition-duration: 360ms;
+  transition-timing-function: var(--ease-emphasized);
+}
+
+.mobile-nav-item,
+[data-slot="dropdown-menu-item"],
+[data-slot="navigation-menu-link"] {
+  transition-property: color, background-color, border-color, box-shadow, translate;
+  transition-duration: 280ms;
+  transition-timing-function: var(--ease-emphasized);
+}
+
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  .nav-brand:hover {
+    translate: 0 -0.125rem;
+    scale: 1.02;
+  }
+
+  .navbar-interactive:not(.theme-toggle):hover svg,
+  header button:not(.theme-toggle):not(:disabled):hover svg {
+    translate: 0 -0.1rem;
+    scale: 1.1;
+    rotate: -2deg;
+  }
+
+  html:not(.dark) .theme-toggle:hover .theme-toggle-sun {
+    rotate: 10deg;
+    scale: 1.08;
+  }
+
+  .dark .theme-toggle:hover .theme-toggle-moon {
+    rotate: -8deg;
+    scale: 1.08;
+  }
+
+  .mobile-nav-item:hover,
+  [data-slot="dropdown-menu-item"]:is(:hover, :focus),
+  [data-slot="navigation-menu-link"]:is(:hover, :focus) {
+    translate: 0.2rem 0;
+  }
+
+  .mobile-nav-item:hover svg,
+  [data-slot="dropdown-menu-item"]:is(:hover, :focus) svg,
+  [data-slot="navigation-menu-link"]:is(:hover, :focus) svg {
+    translate: 0.1rem 0;
+    scale: 1.08;
+  }
+}
+
+@layer utilities {
+  .interactive-lift {
+    transition:
+      transform var(--motion-base) var(--ease-emphasized),
+      box-shadow var(--motion-base) var(--ease-emphasized),
+      border-color var(--motion-fast) var(--ease-standard);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .interactive-lift:hover {
+      transform: translateY(-5px);
+      border-color: color-mix(in oklch, var(--primary) 24%, var(--border));
+      box-shadow: var(--shadow-e3);
+    }
+  }
+
+  .shine-on-hover {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .shine-on-hover::after {
+    position: absolute;
+    inset: -40% auto -40% -30%;
+    width: 22%;
+    content: "";
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 24%), transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.leaflet-container {
+  z-index: 0;
+  background: var(--muted);
+  font-family: var(--font-sans);
+}
+
+.leaflet-control-attribution {
+  border-radius: 0.5rem 0 0;
+  color: #334155;
+}
+
+.address-map-marker {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border: 3px solid white;
+  border-radius: 50% 50% 50% 0;
+  background: var(--primary);
+  box-shadow: 0 8px 18px rgb(15 23 42 / 28%);
+  rotate: -45deg;
+}
+
+.address-map-marker > span {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 999px;
+  background: white;
 }

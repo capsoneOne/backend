@@ -1,6 +1,6 @@
 'use client';
 
-import {use, useEffect, useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {VerifyResult, type VerifyResultValue} from './verify-result';
 import {VerifyLoading} from './verify-loading';
 import {verifyAccountAction} from './actions';
@@ -11,13 +11,11 @@ import {XCircle} from 'lucide-react';
 import {useTranslations} from 'next-intl';
 
 interface VerifyContentProps {
-    searchParams: Promise<{ token?: string }>;
+    token?: string;
 }
 
-export function VerifyContent({searchParams}: VerifyContentProps) {
+export function VerifyContent({token}: VerifyContentProps) {
     const t = useTranslations('Verify');
-    const params = use(searchParams);
-    const token = params.token;
     // Verification tokens are single-use. Cache each request so effect replay
     // or returning to a previously seen token cannot submit it twice.
     const requests = useRef(new Map<string, Promise<VerifyResultValue>>());

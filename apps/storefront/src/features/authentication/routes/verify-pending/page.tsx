@@ -6,11 +6,16 @@ import { Link } from '@/platform/i18n/navigation';
 import { CheckCircle } from 'lucide-react';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {getTranslations} from 'next-intl/server';
+import {AuthPageShell} from '@/components/auth-page-shell';
 
-export const metadata: Metadata = {
-    title: 'Verification Pending',
-    description: 'Check your email to verify your account.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+    const locale = await getRouteLocale();
+    const t = await getTranslations({locale, namespace: 'Auth'});
+    return {
+        title: t('verifyPendingPageTitle'),
+        description: t('verifyPendingPageDescription'),
+    };
+}
 
 async function VerifyPendingContent({searchParams}: {searchParams: Promise<Record<string, string | string[] | undefined>>}) {
     const locale = await getRouteLocale();
@@ -55,12 +60,12 @@ export default async function VerifyPendingPage({searchParams}: PageProps<'/[loc
     const locale = await getRouteLocale();
     const t = await getTranslations({locale, namespace: 'Verify'});
     return (
-        <div className="flex min-h-screen items-center justify-center px-4">
-            <div className="w-full max-w-md space-y-6">
+        <AuthPageShell>
+            <div className="space-y-6">
                 <Suspense fallback={<div>{t('loading')}</div>}>
                     <VerifyPendingContent searchParams={searchParams} />
                 </Suspense>
             </div>
-        </div>
+        </AuthPageShell>
     );
 }

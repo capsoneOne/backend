@@ -138,7 +138,7 @@ export default function ContactStep({ onComplete }: ContactStepProps) {
             </Field>
           </div>
 
-          <Button type="submit" disabled={loading} className="w-full mt-4">
+          <Button type="submit" disabled={loading} className="mt-4 min-h-11 w-full px-5">
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {t('continue')}
           </Button>

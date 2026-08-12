@@ -1,0 +1,20 @@
+{
+  "Collection": {
+    "home": "ទំព័រដើម",
+    "shopAll": "ទិញទាំងអស់",
+    "eyebrow": "បណ្ដុំទំនិញ",
+    "featuredEyebrow": "កាតាឡុក",
+    "featuredDescription": "ស្វែងរកសម្លៀកបំពាក់ ស្បែកជើង និងគ្រឿងបន្ថែមលេចធ្លោដែលបានជ្រើសរើសពីគ្រប់ផ្នែកនៃហាង។",
+    "categories": "ប្រភេទទំនិញ",
+    "allProducts": "ទំនិញទាំងអស់",
+    "defaultDescription": "ស្វែងរកគ្រប់ម៉ូដក្នុង {name} រួចចម្រាញ់តាមទំហំ ពណ៌ ឬស្តុក។",
+    "collectionNotFound": "រកមិនឃើញបណ្ដុំទំនិញ",
+    "browseCollectionAt": "មើលបណ្ដុំ {name} របស់យើងនៅ {siteName}",
+    "indexEyebrow": "ទិញតាមប្រភេទ",
+    "indexTitle": "ប្រភេទទំនិញ",
+    "indexSubtitle": "មើលសម្លៀកបំពាក់ ស្បែកជើង និងគ្រឿងបន្ថែមតាមប្រភេទ ដើម្បីរកទំនិញដែលសមរម្យបានលឿន។",
+    "indexDescription": "មើលប្រភេទសម្លៀកបំពាក់ទាំងអស់នៅ {siteName}។",
+    "indexEmpty": "មិនទាន់មានបណ្ដុំទំនិញណាត្រូវបានផ្សព្វផ្សាយទេ។",
+    "productCount": "{count, plural, =0 {គ្មានទំនិញ} one {ទំនិញ #} other {ទំនិញ #}}"
+  }
+}

@@ -7,6 +7,7 @@ import {ordersMessageLoaders} from '@/features/orders/messages';
 import {productsMessageLoaders} from '@/features/products/messages';
 import {searchMessageLoaders} from '@/features/search/messages';
 import {visualSearchMessageLoaders} from '@/features/visual-search/messages';
+import {wishlistMessageLoaders} from '@/features/wishlist/messages';
 import {
     platformMessageLoaders,
     type MessageLoader,
@@ -15,7 +16,9 @@ import {
 } from '@/platform/i18n/messages';
 import {homeMessageLoaders} from '@/site/home/messages';
 import {navigationMessageLoaders} from '@/site/navigation/messages';
+import {pagesMessageLoaders} from '@/site/pages/messages';
 import {siteMessageLoaders} from '@/site/messages';
+import {chatAssistantMessageLoaders} from '@/site/chat-assistant/messages';
 
 const registrations: MessageLoaders[] = [
     accountMessageLoaders,
@@ -27,10 +30,13 @@ const registrations: MessageLoaders[] = [
     productsMessageLoaders,
     searchMessageLoaders,
     visualSearchMessageLoaders,
+    wishlistMessageLoaders,
     platformMessageLoaders,
     homeMessageLoaders,
     navigationMessageLoaders,
+    pagesMessageLoaders,
     siteMessageLoaders,
+    chatAssistantMessageLoaders,
 ];
 
 const loaders: Record<string, MessageLoader[]> = {};

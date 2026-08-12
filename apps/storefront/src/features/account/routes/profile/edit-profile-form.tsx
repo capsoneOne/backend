@@ -27,7 +27,7 @@ export function EditProfileForm({ customer }: EditProfileFormProps) {
     }, [state?.success]);
 
     return (
-        <Card>
+        <Card className="gap-5 border-border">
             <CardHeader>
                 <CardTitle>{t('personalInformation')}</CardTitle>
                 <CardDescription>
@@ -42,7 +42,7 @@ export function EditProfileForm({ customer }: EditProfileFormProps) {
                             id="firstName"
                             name="firstName"
                             type="text"
-                            placeholder="John"
+                            placeholder={t('firstNamePlaceholder')}
                             defaultValue={customer?.firstName || ''}
                             required
                             disabled={isPending}
@@ -54,7 +54,7 @@ export function EditProfileForm({ customer }: EditProfileFormProps) {
                             id="lastName"
                             name="lastName"
                             type="text"
-                            placeholder="Doe"
+                            placeholder={t('lastNamePlaceholder')}
                             defaultValue={customer?.lastName || ''}
                             required
                             disabled={isPending}
@@ -66,11 +66,11 @@ export function EditProfileForm({ customer }: EditProfileFormProps) {
                         </div>
                     )}
                     {state?.success && (
-                        <div className="text-sm text-green-600">
+                        <div className="text-sm text-emerald-700 dark:text-emerald-400">
                             {t('profileUpdated')}
                         </div>
                     )}
-                    <Button type="submit" disabled={isPending}>
+                    <Button type="submit" disabled={isPending} className="min-h-11 px-5">
                         {isPending ? t('updating') : t('updateProfile')}
                     </Button>
                 </CardContent>

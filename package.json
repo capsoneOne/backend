@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev:all": "npm run infra:up && STOP_INFRA=1 bash scripts/dev.sh",
     "dev": "bash scripts/dev.sh",
     "status": "bash scripts/status.sh",
     "stop": "bash scripts/stop.sh",
@@ -20,6 +21,8 @@
     "start:server": "npm run start -w server",
     "start:storefront": "npm run start -w storefront",
     "start:worker": "npm run start:worker -w server",
+    "seed": "npm run seed -w server",
+    "eval": "node eval/run.mjs",
     "lint": "npm run lint -w storefront",
     "check-types": "npm run check-types -w storefront",
     "test": "npm run test:storefront && npm run test:embedder",

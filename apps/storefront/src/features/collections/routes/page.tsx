@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { Link } from '@/platform/i18n/navigation';
 import { query } from '@/platform/vendure/api';
 import {SearchProductsQuery} from '@/features/search/graphql';
 import {GetCollectionProductsQuery} from '@/features/collections/graphql';
@@ -9,14 +8,6 @@ import {FacetFilters} from '@/features/search/facet-filters';
 import {ProductGridSkeleton} from '@/features/products/product-grid-skeleton';
 import { buildSearchInput, getCurrentPage } from '@/features/search/search-helpers';
 import { cacheLife, cacheTag } from 'next/cache';
-import {
-    Breadcrumb,
-    BreadcrumbList,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import { routing } from '@/platform/i18n/routing';
 import {
     SITE_NAME,
@@ -28,6 +19,15 @@ import {toOgLocale} from '@/platform/i18n/locale-utils';
 import {getActiveCurrencyCode} from '@/features/currency/currency-server';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {getTranslations} from 'next-intl/server';
+import {getAllCollections} from '@/features/collections/data';
+import {getCollectionPath} from '@/features/collections/paths';
+import {redirect} from '@/platform/i18n/navigation';
+import {
+    CataloguePageHeader,
+    CatalogueSidebar,
+    StorefrontBreadcrumbs,
+    StorefrontPageShell,
+} from '@/components/catalogue-page';
 
 async function getCollectionProducts(slug: string, searchParams: { [key: string]: string | string[] | undefined }, currencyCode: string) {
     'use cache';
@@ -58,10 +58,7 @@ async function getCollectionMetadata(slug: string) {
     }, {languageCode: locale});
 }
 
-export async function generateMetadata({
-    params,
-}: PageProps<'/[locale]/collection/[slug]'>): Promise<Metadata> {
-    const { slug } = await params;
+export async function generateCollectionMetadata(slug: string): Promise<Metadata> {
     const locale = await getRouteLocale();
     const result = await getCollectionMetadata(slug);
     const collection = result.data.collection;
@@ -74,11 +71,12 @@ export async function generateMetadata({
         };
     }
 
-    const description =
-        truncateDescription(collection.description) ||
-        t('browseCollectionAt', {name: collection.name, siteName: SITE_NAME});
+    const description = slug === 'featured'
+        ? t('featuredDescription')
+        : truncateDescription(collection.description) ||
+          t('browseCollectionAt', {name: collection.name, siteName: SITE_NAME});
     const ogLocale = toOgLocale(locale);
-    const collectionPath = `/collection/${collection.slug}`;
+    const collectionPath = getCollectionPath(collection.slug);
 
     return {
         title: collection.name,
@@ -108,8 +106,18 @@ export async function generateMetadata({
     };
 }
 
-export default async function CollectionPage({params, searchParams}: PageProps<'/[locale]/collection/[slug]'>) {
-    const { slug } = await params;
+export async function generateMetadata({params}: PageProps<'/[locale]/collection/[slug]'>): Promise<Metadata> {
+    const {slug} = await params;
+    return generateCollectionMetadata(slug);
+}
+
+interface CollectionPageContentProps {
+    slug: string;
+    searchParams: Promise<{[key: string]: string | string[] | undefined}>;
+    topLevel?: boolean;
+}
+
+export async function CollectionPageContent({slug, searchParams, topLevel = false}: CollectionPageContentProps) {
     const searchParamsResolved = await searchParams;
     const locale = await getRouteLocale();
     const currencyCode = await getActiveCurrencyCode();
@@ -117,44 +125,63 @@ export default async function CollectionPage({params, searchParams}: PageProps<'
     const page = getCurrentPage(searchParamsResolved);
 
     const productDataPromise = getCollectionProducts(slug, searchParamsResolved, currencyCode);
-    const collectionResult = await getCollectionMetadata(slug);
-    const collectionName = collectionResult.data.collection?.name ?? slug;
+    const [collectionResult, categories] = await Promise.all([
+        getCollectionMetadata(slug),
+        getAllCollections(locale),
+    ]);
+    const collection = collectionResult.data.collection;
+    const collectionName = collection?.name ?? slug;
 
     return (
-        <div className="container mx-auto px-4 py-8 mt-16">
-            {/* Breadcrumbs */}
-            <Breadcrumb className="mb-6">
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink render={<Link href="/" />}>{t('home')}</BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>{collectionName}</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
+        <StorefrontPageShell>
+            <CataloguePageHeader
+                eyebrow={topLevel ? t('featuredEyebrow') : t('eyebrow')}
+                title={collectionName}
+                description={topLevel ? t('featuredDescription') : collection?.description ? (
+                    <div dangerouslySetInnerHTML={{__html: collection.description}} />
+                ) : t('defaultDescription', {name: collectionName})}
+                breadcrumbs={topLevel ? undefined : (
+                    <StorefrontBreadcrumbs
+                        items={[
+                            {label: t('home'), href: '/'},
+                            {label: t('shopAll'), href: '/search'},
+                            {label: collectionName},
+                        ]}
+                    />
+                )}
+            />
 
-            {/* Collection Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold tracking-tight">{collectionName}</h1>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                {/* Filters Sidebar */}
-                <aside className="lg:col-span-1">
-                    <Suspense fallback={<div className="h-64 animate-pulse bg-muted rounded-lg" />}>
-                        <FacetFilters productDataPromise={productDataPromise} />
-                    </Suspense>
-                </aside>
+            <div className="flex flex-col gap-8 lg:flex-row">
+                <CatalogueSidebar
+                    categories={categories}
+                    activeSlug={slug}
+                    categoryTitle={t('categories')}
+                    allProductsLabel={t('allProducts')}
+                    filters={(
+                        <Suspense fallback={<div className="h-64 animate-pulse rounded-lg bg-muted" />}>
+                            <FacetFilters productDataPromise={productDataPromise} />
+                        </Suspense>
+                    )}
+                />
 
                 {/* Product Grid */}
-                <div className="lg:col-span-3">
+                <div className="min-w-0 flex-1">
                     <Suspense fallback={<ProductGridSkeleton />}>
                         <ProductGrid productDataPromise={productDataPromise} currentPage={page} take={12} />
                     </Suspense>
                 </div>
             </div>
-        </div>
+        </StorefrontPageShell>
     );
+}
+
+export default async function CollectionPage({params, searchParams}: PageProps<'/[locale]/collection/[slug]'>) {
+    const {slug} = await params;
+    const locale = await getRouteLocale();
+
+    if (slug === 'featured') {
+        return redirect({href: '/featured', locale});
+    }
+
+    return <CollectionPageContent slug={slug} searchParams={searchParams} />;
 }

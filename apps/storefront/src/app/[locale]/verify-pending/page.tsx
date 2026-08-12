@@ -1,1 +1,1 @@
-export {default, metadata} from '@/features/authentication/routes/verify-pending/page';
+export {default, generateMetadata} from '@/features/authentication/routes/verify-pending/page';

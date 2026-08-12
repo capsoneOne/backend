@@ -5,6 +5,7 @@ import {Cart} from "@/features/cart/routes/cart";
 import {Suspense} from "react";
 import {CartSkeleton} from "@/features/cart/components/cart-skeleton";
 import {noIndexRobots} from '@/config/metadata';
+import {StorefrontPageHeader, StorefrontPageShell} from '@/components/catalogue-page';
 
 export async function generateMetadata(): Promise<Metadata> {
     const locale = await getRouteLocale();
@@ -20,12 +21,18 @@ export default async function CartPage() {
     const t = await getTranslations({locale, namespace: 'Cart'});
 
     return (
-        <div className="container mx-auto px-4 py-20">
-            <h1 className="text-3xl font-bold mb-8">{t('title')}</h1>
+        <StorefrontPageShell>
+            <div className="mx-auto max-w-6xl">
+                <StorefrontPageHeader
+                    eyebrow={t('eyebrow')}
+                    title={t('title')}
+                    description={t('description')}
+                />
 
-            <Suspense fallback={<CartSkeleton />}>
-                <Cart/>
-            </Suspense>
-        </div>
+                <Suspense fallback={<CartSkeleton />}>
+                    <Cart/>
+                </Suspense>
+            </div>
+        </StorefrontPageShell>
     );
 }

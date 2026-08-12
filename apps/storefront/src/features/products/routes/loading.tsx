@@ -1,8 +1,9 @@
 import { Skeleton } from '@/components/ui/skeleton';
+import {StorefrontPageShell} from '@/components/catalogue-page';
 
 export default function ProductLoading() {
     return (
-        <div className="container mx-auto px-4 py-8 mt-16">
+        <StorefrontPageShell>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
                 {/* Left Column: Image Carousel Skeleton */}
                 <div className="lg:sticky lg:top-20 lg:self-start">
@@ -49,6 +50,6 @@ export default function ProductLoading() {
                     <Skeleton className="h-3 w-32" />
                 </div>
             </div>
-        </div>
+        </StorefrontPageShell>
     );
 }

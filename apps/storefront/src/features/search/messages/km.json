@@ -1,0 +1,54 @@
+{
+  "Sort": {
+    "relevance": "ត្រូវគ្នាបំផុត",
+    "nameAsc": "ឈ្មោះ៖ A ដល់ Z",
+    "nameDesc": "ឈ្មោះ៖ Z ដល់ A",
+    "priceAsc": "តម្លៃ៖ ទាបទៅខ្ពស់",
+    "priceDesc": "តម្លៃ៖ ខ្ពស់ទៅទាប",
+    "placeholder": "តម្រៀបតាម"
+  },
+  "Filters": {
+    "title": "តម្រង",
+    "clearAll": "សម្អាតទាំងអស់",
+    "filtersButton": "តម្រង",
+    "inStockOnly": "បង្ហាញតែទំនិញមានក្នុងស្តុក",
+    "description": "ជ្រើសតម្រងមួយចំនួន រួចអនុវត្តរួមគ្នា។",
+    "selectedCount": "{count, plural, one {បានជ្រើស #} other {បានជ្រើស #}}",
+    "applyFilters": "អនុវត្ត {count, plural, =0 {តម្រង} one {តម្រង #} other {តម្រង #}}",
+    "applying": "កំពុងអនុវត្ត...",
+    "activeFilters": "តម្រងកំពុងប្រើ",
+    "removeFilter": "ដកតម្រង {name}"
+  },
+  "Search": {
+    "title": "ទិញទាំងអស់",
+    "pageTitle": "ទិញសម្លៀកបំពាក់ទាំងអស់",
+    "shopAll": "ទិញទាំងអស់",
+    "catalogueEyebrow": "កាតាឡុក",
+    "catalogueDescription": "មើលគ្រប់ម៉ូដ រួចចម្រាញ់តាមប្រភេទ ទំហំ ពណ៌ ឬស្តុក។",
+    "resultsEyebrow": "លទ្ធផលស្វែងរក",
+    "resultsDescription": "ចម្រាញ់លទ្ធផលដោយប្រភេទ និងតម្រង ឬសាកស្វែងរកម្ដងទៀតពីរបាររុករក។",
+    "categories": "ប្រភេទទំនិញ",
+    "allProducts": "ទំនិញទាំងអស់",
+    "resultsFor": "លទ្ធផលស្វែងរកសម្រាប់ \"{query}\"",
+    "resultsTitle": "លទ្ធផលស្វែងរកសម្រាប់ \"{query}\"",
+    "metaDescription": "ស្វែងរកទំនិញដែលត្រូវនឹង \"{query}\" នៅ {siteName}",
+    "metaCatalogDescription": "ទិញសម្លៀកបំពាក់ ស្បែកជើង និងគ្រឿងបន្ថែមគ្រប់ប្រភេទនៅ {siteName}"
+  },
+  "SearchSuggestions": {
+    "searchProducts": "ស្វែងរកទំនិញ...",
+    "searchCategory": "ជ្រើសប្រភេទសម្រាប់ស្វែងរក",
+    "allProducts": "ទំនិញទាំងអស់",
+    "allProductsDescription": "ស្វែងរកក្នុងកាតាឡុកទាំងមូល",
+    "allInCategory": "{category} ទាំងអស់",
+    "searchScopeLabel": "ស្វែងរកក្នុង",
+    "searchScopeDescription": "ជ្រើសកន្លែងដែលត្រូវយកទំនិញណែនាំ។",
+    "searchByImage": "ស្វែងរកតាមរូបភាព",
+    "searching": "កំពុងស្វែងរក…",
+    "noSuggestionsFor": "មិនមានលទ្ធផលរហ័សសម្រាប់ “{query}” ទេ។",
+    "searchFor": "ស្វែងរកក្នុងលទ្ធផលទាំងអស់",
+    "clearSearch": "សម្អាតការស្វែងរក",
+    "suggestionsLabel": "ទំនិញដែលបានណែនាំ",
+    "suggestionStatus": "{count, plural, =0 {មិនមានទំនិញណែនាំ} one {ទំនិញណែនាំ #} other {ទំនិញណែនាំ #}}",
+    "viewAllResults": "{count, plural, =0 {មើលលទ្ធផលទាំងអស់} one {មើលលទ្ធផល #} other {មើលលទ្ធផលទាំង #}}"
+  }
+}

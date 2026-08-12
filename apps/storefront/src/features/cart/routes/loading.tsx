@@ -1,10 +1,13 @@
 import { CartSkeleton } from '@/features/cart/components/cart-skeleton';
+import {CataloguePageHeaderSkeleton, StorefrontPageShell} from '@/components/catalogue-page';
 
 export default function CartLoading() {
     return (
-        <div className="container mx-auto px-4 py-20">
-            <div className="h-9 w-48 bg-muted animate-pulse rounded mb-8" />
-            <CartSkeleton />
-        </div>
+        <StorefrontPageShell>
+            <div className="mx-auto max-w-6xl">
+                <CataloguePageHeaderSkeleton />
+                <CartSkeleton />
+            </div>
+        </StorefrontPageShell>
     );
 }
