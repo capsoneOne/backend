@@ -1,17 +1,17 @@
 import Image from 'next/image';
 
 /**
- * Which illustration belongs to which entry point: returning shoppers get the
- * checkout scene, new ones get the storefront they are about to browse.
+ * Which illustration belongs to which entry point, with each asset's own intrinsic
+ * size. The dimensions travel with the `src` rather than sitting in one shared
+ * constant because they genuinely differ — the shopping scenes are 750x500 and the
+ * recovery one is 500x500. A single pair of numbers would hand `next/image` the
+ * wrong aspect ratio for whichever asset did not match.
  */
 const ARTWORK = {
-    'sign-in': '/storyset/online-shopping-pana.svg',
-    register: '/storyset/ecommerce-campaign-pana.svg',
+    'sign-in': {src: '/storyset/online-shopping-pana.svg', width: 750, height: 500},
+    register: {src: '/storyset/ecommerce-campaign-pana.svg', width: 750, height: 500},
+    'forgot-password': {src: '/storyset/add-to-cart-cuate.svg', width: 500, height: 500},
 } as const;
-
-/** Both assets share a 750x500 viewBox; `next/image` needs it to reserve the right box. */
-const ARTWORK_WIDTH = 750;
-const ARTWORK_HEIGHT = 500;
 
 interface AuthShowcaseProps {
     variant: keyof typeof ARTWORK;
@@ -29,16 +29,18 @@ interface AuthShowcaseProps {
  * above it would just push the first input off the fold.
  */
 export function AuthShowcase({variant}: AuthShowcaseProps) {
+    const artwork = ARTWORK[variant];
+
     // Padding is deliberately tight: the artwork is width-constrained, not
     // height-constrained — the panel has vertical slack to spare — so every pixel of
     // horizontal padding comes straight off the illustration's size.
     return (
         <section className="relative hidden overflow-hidden rounded-xl border border-border bg-card/60 p-4 lg:flex lg:flex-col lg:justify-center">
             <Image
-                src={ARTWORK[variant]}
+                src={artwork.src}
                 alt=""
-                width={ARTWORK_WIDTH}
-                height={ARTWORK_HEIGHT}
+                width={artwork.width}
+                height={artwork.height}
                 priority
                 className="animate-float-art h-auto w-full"
             />
