@@ -65,7 +65,7 @@ export default function GlobalErrorBoundary({
                     }}
                 >
                     <p style={{margin: 0, color: '#0866d8', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase'}}>
-                        StyleMatch
+                        Lumé
                     </p>
                     <h1 style={{fontSize: '2.25rem', lineHeight: 1.15, fontWeight: 700, margin: '0.75rem 0 0'}}>
                         {copy.title}

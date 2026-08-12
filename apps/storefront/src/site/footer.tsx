@@ -3,14 +3,15 @@ import {SITE_NAME} from '@/config/metadata';
 import {cacheLife, cacheTag} from 'next/cache';
 import {getTopCollections} from '@/features/collections/data';
 import {getCollectionPath} from '@/features/collections/paths';
-import {Heart, RotateCcw, Truck} from 'lucide-react';
+import {Heart, RotateCcw, ShieldCheck, Truck} from 'lucide-react';
 import {NavigationLink} from '@/site/navigation/navigation-link';
 import {Brand} from '@/site/brand';
 import {getTranslations} from 'next-intl/server';
+import {PaymentMethodMarks} from '@/site/payment-method-marks';
 
 const COPYRIGHT_YEAR = 2026;
 
-const linkClass = 'inline-flex min-h-10 min-w-11 items-center font-light text-muted-foreground transition-colors hover:text-primary focus-visible:text-primary';
+const linkClass = 'group inline-flex min-h-10 min-w-11 items-center font-light text-muted-foreground transition-[color,transform] duration-200 hover:translate-x-0.5 hover:text-primary focus-visible:text-primary focus-visible:outline-none';
 const headingClass = 'text-xs font-bold uppercase tracking-[0.16em] text-foreground';
 
 async function Copyright() {
@@ -40,8 +41,9 @@ export async function Footer() {
     return (
         <footer className="relative mt-auto overflow-hidden border-t border-border bg-background">
             <div aria-hidden="true" className="absolute -bottom-48 -left-24 size-96 rounded-full bg-primary/8 blur-3xl" />
-            <div className="border-b border-border bg-secondary/25">
-                <div className="container mx-auto grid px-4 sm:grid-cols-3">
+            <div aria-hidden="true" className="absolute -right-32 top-40 size-80 rounded-full bg-cyan-400/5 blur-3xl" />
+            <div className="relative border-b border-border bg-secondary/25">
+                <div className="container mx-auto grid px-4 sm:grid-cols-2 lg:grid-cols-4">
                     <div className="flex items-center gap-3 border-border py-5 sm:border-r sm:pr-6">
                         <Truck className="size-5 shrink-0 text-primary" aria-hidden="true" />
                         <div>
@@ -49,14 +51,21 @@ export async function Footer() {
                             <p className="mt-0.5 text-xs font-light text-muted-foreground">{t('deliveryDescription')}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3 border-t border-border py-5 sm:border-r sm:border-t-0 sm:px-6">
+                    <div className="flex items-center gap-3 border-t border-border py-5 sm:border-t-0 sm:pl-6 lg:border-r lg:pr-6">
                         <RotateCcw className="size-5 shrink-0 text-primary" aria-hidden="true" />
                         <div>
                             <p className="text-sm font-bold">{t('returnsTitle')}</p>
                             <p className="mt-0.5 text-xs font-light text-muted-foreground">{t('returnsDescription')}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3 border-t border-border py-5 sm:border-t-0 sm:pl-6">
+                    <div className="flex items-center gap-3 border-t border-border py-5 sm:border-r sm:pr-6 lg:border-t-0 lg:pl-6">
+                        <ShieldCheck className="size-5 shrink-0 text-primary" aria-hidden="true" />
+                        <div>
+                            <p className="text-sm font-bold">{t('secureTitle')}</p>
+                            <p className="mt-0.5 text-xs font-light text-muted-foreground">{t('secureDescription')}</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3 border-t border-border py-5 sm:pl-6 lg:border-t-0">
                         <Heart className="size-5 shrink-0 text-primary" aria-hidden="true" />
                         <div>
                             <p className="text-sm font-bold">{t('wishlistTitle')}</p>
@@ -66,7 +75,7 @@ export async function Footer() {
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 pb-8 pt-12 lg:pt-14">
+            <div className="relative container mx-auto px-4 pb-8 pt-12 lg:pt-14">
                 <div className="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_repeat(4,minmax(0,1fr))]">
                     <div className="max-w-sm sm:col-span-2 lg:col-span-1">
                         <NavigationLink href="/" className="inline-flex min-h-11 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background">
@@ -78,6 +87,10 @@ export async function Footer() {
                         <p className="mt-5 text-xs font-medium text-primary">
                             {t('storeTagline')}
                         </p>
+                        <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-2 text-xs font-medium text-primary">
+                            <ShieldCheck className="size-3.5" aria-hidden="true" />
+                            {t('shopConfidence')}
+                        </div>
                     </div>
 
                     <div>
@@ -126,7 +139,15 @@ export async function Footer() {
                     </div>
                 </div>
 
-                <div className="mt-10 flex flex-col gap-2 border-t border-border pt-7 text-sm font-light text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+                <div className="mt-10">
+                    <PaymentMethodMarks
+                        title={t('paymentsTitle')}
+                        description={t('paymentsDescription')}
+                        demoNote={t('paymentsDemoNote')}
+                    />
+                </div>
+
+                <div className="mt-8 flex flex-col gap-2 border-t border-border pt-7 text-sm font-light text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
                     <Copyright/>
                     <p>{t('closingLine')}</p>
                 </div>

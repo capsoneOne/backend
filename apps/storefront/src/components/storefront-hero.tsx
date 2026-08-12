@@ -3,12 +3,14 @@ import type {ReactNode} from 'react';
 interface StorefrontHeroProps {
     children: ReactNode;
     artwork: ReactNode;
+    topContent?: ReactNode;
 }
 
 /** Shared display hero for the storefront's primary discovery experiences. */
-export function StorefrontHero({children, artwork}: StorefrontHeroProps) {
+export function StorefrontHero({children, artwork, topContent}: StorefrontHeroProps) {
     return (
         <section className="border-b border-border bg-secondary/20 pt-[4.5rem]">
+            {topContent}
             <div className="container mx-auto grid items-center gap-12 px-4 py-12 md:py-20 lg:min-h-[46rem] lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
                 <div className="relative z-10 max-w-3xl">
                     {children}

@@ -1,12 +1,12 @@
 {
   "Pages": {
     "about": {
-      "title": "About StyleMatch",
+      "title": "About Lumé",
       "lede": "A multi-category marketplace for discovering useful products across technology, fashion, beauty, home, sport, and more.",
       "sections": [
         {
           "heading": "One complete marketplace",
-          "body": "StyleMatch brings products from every part of daily life into one searchable catalogue. Browse categories, filter by product details and price, save favourites, manage a cart, and move through one consistent checkout."
+          "body": "Lumé brings products from every part of daily life into one searchable catalogue. Browse categories, filter by product details and price, save favourites, manage a cart, and move through one consistent checkout."
         },
         {
           "heading": "Built around how people shop",
@@ -22,7 +22,7 @@
         },
         {
           "heading": "This is a student project",
-          "body": "StyleMatch is a capstone project, not a live retailer. Orders placed here are processed against a test payment handler, no money changes hands, and nothing ships. Treat any product, price or delivery estimate on the site as sample data."
+          "body": "Lumé is a capstone project, not a live retailer. Orders placed here are processed against a test payment handler, no money changes hands, and nothing ships. Treat any product, price or delivery estimate on the site as sample data."
         }
       ]
     },
@@ -110,7 +110,7 @@
       "sections": [
         {
           "heading": "About this service",
-          "body": "StyleMatch is a student capstone project operated for educational purposes. It is not a commercial retailer. Products, prices, stock levels and delivery estimates shown on the site are sample data, and orders placed here are processed against a test payment handler — no money is taken and no goods are dispatched."
+          "body": "Lumé is a student capstone project operated for educational purposes. It is not a commercial retailer. Products, prices, stock levels and delivery estimates shown on the site are sample data, and orders placed here are processed against a test payment handler — no money is taken and no goods are dispatched."
         },
         {
           "heading": "Accounts",
@@ -168,7 +168,7 @@
         },
         {
           "question": "Is this a real shop?",
-          "answer": "No. StyleMatch is a student capstone project. Orders run against a test payment handler, no money is taken, and nothing is dispatched. Treat the products, prices and delivery estimates as sample data."
+          "answer": "No. Lumé is a student capstone project. Orders run against a test payment handler, no money is taken, and nothing is dispatched. Treat the products, prices and delivery estimates as sample data."
         }
       ]
     }

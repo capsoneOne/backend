@@ -1,13 +1,13 @@
 import type {Metadata} from 'next';
 
 export const metadata: Metadata = {
-    title: 'Page not found | StyleMatch',
+    title: 'Page not found | Lumé',
     description: 'The requested storefront page could not be found.',
 };
 
 /**
  * Unmatched URLs bypass the locale root layout in Next.js, so this document
- * deliberately carries the essential StyleMatch tokens inline.
+ * deliberately carries the essential Lumé tokens inline.
  */
 export default function GlobalNotFound() {
     return (
@@ -38,7 +38,7 @@ export default function GlobalNotFound() {
                     }}
                 >
                     <p style={{margin: 0, color: '#0866d8', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase'}}>
-                        404 · StyleMatch
+                        404 · Lumé
                     </p>
                     <h1 style={{margin: '0.85rem 0 0', maxWidth: '34rem', fontSize: 'clamp(2.25rem, 7vw, 3.75rem)', lineHeight: 1.05, fontWeight: 700, letterSpacing: '-0.02em'}}>
                         Page not found
