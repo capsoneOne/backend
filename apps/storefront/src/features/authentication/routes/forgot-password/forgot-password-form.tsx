@@ -4,7 +4,9 @@ import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { CircleAlert, Mail } from 'lucide-react';
 import { requestPasswordResetAction } from './actions';
+import { AuthField } from '@/components/ui/auth-field';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -81,20 +83,24 @@ export function ForgotPasswordForm() {
         <Card>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
-                    <CardContent className="pt-6">
+                    <CardContent className="space-y-5">
                         <FormField
                             control={form.control}
                             name="emailAddress"
                             render={({ field }) => (
-                                <FormItem>
+                                <FormItem className="animate-field-rise" style={{ animationDelay: '60ms' }}>
                                     <FormLabel>{t('email')}</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            type="email"
-                                            placeholder="you@example.com"
-                                            disabled={isPending}
-                                            {...field}
-                                        />
+                                        <AuthField icon={Mail}>
+                                            <Input
+                                                type="email"
+                                                autoComplete="email"
+                                                placeholder="you@example.com"
+                                                disabled={isPending}
+                                                className="h-11 pl-10"
+                                                {...field}
+                                            />
+                                        </AuthField>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -102,8 +108,12 @@ export function ForgotPasswordForm() {
                         />
 
                         {serverError && (
-                            <div className="text-sm text-destructive mt-4">
-                                {serverError}
+                            <div
+                                role="alert"
+                                className="animate-field-rise flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+                            >
+                                <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
+                                <span>{serverError}</span>
                             </div>
                         )}
                     </CardContent>
