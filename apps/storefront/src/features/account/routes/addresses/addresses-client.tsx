@@ -62,6 +62,7 @@ export function AddressesClient({ addresses, countries }: AddressesClientProps) 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingAddress, setEditingAddress] = useState<CustomerAddress | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState<string | null>(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [addressToDelete, setAddressToDelete] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -69,11 +70,13 @@ export function AddressesClient({ addresses, countries }: AddressesClientProps) 
 
     const handleAddNew = () => {
         setEditingAddress(null);
+        setSubmitError(null);
         setDialogOpen(true);
     };
 
     const handleEdit = (address: CustomerAddress) => {
         setEditingAddress(address);
+        setSubmitError(null);
         setDialogOpen(true);
     };
 
@@ -128,6 +131,7 @@ export function AddressesClient({ addresses, countries }: AddressesClientProps) 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleSubmit = async (data: any) => {
         setIsSubmitting(true);
+        setSubmitError(null);
         try {
             if (editingAddress) {
                 await updateAddress(data);
@@ -139,7 +143,7 @@ export function AddressesClient({ addresses, countries }: AddressesClientProps) 
             setEditingAddress(null);
         } catch (error) {
             console.error('Error saving address:', error);
-            alert(`Error saving address: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            setSubmitError(t('saveAddressError'));
         } finally {
             setIsSubmitting(false);
         }
@@ -256,9 +260,15 @@ export function AddressesClient({ addresses, countries }: AddressesClientProps) 
                 </div>
             )}
 
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
+            <Dialog open={dialogOpen} onOpenChange={(open) => {
+                setDialogOpen(open);
+                if (!open) {
+                    setEditingAddress(null);
+                    setSubmitError(null);
+                }
+            }}>
+                <DialogContent className="h-[min(92dvh,52rem)] max-w-[min(76rem,calc(100%-1rem))] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden rounded-2xl p-0 sm:max-w-[min(76rem,calc(100%-2rem))]">
+                    <DialogHeader className="border-b border-border px-5 py-4 pr-14 sm:px-6">
                         <DialogTitle>{editingAddress ? t('editAddress') : t('addNewAddressDialog')}</DialogTitle>
                         <DialogDescription>
                             {editingAddress
@@ -273,8 +283,10 @@ export function AddressesClient({ addresses, countries }: AddressesClientProps) 
                         onCancel={() => {
                             setDialogOpen(false);
                             setEditingAddress(null);
+                            setSubmitError(null);
                         }}
                         isSubmitting={isSubmitting}
+                        submitError={submitError}
                     />
                 </DialogContent>
             </Dialog>

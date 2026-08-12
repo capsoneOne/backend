@@ -11,7 +11,7 @@
  * determined", and with no products there is nothing for visual search to rank.
  *
  * What it creates:
- *   - a country, a zone, a tax category and a zero-rate tax, wired as the channel's
+ *   - Cambodia, a zone, a tax category and a zero-rate tax, wired as the channel's
  *     default tax and shipping zone
  *   - eight products, each with one image and one variant
  *   - a clothing-store collection hierarchy used by catalogue navigation
@@ -273,18 +273,18 @@ async function ensureChannelSetup() {
         console.log('  Khmer language enabled globally');
     }
 
-    const {countries} = await gql(`query { countries { items { id code } } }`);
-    let country = countries.items.find(c => c.code === 'US');
+    const {countries} = await gql(`query { countries { items { id code enabled } } }`);
+    let country = countries.items.find(c => c.code === 'KH');
     if (!country) {
         const r = await gql(
             `mutation Create($input: CreateCountryInput!) { createCountry(input: $input) { id code } }`,
             {
                 input: {
-                    code: 'US',
+                    code: 'KH',
                     enabled: true,
                     translations: [
-                        {languageCode: 'en', name: 'United States'},
-                        {languageCode: 'km', name: 'សហរដ្ឋអាមេរិក'},
+                        {languageCode: 'en', name: 'Cambodia'},
+                        {languageCode: 'km', name: 'កម្ពុជា'},
                     ],
                 },
             },
@@ -297,16 +297,26 @@ async function ensureChannelSetup() {
             {
                 input: {
                     id: country.id,
+                    enabled: true,
                     translations: [
-                        {languageCode: 'en', name: 'United States'},
-                        {languageCode: 'km', name: 'សហរដ្ឋអាមេរិក'},
+                        {languageCode: 'en', name: 'Cambodia'},
+                        {languageCode: 'km', name: 'កម្ពុជា'},
                     ],
                 },
             },
         );
     }
 
-    const {zones} = await gql(`query { zones { items { id name } } }`);
+    const previousCountry = countries.items.find(c => c.code === 'US');
+    if (previousCountry?.enabled) {
+        await gql(
+            `mutation Update($input: UpdateCountryInput!) { updateCountry(input: $input) { id code enabled } }`,
+            {input: {id: previousCountry.id, enabled: false}},
+        );
+        console.log('  disabled previous country', previousCountry.code);
+    }
+
+    const {zones} = await gql(`query { zones { items { id name members { id } } } }`);
     let zone = zones.items.find(z => z.name === 'Default Zone');
     if (!zone) {
         const r = await gql(
@@ -315,6 +325,26 @@ async function ensureChannelSetup() {
         );
         zone = r.createZone;
         console.log('  zone', zone.name);
+    } else {
+        const memberIds = new Set(zone.members.map(member => member.id));
+        if (!memberIds.has(country.id)) {
+            await gql(
+                `mutation Add($zoneId: ID!, $memberIds: [ID!]!) {
+                    addMembersToZone(zoneId: $zoneId, memberIds: $memberIds) { id }
+                }`,
+                {zoneId: zone.id, memberIds: [country.id]},
+            );
+            console.log('  added', country.code, 'to zone', zone.name);
+        }
+        if (previousCountry && memberIds.has(previousCountry.id)) {
+            await gql(
+                `mutation Remove($zoneId: ID!, $memberIds: [ID!]!) {
+                    removeMembersFromZone(zoneId: $zoneId, memberIds: $memberIds) { id }
+                }`,
+                {zoneId: zone.id, memberIds: [previousCountry.id]},
+            );
+            console.log('  removed', previousCountry.code, 'from zone', zone.name);
+        }
     }
 
     const {taxCategories} = await gql(`query { taxCategories { items { id name } } }`);
