@@ -17,7 +17,19 @@ declare global {
             DB_USERNAME: string;
             DB_PASSWORD: string;
             DB_SCHEMA: string;
+            OPENAI_API_KEY?: string;
+            OPENAI_CHAT_MODEL?: string;
+            CHAT_MAX_HISTORY_MESSAGES?: string;
+            CHAT_MAX_OUTPUT_TOKENS?: string;
+            CHAT_ANONYMOUS_REQUESTS_PER_MINUTE?: string;
+            CHAT_ANONYMOUS_REQUESTS_PER_DAY?: string;
+            CHAT_USER_REQUESTS_PER_MINUTE?: string;
+            CHAT_USER_REQUESTS_PER_DAY?: string;
+            CHAT_GLOBAL_REQUESTS_PER_DAY?: string;
+            CHAT_GLOBAL_INPUT_TOKENS_PER_DAY?: string;
+            CHAT_GLOBAL_OUTPUT_TOKENS_PER_DAY?: string;
+            CHAT_MAX_CONCURRENT_REQUESTS?: string;
+            CHAT_LEASE_TTL_SECONDS?: string;
         }
     }
 }
-

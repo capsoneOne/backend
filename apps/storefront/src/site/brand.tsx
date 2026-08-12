@@ -1,10 +1,10 @@
 import {cn} from '@/lib/utils';
 import {SITE_NAME} from '@/config/metadata';
-import {Shirt} from 'lucide-react';
+import {Store} from 'lucide-react';
 
 /**
- * A clothing-first mark. Visual search remains a feature in navigation rather
- * than the symbol used to define the entire store.
+ * A category-neutral marketplace mark. Individual discovery features remain
+ * navigation actions rather than defining the whole store identity.
  *
  * The wordmark reads `NEXT_PUBLIC_SITE_NAME`, so renaming the store stays an env
  * change. Multi-word names use a light-to-bold contrast; single-word names use
@@ -18,7 +18,7 @@ export function BrandMark({className}: {className?: string}) {
                 className,
             )}
         >
-            <Shirt className="size-5" aria-hidden="true" />
+            <Store className="size-5" aria-hidden="true" />
         </span>
     );
 }

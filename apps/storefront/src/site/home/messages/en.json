@@ -1,47 +1,53 @@
 {
   "Hero": {
-    "badge": "New season, made for every day",
-    "title": "Clothes you’ll reach for.",
-    "titleHighlight": "Style that feels like you.",
-    "subtitle": "Explore clothing, shoes, and accessories selected for everyday comfort, effortless layering, and your own way of dressing.",
-    "shopNow": "Shop all clothing",
+    "badge": "One marketplace. Every category.",
+    "title": "Everything you’re looking for.",
+    "titleHighlight": "All in one place.",
+    "subtitle": "Explore technology, fashion, beauty, home, sport, and everyday essentials through one simple shopping experience.",
+    "shopNow": "Shop all products",
     "searchByImage": "Search by image",
     "viewCollections": "Explore categories",
-    "reassurance": "New arrivals · Everyday essentials · Seasonal styles",
+    "reassurance": "Trusted products · Clear prices · Easy checkout",
     "illustrationAlt": "An ecommerce website surrounded by shopping bags and gifts"
   },
   "Home": {
     "categoriesEyebrow": "Shop your way",
     "shopByCategory": "Shop by category",
-    "shopByCategoryDescription": "Find the right piece faster, from everyday essentials to the latest seasonal styles.",
+    "shopByCategoryDescription": "Jump straight to what you need, from everyday essentials to the latest products.",
     "viewAllCategories": "View all categories",
-    "pageTitle": "Clothing, shoes, and accessories for every day",
-    "description": "Shop clothing, shoes, and accessories across multiple categories, from everyday essentials to seasonal new arrivals.",
-    "ogDescription": "Shop curated clothing, shoes, and accessories across collections for every day and every season.",
-    "campaignTitle": "Easy layers. Fresh colour. Everyday confidence.",
-    "campaignDescription": "Build a wardrobe that works harder with versatile pieces made for changing days, effortless combinations, and your own way of dressing.",
-    "campaignPrimary": "Shop the edit",
-    "campaignSecondary": "Browse all styles",
-    "campaignAlt": "Customer style stories paired with six modern independent fashion labels",
-    "campaignBrandsHeading": "Style stories",
-    "campaignBrandsLeftCaption": "Shopper stories",
-    "campaignBrandsRightCaption": "Everyday style",
-    "campaignStoriesEyebrow": "Worn your way",
-    "campaignStoriesTitle": "Style stories from our community",
-    "campaignStoriesDescription": "Discover the labels and everyday pieces shoppers keep reaching for.",
-    "campaignReviews": {
-      "reviewerLabel": "StyleMatch community",
-      "ratingLabel": "5 out of 5 stars",
-      "maya": "The jacket layers beautifully and still feels light enough for warmer afternoons.",
-      "sofia": "Everything arrived exactly as pictured. The cut feels modern without trying too hard.",
-      "jonah": "I found a full weekend look in minutes, and every piece works with what I own.",
-      "lina": "The fit notes were spot on. This is already the most-worn piece in my wardrobe.",
-      "amara": "Clean design, great fabric, and easy to dress up or down. Exactly my style.",
-      "theo": "The colours are even better in person, and the quality feels excellent for everyday wear."
+    "pageTitle": "Everything you need in one marketplace",
+    "description": "Shop technology, fashion, beauty, home, sport, and everyday essentials across one easy-to-browse marketplace.",
+    "ogDescription": "Discover trusted products across every category, with visual search, wishlists, and easy checkout.",
+    "campaignTitle": "More categories. More choice. One destination.",
+    "campaignDescription": "Discover useful products for every part of life, from the brands you know and new favourites worth finding.",
+    "campaignPrimary": "Shop featured products",
+    "campaignSecondary": "Browse all products",
+    "campaignAlt": "A moving showcase of leading marketplace brands across multiple categories",
+    "campaignBrandsHeading": "Marketplace favourites",
+    "campaignBrandsLeftCaption": "Trusted names",
+    "campaignBrandsRightCaption": "Everyday choice",
+    "campaignStoriesEyebrow": "One marketplace. More choice.",
+    "campaignStoriesTitle": "Brands for every part of life",
+    "campaignStoriesDescription": "Discover trusted names across technology, fashion, beauty, home, sports, and toys—all together on StyleMatch.",
+    "campaignCategoriesLabel": "Marketplace categories",
+    "campaignCategories": {
+      "technology": "Technology",
+      "fashion": "Fashion",
+      "beauty": "Beauty",
+      "home": "Home",
+      "sports": "Sports",
+      "toys": "Toys"
     },
-    "memberEyebrow": "Keep your style together",
+    "testimonials": {
+      "eyebrow": "Testimonials",
+      "title": "What our users say",
+      "description": "See what StyleMatch shoppers say about finding the right products across the marketplace.",
+      "reviewerLabel": "Verified shopper",
+      "ratingLabel": "5 out of 5 stars"
+    },
+    "memberEyebrow": "Keep your shopping together",
     "memberTitle": "Make shopping easier with a StyleMatch account",
-    "memberDescription": "Save the pieces you love, follow every order, and keep delivery details ready for a faster checkout next time.",
+    "memberDescription": "Save products you love, follow every order, and keep delivery details ready for a faster checkout next time.",
     "memberBenefits": {
       "wishlist": "Save favourites",
       "orders": "Track orders",
@@ -51,18 +57,18 @@
     "memberSecondary": "Already a member? Sign in",
     "memberSignedInEyebrow": "Welcome back",
     "memberSignedInTitle": "Your StyleMatch account, all in one place",
-    "memberSignedInDescription": "Jump back into your saved pieces, check an order, or update your delivery details whenever you need.",
+    "memberSignedInDescription": "Jump back into your saved products, check an order, or update your delivery details whenever you need.",
     "memberSignedInPrimary": "Open your account",
     "memberSignedInSecondary": "Continue shopping",
     "whyShopWithUs": "Everything you need to shop confidently",
     "features": {
       "highQuality": {
         "title": "Curated quality",
-        "description": "Reliable everyday pieces selected with material, finish, and wearability in mind."
+        "description": "Reliable products selected with quality, usefulness, and lasting value in mind."
       },
       "bestPrices": {
         "title": "Clear value",
-        "description": "Straightforward pricing across essentials, new arrivals, and seasonal edits."
+        "description": "Straightforward pricing across essentials, new arrivals, and every category."
       },
       "fastDelivery": {
         "title": "Reliable delivery",

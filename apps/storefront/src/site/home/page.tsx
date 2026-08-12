@@ -11,6 +11,7 @@ import {toOgLocale} from '@/platform/i18n/locale-utils';
 import {ShopByCategory} from '@/site/home/shop-by-category';
 import {storefrontSectionClass} from '@/components/storefront-section';
 import {
+    CustomerTestimonialsSection,
     MemberBenefitsSection,
     SeasonalCampaignSection,
 } from '@/site/home/home-campaign-sections';
@@ -58,6 +59,7 @@ export default async function Home() {
                 <FeaturedProducts/>
             </Suspense>
             <SeasonalCampaignSection/>
+            <CustomerTestimonialsSection/>
             <Suspense fallback={<HomepageSectionSkeleton cards={4}/> }>
                 <NewArrivalsSection/>
             </Suspense>

@@ -14,6 +14,7 @@ import 'dotenv/config';
 import path from 'path';
 
 import { VisualSearchPlugin } from './plugins/visual-search/visual-search.plugin';
+import { ChatAssistantPlugin } from './plugins/chat-assistant/chat-assistant.plugin';
 
 const IS_DEV = process.env.APP_ENV === 'dev';
 // PORT wins because hosting platforms inject it into the environment at runtime, and that
@@ -24,6 +25,11 @@ const serverPort = +process.env.PORT || +process.env.VENDURE_SERVER_PORT || 3000
 // every route with a locale, so both parts matter — a link missing /<locale> 404s.
 const STOREFRONT_URL = process.env.STOREFRONT_URL ?? 'http://localhost:3001';
 const DEFAULT_LOCALE = process.env.STOREFRONT_DEFAULT_LOCALE ?? 'en';
+
+function positiveInt(value: string | undefined, fallback: number): number {
+    const parsed = Number(value);
+    return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
 
 export const config: VendureConfig = {
     apiOptions: {
@@ -103,6 +109,21 @@ export const config: VendureConfig = {
         DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: true }),
         VisualSearchPlugin.init({
             embedderUrl: process.env.EMBEDDER_URL ?? 'http://localhost:8100',
+        }),
+        ChatAssistantPlugin.init({
+            apiKey: process.env.OPENAI_API_KEY,
+            model: process.env.OPENAI_CHAT_MODEL ?? 'gpt-5.6-luna',
+            maxHistoryMessages: positiveInt(process.env.CHAT_MAX_HISTORY_MESSAGES, 8),
+            maxOutputTokens: positiveInt(process.env.CHAT_MAX_OUTPUT_TOKENS, 450),
+            anonymousRequestsPerMinute: positiveInt(process.env.CHAT_ANONYMOUS_REQUESTS_PER_MINUTE, 5),
+            anonymousRequestsPerDay: positiveInt(process.env.CHAT_ANONYMOUS_REQUESTS_PER_DAY, 30),
+            authenticatedRequestsPerMinute: positiveInt(process.env.CHAT_USER_REQUESTS_PER_MINUTE, 10),
+            authenticatedRequestsPerDay: positiveInt(process.env.CHAT_USER_REQUESTS_PER_DAY, 100),
+            globalRequestsPerDay: positiveInt(process.env.CHAT_GLOBAL_REQUESTS_PER_DAY, 5000),
+            globalInputTokensPerDay: positiveInt(process.env.CHAT_GLOBAL_INPUT_TOKENS_PER_DAY, 2_000_000),
+            globalOutputTokensPerDay: positiveInt(process.env.CHAT_GLOBAL_OUTPUT_TOKENS_PER_DAY, 250_000),
+            maxConcurrentRequests: positiveInt(process.env.CHAT_MAX_CONCURRENT_REQUESTS, 10),
+            leaseTtlSeconds: positiveInt(process.env.CHAT_LEASE_TTL_SECONDS, 45),
         }),
         EmailPlugin.init({
             devMode: true,

@@ -18,7 +18,8 @@ export type QuickAddResult =
  * The variant is resolved here rather than on the client because a `SearchResult`
  * cannot tell you how many variants a product has — `productVariantId` on a
  * grouped hit is just *one* of them. Quick-adding that blindly would drop a
- * size-M shirt into the basket for someone who clicked a tile showing all sizes.
+ * one product variant into the basket for someone who clicked a tile showing
+ * several choices.
  * So: look the product up, and only add when the choice is unambiguous.
  */
 export async function quickAddToCart(slug: string): Promise<QuickAddResult> {

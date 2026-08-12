@@ -24,6 +24,7 @@
     "@vendure/graphiql-plugin": "3.7.2",
     "bakong-khqr": "^1.0.20",
     "dotenv": "17.4.2",
+    "openai": "^6.49.0",
     "pg": "8.22.0",
     "qrcode": "^1.5.4"
   },
