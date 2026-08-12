@@ -4,7 +4,7 @@ import {useState, useTransition} from 'react';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import {Lock, Mail} from 'lucide-react';
+import {CircleAlert, Lock, Mail} from 'lucide-react';
 import {loginAction} from './actions';
 import {AuthField} from '@/components/ui/auth-field';
 import {Button} from '@/components/ui/button';
@@ -22,12 +22,21 @@ import {
 import { Link } from '@/platform/i18n/navigation';
 import {useTranslations} from 'next-intl';
 
-const loginSchema = z.object({
-    username: z.email('Please enter a valid email address'),
-    password: z.string().min(1, 'Password is required'),
-});
+/**
+ * Built per-render rather than at module scope so the messages come from the
+ * active locale. These were hardcoded English while the registration form
+ * already translated its equivalents, so a Khmer visitor got Khmer labels and
+ * English validation errors on the same form. Both keys already existed —
+ * `passwordRequired` was written for exactly this and used nowhere.
+ */
+function createLoginSchema(t: ReturnType<typeof useTranslations<'Auth'>>) {
+    return z.object({
+        username: z.email(t('emailValidation')),
+        password: z.string().min(1, t('passwordRequired')),
+    });
+}
 
-type LoginFormData = z.infer<typeof loginSchema>;
+type LoginFormData = z.infer<ReturnType<typeof createLoginSchema>>;
 
 interface LoginFormProps {
     redirectTo?: string;
@@ -38,6 +47,7 @@ export function LoginForm({redirectTo}: LoginFormProps) {
     const [isPending, startTransition] = useTransition();
     const [serverError, setServerError] = useState<string | null>(null);
 
+    const loginSchema = createLoginSchema(t);
     const form = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
@@ -69,10 +79,10 @@ export function LoginForm({redirectTo}: LoginFormProps) {
         : '/register';
 
     return (
-        <Card data-size="sm">
+        <Card>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
-                    <CardContent className="space-y-3">
+                    <CardContent className="space-y-5">
                         <FormField
                             control={form.control}
                             name="username"
@@ -86,7 +96,7 @@ export function LoginForm({redirectTo}: LoginFormProps) {
                                                 autoComplete="email"
                                                 placeholder="you@example.com"
                                                 disabled={isPending}
-                                                className="pl-10"
+                                                className="h-11 pl-10"
                                                 {...field}
                                             />
                                         </AuthField>
@@ -101,15 +111,7 @@ export function LoginForm({redirectTo}: LoginFormProps) {
                             name="password"
                             render={({field}) => (
                                 <FormItem className="animate-field-rise" style={{animationDelay: '140ms'}}>
-                                    <div className="flex items-center justify-between">
-                                        <FormLabel>{t('password')}</FormLabel>
-                                        <Link
-                                            href="/forgot-password"
-                                            className="text-muted-foreground hover:text-primary text-sm"
-                                        >
-                                            {t('forgotPassword')}
-                                        </Link>
-                                    </div>
+                                    <FormLabel>{t('password')}</FormLabel>
 
                                     <FormControl>
                                         <AuthField icon={Lock}>
@@ -117,19 +119,35 @@ export function LoginForm({redirectTo}: LoginFormProps) {
                                                 autoComplete="current-password"
                                                 placeholder="••••••••"
                                                 disabled={isPending}
-                                                className="pl-10"
+                                                className="h-11 pl-10"
                                                 {...field}
                                             />
                                         </AuthField>
                                     </FormControl>
                                     <FormMessage/>
+
+                                    {/* Sits under the password field, not on the label row. Level with
+                                        the label it rendered directly beneath the email input, where it
+                                        read as belonging to the email rather than the password. */}
+                                    <div className="flex justify-end">
+                                        <Link
+                                            href="/forgot-password"
+                                            className="text-sm text-muted-foreground hover:text-primary"
+                                        >
+                                            {t('forgotPassword')}
+                                        </Link>
+                                    </div>
                                 </FormItem>
                             )}
                         />
 
                         {serverError && (
-                            <div role="alert" className="animate-field-rise text-sm text-destructive">
-                                {serverError}
+                            <div
+                                role="alert"
+                                className="animate-field-rise flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+                            >
+                                <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
+                                <span>{serverError}</span>
                             </div>
                         )}
                         <Button

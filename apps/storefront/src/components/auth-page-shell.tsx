@@ -31,7 +31,7 @@ export function AuthPageShell({children, aside}: AuthPageShellProps) {
                 against the artwork instead of hanging from the top, while a tall one
                 (register, six fields) simply drives the height itself. Neither side
                 carries a hardcoded height, and the artwork never shrinks to fit. */}
-            <div className="grid w-full max-w-4xl items-stretch gap-8 lg:grid-cols-[1fr_minmax(0,26rem)]">
+            <div className="grid w-full max-w-5xl items-stretch gap-8 lg:grid-cols-[1fr_minmax(0,26rem)]">
                 {aside}
                 <div className="mx-auto flex w-full max-w-lg flex-col justify-center">{children}</div>
             </div>

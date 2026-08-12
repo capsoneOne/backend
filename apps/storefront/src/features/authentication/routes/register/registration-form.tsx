@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { KeyRound, Lock, Mail, Phone, User, UserRound } from 'lucide-react';
+import { CircleAlert, KeyRound, Lock, Mail, Phone, User, UserRound } from 'lucide-react';
 import { registerAction } from './actions';
 import { AuthField } from '@/components/ui/auth-field';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import {
     Form,
     FormControl,
     FormField,
+    FormDescription,
     FormItem,
     FormLabel,
     FormMessage,
@@ -86,10 +87,10 @@ export function RegistrationForm({ redirectTo }: RegistrationFormProps) {
         : '/sign-in';
 
     return (
-        <Card data-size="sm">
+        <Card>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
-                    <CardContent className="space-y-3">
+                    <CardContent className="space-y-5">
                         <FormField
                             control={form.control}
                             name="emailAddress"
@@ -103,7 +104,7 @@ export function RegistrationForm({ redirectTo }: RegistrationFormProps) {
                                                 autoComplete="email"
                                                 placeholder="you@example.com"
                                                 disabled={isPending}
-                                                className="pl-10"
+                                                className="h-11 pl-10"
                                                 {...field}
                                             />
                                         </AuthField>
@@ -113,7 +114,7 @@ export function RegistrationForm({ redirectTo }: RegistrationFormProps) {
                             )}
                         />
 
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
                                 name="firstName"
@@ -127,7 +128,7 @@ export function RegistrationForm({ redirectTo }: RegistrationFormProps) {
                                                     autoComplete="given-name"
                                                     placeholder={t('firstNamePlaceholder')}
                                                     disabled={isPending}
-                                                    className="pl-10"
+                                                    className="h-11 pl-10"
                                                     {...field}
                                                 />
                                             </AuthField>
@@ -150,7 +151,7 @@ export function RegistrationForm({ redirectTo }: RegistrationFormProps) {
                                                     autoComplete="family-name"
                                                     placeholder={t('lastNamePlaceholder')}
                                                     disabled={isPending}
-                                                    className="pl-10"
+                                                    className="h-11 pl-10"
                                                     {...field}
                                                 />
                                             </AuthField>
@@ -172,9 +173,9 @@ export function RegistrationForm({ redirectTo }: RegistrationFormProps) {
                                             <Input
                                                 type="tel"
                                                 autoComplete="tel"
-                                                placeholder="+1 (555) 000-0000"
+                                                placeholder="+855 12 345 678"
                                                 disabled={isPending}
-                                                className="pl-10"
+                                                className="h-11 pl-10"
                                                 {...field}
                                             />
                                         </AuthField>
@@ -196,11 +197,17 @@ export function RegistrationForm({ redirectTo }: RegistrationFormProps) {
                                                 autoComplete="new-password"
                                                 placeholder="••••••••"
                                                 disabled={isPending}
-                                                className="pl-10"
+                                                className="h-11 pl-10"
                                                 {...field}
                                             />
                                         </AuthField>
                                     </FormControl>
+                                    {/* State the rule up front instead of only after a rejected
+                                        submit. `FormControl` already points `aria-describedby` at
+                                        this element's id, so rendering it also stops that reference
+                                        dangling at nothing. Reuses the validation message — one
+                                        string, so the hint and the error can never disagree. */}
+                                    <FormDescription>{t('passwordMinLength')}</FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -218,7 +225,7 @@ export function RegistrationForm({ redirectTo }: RegistrationFormProps) {
                                                 autoComplete="new-password"
                                                 placeholder="••••••••"
                                                 disabled={isPending}
-                                                className="pl-10"
+                                                className="h-11 pl-10"
                                                 {...field}
                                             />
                                         </AuthField>
@@ -229,8 +236,12 @@ export function RegistrationForm({ redirectTo }: RegistrationFormProps) {
                         />
 
                         {serverError && (
-                            <div role="alert" className="animate-field-rise text-sm text-destructive">
-                                {serverError}
+                            <div
+                                role="alert"
+                                className="animate-field-rise flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+                            >
+                                <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
+                                <span>{serverError}</span>
                             </div>
                         )}
 
