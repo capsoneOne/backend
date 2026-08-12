@@ -13,14 +13,14 @@
  * What it creates:
  *   - Cambodia, a zone, a tax category and a zero-rate tax, wired as the channel's
  *     default tax and shipping zone
- *   - eight products, each with one image and one variant
- *   - a clothing-store collection hierarchy used by catalogue navigation
+ *   - thirteen products across fashion, technology, beauty, home, sport, and toys
+ *   - a multi-category marketplace hierarchy used by catalogue navigation
  *   - a DefaultSearchPlugin reindex, so keyword search and the home page see them
  *   - a visual-search reindex, so the products become findable by image
  *
- * The product images are flat colour/shape renders, not photographs. They exist to
- * exercise the pipeline and to give the `sim` embedder something it can genuinely rank
- * (it encodes colour and coarse structure). They are NOT an evaluation set — see
+ * The product images include purpose-built catalogue renders. They exist to exercise
+ * the pipeline and to give the `sim` embedder something it can genuinely rank (it
+ * encodes colour and coarse structure). They are NOT an evaluation set — see
  * eval/README.md for that distinction, which matters.
  *
  * Idempotent: re-running reuses whatever already exists and re-seeds only what is
@@ -35,6 +35,21 @@ const PASSWORD = process.env.SUPERADMIN_PASSWORD ?? 'superadmin';
 const IMAGE_DIR = path.join(import.meta.dirname, 'images');
 
 const PRODUCTS = [
+    {slug: 'navy-wireless-headphones', name: 'Navy Wireless Headphones', file: 'navy-wireless-headphones.jpg', price: 14900,
+     description: 'Comfortable over-ear wireless headphones with rich, balanced sound.',
+     kmName: 'កាសឥតខ្សែពណ៌ខៀវចាស់', kmDescription: 'កាសឥតខ្សែពាក់គ្របត្រចៀកមានផាសុកភាព ជាមួយសំឡេងច្បាស់ និងមានតុល្យភាព។'},
+    {slug: 'amber-hydrating-serum', name: 'Amber Hydrating Serum', file: 'amber-hydrating-serum.jpg', price: 3200,
+     description: 'A lightweight daily face serum designed to replenish and soften skin.',
+     kmName: 'សេរ៉ូមផ្ដល់សំណើមដបពណ៌លឿងត្នោត', kmDescription: 'សេរ៉ូមមុខស្រាលសម្រាប់ប្រើប្រចាំថ្ងៃ ជួយផ្ដល់សំណើម និងធ្វើឱ្យស្បែកទន់។'},
+    {slug: 'cobalt-table-lamp', name: 'Cobalt Table Lamp', file: 'cobalt-table-lamp.jpg', price: 4800,
+     description: 'A compact table lamp with a cobalt base and a warm diffused glow.',
+     kmName: 'ចង្កៀងតុពណ៌ខៀវកូបាល់', kmDescription: 'ចង្កៀងតុទំហំតូច មានជើងពណ៌ខៀវកូបាល់ និងពន្លឺកក់ក្ដៅទន់ភ្លន់។'},
+    {slug: 'orange-basketball', name: 'Indoor Outdoor Basketball', file: 'orange-basketball.jpg', price: 2900,
+     description: 'A durable, high-grip basketball made for indoor and outdoor courts.',
+     kmName: 'បាល់បោះក្នុង និងក្រៅអគារ', kmDescription: 'បាល់បោះធន់ និងងាយកាន់ សម្រាប់ទីលានក្នុង និងក្រៅអគារ។'},
+    {slug: 'wooden-stacking-toy', name: 'Wooden Stacking Toy', file: 'wooden-stacking-toy.jpg', price: 2400,
+     description: 'A colourful wooden stacking toy for early coordination and creative play.',
+     kmName: 'ប្រដាប់ក្មេងលេងឈើដាក់តម្រៀប', kmDescription: 'ប្រដាប់ក្មេងលេងឈើចម្រុះពណ៌ សម្រាប់ហាត់ការសម្របសម្រួល និងការលេងបែបច្នៃប្រឌិត។'},
     {slug: 'red-leather-boot', name: 'Red Leather Boot', file: 'red-boot.jpg', price: 12900,
      description: 'Ankle-height boot in deep red full-grain leather.',
      kmName: 'ស្បែកជើងកវែងស្បែកក្រហម', kmDescription: 'ស្បែកជើងកវែងត្រឹមកជើង ផលិតពីស្បែកពេញគ្រាប់ពណ៌ក្រហមចាស់។'},
@@ -66,10 +81,16 @@ const COLLECTIONS = [
         slug: 'featured',
         name: 'Featured',
         kmName: 'ទំនិញលេចធ្លោ',
-        description: 'A curated edit of standout layers, shoes, and accessories for the season.',
-        kmDescription: 'ជម្រើសសម្លៀកបំពាក់ជាស្រទាប់ ស្បែកជើង និងគ្រឿងបន្ថែមលេចធ្លោសម្រាប់រដូវកាលនេះ។',
-        featuredProduct: 'blue-denim-jacket',
+        description: 'A curated selection of standout products from across the marketplace.',
+        kmDescription: 'ជម្រើសទំនិញលេចធ្លោដែលបានជ្រើសរើសពីគ្រប់ផ្នែកនៃទីផ្សារ។',
+        featuredProduct: 'navy-wireless-headphones',
         products: [
+            'navy-wireless-headphones',
+            'amber-hydrating-serum',
+            'cobalt-table-lamp',
+            'orange-basketball',
+            'wooden-stacking-toy',
+            'green-ceramic-mug',
             'red-leather-boot',
             'blue-denim-jacket',
             'yellow-rain-coat',
@@ -78,6 +99,89 @@ const COLLECTIONS = [
             'orange-backpack',
             'purple-scarf',
         ],
+    },
+    {
+        slug: 'technology',
+        name: 'Technology',
+        kmName: 'បច្ចេកវិទ្យា',
+        description: 'Useful devices and accessories for work, entertainment, and everyday life.',
+        kmDescription: 'ឧបករណ៍ និងគ្រឿងបន្ថែមមានប្រយោជន៍សម្រាប់ការងារ កម្សាន្ត និងជីវិតប្រចាំថ្ងៃ។',
+        featuredProduct: 'navy-wireless-headphones',
+        products: ['navy-wireless-headphones'],
+        children: [{
+            slug: 'audio', name: 'Audio', kmName: 'សំឡេង',
+            description: 'Headphones and audio gear for listening wherever you go.',
+            kmDescription: 'កាស និងឧបករណ៍សំឡេងសម្រាប់ស្ដាប់នៅគ្រប់ទីកន្លែង។',
+            featuredProduct: 'navy-wireless-headphones', products: ['navy-wireless-headphones'],
+        }],
+    },
+    {
+        slug: 'beauty-personal-care',
+        name: 'Beauty & Personal Care',
+        kmName: 'សម្រស់ និងការថែទាំខ្លួន',
+        description: 'Everyday skincare and personal-care essentials for simple routines.',
+        kmDescription: 'ផលិតផលថែស្បែក និងថែទាំខ្លួនសម្រាប់ទម្លាប់ប្រចាំថ្ងៃដ៏ងាយស្រួល។',
+        featuredProduct: 'amber-hydrating-serum',
+        products: ['amber-hydrating-serum'],
+        children: [{
+            slug: 'skincare', name: 'Skincare', kmName: 'ការថែរក្សាស្បែក',
+            description: 'Gentle essentials that support a comfortable daily skincare routine.',
+            kmDescription: 'ផលិតផលទន់ភ្លន់សម្រាប់ទម្លាប់ថែរក្សាស្បែកប្រចាំថ្ងៃ។',
+            featuredProduct: 'amber-hydrating-serum', products: ['amber-hydrating-serum'],
+        }],
+    },
+    {
+        slug: 'home-living',
+        name: 'Home & Living',
+        kmName: 'គេហដ្ឋាន និងការរស់នៅ',
+        description: 'Useful, well-designed products for every room and everyday routine.',
+        kmDescription: 'ទំនិញមានប្រយោជន៍ និងរចនាល្អសម្រាប់គ្រប់បន្ទប់ និងការរស់នៅប្រចាំថ្ងៃ។',
+        featuredProduct: 'cobalt-table-lamp',
+        products: ['cobalt-table-lamp', 'green-ceramic-mug'],
+        children: [
+            {
+                slug: 'lighting', name: 'Lighting', kmName: 'ភ្លើងបំភ្លឺ',
+                description: 'Practical lighting that adds warmth and character to a room.',
+                kmDescription: 'ភ្លើងបំភ្លឺមានប្រយោជន៍ដែលបន្ថែមភាពកក់ក្ដៅ និងសោភ័ណភាពដល់បន្ទប់។',
+                featuredProduct: 'cobalt-table-lamp', products: ['cobalt-table-lamp'],
+            },
+            {
+                slug: 'kitchen-dining', name: 'Kitchen & Dining', kmName: 'ផ្ទះបាយ និងតុបាយ',
+                description: 'Everyday essentials for preparing, serving, and enjoying food and drink.',
+                kmDescription: 'របស់ចាំបាច់ប្រចាំថ្ងៃសម្រាប់រៀបចំ បម្រើ និងរីករាយជាមួយអាហារ និងភេសជ្ជៈ។',
+                featuredProduct: 'green-ceramic-mug', products: ['green-ceramic-mug'],
+            },
+        ],
+    },
+    {
+        slug: 'sports-outdoors',
+        name: 'Sports & Outdoors',
+        kmName: 'កីឡា និងសកម្មភាពក្រៅផ្ទះ',
+        description: 'Gear for training, games, movement, and time outdoors.',
+        kmDescription: 'ឧបករណ៍សម្រាប់ហាត់ប្រាណ លេងកីឡា ចលនា និងសកម្មភាពក្រៅផ្ទះ។',
+        featuredProduct: 'orange-basketball',
+        products: ['orange-basketball'],
+        children: [{
+            slug: 'team-sports', name: 'Team Sports', kmName: 'កីឡាជាក្រុម',
+            description: 'Equipment made for practice, pickup games, and team play.',
+            kmDescription: 'ឧបករណ៍សម្រាប់ការហាត់ លេងកម្សាន្ត និងការប្រកួតជាក្រុម។',
+            featuredProduct: 'orange-basketball', products: ['orange-basketball'],
+        }],
+    },
+    {
+        slug: 'toys-games',
+        name: 'Toys & Games',
+        kmName: 'ប្រដាប់ក្មេងលេង និងល្បែង',
+        description: 'Playful picks for learning, imagination, and family time.',
+        kmDescription: 'ជម្រើសសម្រាប់ការរៀន ការស្រមើស្រមៃ និងពេលវេលាជាមួយគ្រួសារ។',
+        featuredProduct: 'wooden-stacking-toy',
+        products: ['wooden-stacking-toy'],
+        children: [{
+            slug: 'early-learning', name: 'Early Learning', kmName: 'ការរៀនដំបូង',
+            description: 'Hands-on toys that make early learning playful and engaging.',
+            kmDescription: 'ប្រដាប់ក្មេងលេងដែលជួយឱ្យការរៀនដំបូងមានភាពរីករាយ និងទាក់ទាញ។',
+            featuredProduct: 'wooden-stacking-toy', products: ['wooden-stacking-toy'],
+        }],
     },
     {
         slug: 'clothing',
@@ -551,12 +655,24 @@ async function ensureCollection(definition, catalog, existing, parentId) {
 async function ensureCollections(catalog) {
     const {collections} = await gql(`query { collections(options: {take: 100}) { items { id slug } } }`);
     const existing = new Map(collections.items.map(collection => [collection.slug, collection]));
+    const {collection: rootCollection} = await gql(`query { collection(id: "1") { id } }`);
 
     for (const definition of COLLECTIONS) {
         const parentId = await ensureCollection(definition, catalog, existing);
         for (const child of definition.children ?? []) {
             await ensureCollection(child, catalog, existing, parentId);
         }
+    }
+
+    // Keep the broad marketplace departments first even when an older fashion-only
+    // seed already exists. The storefront uses this position for its home-page edit.
+    for (const [index, definition] of COLLECTIONS.entries()) {
+        const collection = existing.get(definition.slug);
+        if (!collection || !rootCollection) continue;
+        await gql(
+            `mutation Move($input: MoveCollectionInput!) { moveCollection(input: $input) { id } }`,
+            {input: {collectionId: collection.id, parentId: rootCollection.id, index}},
+        );
     }
 }
 

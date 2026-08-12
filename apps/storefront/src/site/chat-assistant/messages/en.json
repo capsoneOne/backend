@@ -6,21 +6,26 @@
     "close": "Close shopping assistant",
     "dragHint": "Drag me anywhere · Tap to chat",
     "newConversation": "Start a new conversation",
-    "welcome": "Hi! I’m your shopping assistant. I can help you find the right style, check delivery details, or answer questions about your order.",
+    "welcome": "Hi! I’m your shopping assistant. I can help you find the right product, compare options, check delivery details, or answer order questions.",
     "suggestionLabel": "Suggested questions",
     "suggestions": {
-      "findStyle": "Help me find my style",
+      "findStyle": "Help me find a product",
       "delivery": "What are the delivery options?",
       "returns": "How do returns work?"
     },
     "placeholder": "Ask about products, delivery, or returns…",
     "send": "Send message",
     "typing": "StyleMatch Assistant is typing",
+    "sources": "Sources",
+    "error": "I couldn’t reach the shopping service just now. Please try again in a moment.",
+    "rateLimited": "You’re sending messages too quickly. Please wait a moment and try again.",
+    "dailyQuota": "The assistant’s daily message allowance has been reached. Please try again tomorrow.",
+    "serviceBusy": "The assistant is handling several requests right now. Please try again in a few seconds.",
     "disclaimer": "AI assistant · Please verify important order details",
     "responses": {
-      "findStyle": "I’d love to help. Tell me what you’re shopping for, your preferred colours, and the occasion—and I’ll narrow down some styles for you.",
+      "findStyle": "I’d love to help. Tell me what you need, your budget, and any must-have features—and I’ll narrow down the right products for you.",
       "delivery": "Standard delivery is free on orders over $50. Delivery timing and any faster options are shown at checkout for your address.",
-      "returns": "You can return eligible items within 30 days. Keep the item unworn with its tags attached, then visit Shipping & Returns for the steps.",
+      "returns": "You can return eligible items within 30 days. Keep the product unused and in its original packaging, then visit Shipping & Returns for the steps.",
       "fallback": "Thanks for your message. This assistant is currently in preview mode, so I can guide you around the store but can’t access live products or orders yet."
     }
   }

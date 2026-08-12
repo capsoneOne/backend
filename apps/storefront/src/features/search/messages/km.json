@@ -11,7 +11,7 @@
     "title": "តម្រង",
     "clearAll": "សម្អាតទាំងអស់",
     "filtersButton": "តម្រង",
-    "inStockOnly": "បង្ហាញតែទំនិញមានក្នុងស្តុក",
+    "inStockOnly": "បង្ហាញតែទំនិញដែលមានក្នុងស្តុក",
     "description": "ជ្រើសតម្រងមួយចំនួន រួចអនុវត្តរួមគ្នា។",
     "selectedCount": "{count, plural, one {បានជ្រើស #} other {បានជ្រើស #}}",
     "applyFilters": "អនុវត្ត {count, plural, =0 {តម្រង} one {តម្រង #} other {តម្រង #}}",
@@ -21,10 +21,10 @@
   },
   "Search": {
     "title": "ទិញទាំងអស់",
-    "pageTitle": "ទិញសម្លៀកបំពាក់ទាំងអស់",
+    "pageTitle": "ទិញទំនិញទាំងអស់",
     "shopAll": "ទិញទាំងអស់",
     "catalogueEyebrow": "កាតាឡុក",
-    "catalogueDescription": "មើលគ្រប់ម៉ូដ រួចចម្រាញ់តាមប្រភេទ ទំហំ ពណ៌ ឬស្តុក។",
+    "catalogueDescription": "មើលទំនិញទាំងអស់ក្នុងទីផ្សារ រួចចម្រាញ់តាមប្រភេទ តម្លៃ ព័ត៌មានទំនិញ ឬស្តុក។",
     "resultsEyebrow": "លទ្ធផលស្វែងរក",
     "resultsDescription": "ចម្រាញ់លទ្ធផលដោយប្រភេទ និងតម្រង ឬសាកស្វែងរកម្ដងទៀតពីរបាររុករក។",
     "categories": "ប្រភេទទំនិញ",
@@ -32,7 +32,7 @@
     "resultsFor": "លទ្ធផលស្វែងរកសម្រាប់ \"{query}\"",
     "resultsTitle": "លទ្ធផលស្វែងរកសម្រាប់ \"{query}\"",
     "metaDescription": "ស្វែងរកទំនិញដែលត្រូវនឹង \"{query}\" នៅ {siteName}",
-    "metaCatalogDescription": "ទិញសម្លៀកបំពាក់ ស្បែកជើង និងគ្រឿងបន្ថែមគ្រប់ប្រភេទនៅ {siteName}"
+    "metaCatalogDescription": "ទិញទំនិញពីគ្រប់ប្រភេទក្នុងទីផ្សារនៅ {siteName}"
   },
   "SearchSuggestions": {
     "searchProducts": "ស្វែងរកទំនិញ...",

@@ -41,7 +41,7 @@ export function NavbarCollectionsMenu({
                         {categoriesLabel}
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
-                        <div className="w-[34rem] p-3">
+                        <div className="max-h-[min(38rem,calc(100vh-6rem))] w-[min(52rem,calc(100vw-2rem))] overflow-y-auto p-3">
                             <NavigationMenuLink
                                 render={<Link href="/categories" />}
                                 className="mb-2 flex items-center justify-between rounded-lg bg-primary/8 px-4 py-3 font-medium text-primary"
@@ -49,7 +49,7 @@ export function NavbarCollectionsMenu({
                                 <span>{viewAllLabel}</span>
                                 <ArrowRight className="size-4" />
                             </NavigationMenuLink>
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-2 gap-2 xl:grid-cols-3">
                                 {collections.map(collection => (
                                     <div key={collection.id} className="rounded-lg border border-border/70 p-1.5">
                                         <NavigationMenuLink
