@@ -45,6 +45,10 @@ services:
         restart: unless-stopped
         ports:
             - "8100:8000"
+        volumes:
+            # Model weights survive container recreates. Without this, every
+            # `compose up --build` re-downloads the encoder (~600 MB for CLIP).
+            - embedder_cache:/cache
         environment:
             # stub = deterministic, no semantic meaning (default).
             # sim  = colour/structure encoder with a real shared image/text space —
@@ -90,6 +94,10 @@ volumes:
         labels:
             - "io.vendure.create.name=visual-search-capstone"
     redis_data:
+        driver: local
+        labels:
+            - "io.vendure.create.name=visual-search-capstone"
+    embedder_cache:
         driver: local
         labels:
             - "io.vendure.create.name=visual-search-capstone"
