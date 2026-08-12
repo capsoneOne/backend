@@ -6,17 +6,18 @@ areas:
 
 ## Intent
 
-Replace the generic seasonal campaign illustration with a fashion-specific brand marquee that better expresses the storefront's modern clothing identity.
+Replace the generic blue seasonal campaign banner with a full-viewport-width fashion marquee that pairs modern label treatments with shopper-style feedback cards.
 
 ## Invariants
 
-- The campaign remains a server-rendered, localized homepage section.
+- The campaign remains a server-rendered, localized homepage section without a colored promotional container.
 - Marquee motion is disabled when the visitor prefers reduced motion.
 - The visual remains legible in light and dark themes and exposes a localized accessible label.
+- Feedback, reviewer labels, and rating labels remain localized and accessible.
 
 ## Integration guidance
 
-Preserve downstream campaign copy and destinations while adopting the marquee layout. Brand names are decorative fictional labels and can be replaced without changing the component contract.
+Preserve downstream campaign copy and destinations while adopting the marquee layout. Brand names and shopper stories are sample content and can be replaced with real downstream review data without changing the visual structure.
 
 ## Verification
 

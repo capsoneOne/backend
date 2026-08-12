@@ -16,48 +16,72 @@ const fashionLabels = [
     {name: 'ELAN', detail: 'MODERN UNIFORM', style: 'italic tracking-[0.02em]'},
 ] as const;
 
-function FashionBrandMarquee({label}: {label: string}) {
+type CampaignReview = {
+    brand: (typeof fashionLabels)[number];
+    name: string;
+    quote: string;
+};
+
+function FashionBrandMarquee({
+    label,
+    ratingLabel,
+    reviewerLabel,
+    reviews,
+}: {
+    label: string;
+    ratingLabel: string;
+    reviewerLabel: string;
+    reviews: readonly CampaignReview[];
+}) {
     return (
         <div
-            className="relative min-h-[21rem] overflow-hidden rounded-3xl border border-white/20 bg-background text-foreground shadow-2xl sm:min-h-[25rem]"
-            role="img"
+            className="relative overflow-hidden border-y border-border bg-muted/35 py-5 text-foreground sm:py-6"
+            role="group"
             aria-label={label}
         >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_10%,color-mix(in_oklch,var(--primary)_14%,transparent),transparent_42%),linear-gradient(145deg,var(--background),var(--secondary))]" />
-            <div className="relative flex items-center justify-between border-b border-border/70 px-5 py-4 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-muted-foreground sm:px-6">
-                <span>StyleMatch / Brand edit</span>
-                <span>01—06</span>
-            </div>
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_10%,color-mix(in_oklch,var(--primary)_10%,transparent),transparent_36%),radial-gradient(circle_at_85%_90%,color-mix(in_oklch,var(--chart-2)_9%,transparent),transparent_34%)]" />
 
-            <div className="relative space-y-3 py-6 sm:py-8" aria-hidden="true">
-                {[fashionLabels, [...fashionLabels].reverse()].map((labels, rowIndex) => (
-                    <div key={rowIndex} className="brand-marquee-window overflow-hidden">
-                        <div className={`brand-marquee-track ${rowIndex === 1 ? 'brand-marquee-track-reverse' : ''}`}>
-                            {[0, 1].map((copyIndex) => (
-                                <div key={copyIndex} className="flex shrink-0 gap-3" aria-hidden={copyIndex === 1}>
-                                    {labels.map((brand) => (
-                                        <div
-                                            key={`${rowIndex}-${copyIndex}-${brand.name}`}
-                                            className="flex h-28 w-44 shrink-0 flex-col items-center justify-center rounded-2xl border border-border/80 bg-card/90 px-4 shadow-[var(--shadow-e1)] sm:h-32 sm:w-52"
-                                        >
-                                            <span className={`text-xl font-bold sm:text-2xl ${brand.style}`}>
-                                                {brand.name}
-                                            </span>
-                                            <span className="mt-2 text-[0.58rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">
-                                                {brand.detail}
-                                            </span>
+            <div className="brand-marquee-window relative overflow-hidden">
+                <div className="brand-marquee-track">
+                    {[0, 1].map((copyIndex) => (
+                        <div key={copyIndex} className="flex shrink-0 gap-3" aria-hidden={copyIndex === 1}>
+                            {reviews.map((review, reviewIndex) => (
+                                <article
+                                    key={`${copyIndex}-${review.brand.name}`}
+                                    className={`flex w-72 shrink-0 sm:w-80 ${reviewIndex % 2 === 0 ? 'flex-col' : 'flex-col-reverse'}`}
+                                >
+                                    <div className="relative flex h-32 items-center justify-center overflow-hidden rounded-xl border border-border/80 bg-secondary/55 px-4 sm:h-36" aria-hidden="true">
+                                        <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-[size:18px_18px] opacity-35 [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+                                        <div className="relative text-center">
+                                            <p className={`text-2xl font-bold ${review.brand.style}`}>{review.brand.name}</p>
+                                            <p className="mt-1.5 text-[0.55rem] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                                                {review.brand.detail}
+                                            </p>
                                         </div>
-                                    ))}
-                                </div>
+                                    </div>
+
+                                    <div className="min-h-48 rounded-xl border border-border/80 bg-card/95 p-5 shadow-[var(--shadow-e1)]">
+                                        <div className="flex items-center gap-3">
+                                            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+                                                {review.name.charAt(0)}
+                                            </span>
+                                            <div className="min-w-0">
+                                                <p className="truncate text-sm font-bold">{review.name}</p>
+                                                <p className="text-[0.68rem] text-muted-foreground">{reviewerLabel}</p>
+                                            </div>
+                                        </div>
+                                        <p className="mt-4 text-sm font-light leading-relaxed text-card-foreground">
+                                            “{review.quote}”
+                                        </p>
+                                        <p className="mt-3 text-xs tracking-[0.12em] text-primary" aria-label={ratingLabel}>
+                                            ★★★★★
+                                        </p>
+                                    </div>
+                                </article>
                             ))}
                         </div>
-                    </div>
-                ))}
-            </div>
-
-            <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between border-t border-border/70 bg-background/75 px-5 py-3 text-[0.6rem] font-medium uppercase tracking-[0.18em] text-muted-foreground backdrop-blur-sm sm:px-6">
-                <span>Independent design</span>
-                <span>Everyday wear</span>
+                    ))}
+                </div>
             </div>
         </div>
     );
@@ -66,50 +90,36 @@ function FashionBrandMarquee({label}: {label: string}) {
 export async function SeasonalCampaignSection() {
     const locale = await getRouteLocale();
     const t = await getTranslations({locale, namespace: 'Home'});
+    const reviews: CampaignReview[] = [
+        {brand: fashionLabels[0], name: 'Maya R.', quote: t('campaignReviews.maya')},
+        {brand: fashionLabels[1], name: 'Sofia L.', quote: t('campaignReviews.sofia')},
+        {brand: fashionLabels[2], name: 'Jonah K.', quote: t('campaignReviews.jonah')},
+        {brand: fashionLabels[3], name: 'Lina P.', quote: t('campaignReviews.lina')},
+        {brand: fashionLabels[4], name: 'Amara D.', quote: t('campaignReviews.amara')},
+        {brand: fashionLabels[5], name: 'Theo N.', quote: t('campaignReviews.theo')},
+    ];
 
     return (
-        <section className={`reveal-section ${storefrontSectionClass}`}>
-            <div className="container mx-auto px-4">
-                <div className="relative isolate overflow-hidden rounded-3xl bg-primary text-primary-foreground shadow-[var(--shadow-e3)]">
-                    <div className="pointer-events-none absolute -left-24 -top-28 size-72 rounded-full bg-white/10 blur-3xl" />
-                    <div className="pointer-events-none absolute -bottom-32 left-1/3 size-80 rounded-full bg-cyan-300/15 blur-3xl" />
+        <section className={`reveal-section ${storefrontSectionClass} overflow-hidden`}>
+            <div className="container mx-auto px-4 text-center">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
+                    {t('campaignStoriesEyebrow')}
+                </p>
+                <h2 className="mt-3 text-balance text-3xl font-bold md:text-4xl">
+                    {t('campaignStoriesTitle')}
+                </h2>
+                <p className="mx-auto mt-3 max-w-2xl text-pretty font-light leading-relaxed text-muted-foreground sm:text-lg">
+                    {t('campaignStoriesDescription')}
+                </p>
+            </div>
 
-                    <div className="grid items-center gap-8 p-6 sm:p-8 lg:grid-cols-[1.05fr_0.95fr] lg:p-12">
-                        <div className="relative z-10 max-w-2xl">
-                            <h2 className="text-balance text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
-                                {t('campaignTitle')}
-                            </h2>
-                            <p className="mt-4 max-w-xl text-pretty font-light leading-relaxed text-primary-foreground/80 sm:text-lg">
-                                {t('campaignDescription')}
-                            </p>
-                            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                                <Button
-                                    render={<Link href="/featured" />}
-                                    nativeButton={false}
-                                    size="lg"
-                                    className="h-12 rounded-xl bg-background px-6 text-foreground shadow-md hover:bg-background/95"
-                                >
-                                    {t('campaignPrimary')}
-                                    <ArrowRight className="ml-1 size-4" aria-hidden="true" />
-                                </Button>
-                                <Button
-                                    render={<Link href="/search" />}
-                                    nativeButton={false}
-                                    variant="outline"
-                                    size="lg"
-                                    className="h-12 rounded-xl border-white/30 bg-white/5 px-6 text-primary-foreground hover:bg-white/12 hover:text-primary-foreground dark:border-white/25 dark:bg-white/5"
-                                >
-                                    {t('campaignSecondary')}
-                                </Button>
-                            </div>
-                        </div>
-
-                        <div className="relative mx-auto w-full max-w-[31rem]">
-                            <div className="absolute inset-6 rounded-full bg-cyan-200/20 blur-3xl" />
-                            <FashionBrandMarquee label={t('campaignAlt')} />
-                        </div>
-                    </div>
-                </div>
+            <div className="mt-10 w-screen max-w-none">
+                <FashionBrandMarquee
+                    label={t('campaignAlt')}
+                    ratingLabel={t('campaignReviews.ratingLabel')}
+                    reviewerLabel={t('campaignReviews.reviewerLabel')}
+                    reviews={reviews}
+                />
             </div>
         </section>
     );

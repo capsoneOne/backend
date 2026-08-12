@@ -267,8 +267,8 @@ export function AddressesClient({ addresses, countries }: AddressesClientProps) 
                     setSubmitError(null);
                 }
             }}>
-                <DialogContent className="h-[min(92dvh,48rem)] max-w-[min(72rem,calc(100%-1rem))] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden rounded-2xl p-0 sm:max-w-[min(72rem,calc(100%-2rem))]">
-                    <DialogHeader className="border-b border-border px-5 py-5 pr-14 sm:px-6">
+                <DialogContent className="h-[min(92dvh,52rem)] max-w-[min(76rem,calc(100%-1rem))] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden rounded-2xl p-0 sm:max-w-[min(76rem,calc(100%-2rem))]">
+                    <DialogHeader className="border-b border-border px-5 py-4 pr-14 sm:px-6">
                         <DialogTitle>{editingAddress ? t('editAddress') : t('addNewAddressDialog')}</DialogTitle>
                         <DialogDescription>
                             {editingAddress

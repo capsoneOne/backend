@@ -53,6 +53,7 @@ interface AddressFormProps {
 
 export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitting, submitError }: AddressFormProps) {
   const t = useTranslations('Account');
+  const onlyCountry = countries.length === 1 ? countries[0] : null;
   const { register, handleSubmit, formState: { errors }, control, setValue } = useForm<AddressFormData>({
     defaultValues: address ? {
       fullName: address.fullName || '',
@@ -65,7 +66,7 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
       countryCode: address.country.code,
       phoneNumber: address.phoneNumber || '',
     } : {
-      countryCode: countries[0]?.code || 'US',
+      countryCode: countries[0]?.code || 'KH',
     }
   });
 
@@ -87,15 +88,19 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      <div className="min-h-0 flex-1 overflow-y-auto lg:grid lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:overflow-hidden">
-        <div className="border-b border-border bg-secondary/15 p-4 sm:p-6 lg:border-b-0 lg:border-r">
-          <AddressLocationPicker onAddressResolved={applyMapAddress} disabled={isSubmitting}/>
+      <div className="min-h-0 flex-1 overflow-y-auto lg:grid lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:overflow-hidden">
+        <div className="border-b border-border bg-secondary/15 p-4 sm:p-5 lg:min-h-0 lg:border-b-0 lg:border-r">
+          <AddressLocationPicker
+            onAddressResolved={applyMapAddress}
+            allowedCountryCodes={countries.map(country => country.code)}
+            disabled={isSubmitting}
+          />
         </div>
 
-        <div className="p-5 sm:p-6 lg:overflow-y-auto">
-          <FieldGroup className="gap-7">
+        <div className="p-5 sm:p-6 lg:overflow-y-auto lg:[scrollbar-gutter:stable]">
+          <FieldGroup className="gap-5">
             <section aria-labelledby="recipient-details-title">
-              <div className="mb-4 flex items-start gap-3">
+              <div className="mb-3 flex items-start gap-3">
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
                   <UserRound className="size-4" aria-hidden="true"/>
                 </span>
@@ -105,7 +110,7 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
                 </div>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-2">
                 <Field>
                   <FieldLabel htmlFor="fullName">{t('fullName')}</FieldLabel>
                   <Input id="fullName" autoComplete="name" {...register('fullName', { required: t('fullNameRequired') })} disabled={isSubmitting}/>
@@ -117,7 +122,7 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
                   <FieldError>{errors.phoneNumber?.message}</FieldError>
                 </Field>
                 <Field className="sm:col-span-2">
-                  <FieldLabel htmlFor="company">{t('company')}</FieldLabel>
+                  <FieldLabel htmlFor="company">{t('companyOptional')}</FieldLabel>
                   <Input id="company" autoComplete="organization" {...register('company')} disabled={isSubmitting}/>
                 </Field>
               </div>
@@ -126,7 +131,7 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
             <div className="h-px bg-border"/>
 
             <section aria-labelledby="delivery-details-title">
-              <div className="mb-4 flex items-start gap-3">
+              <div className="mb-3 flex items-start gap-3">
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
                   <MapPinned className="size-4" aria-hidden="true"/>
                 </span>
@@ -136,7 +141,7 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
                 </div>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-2">
                 <Field className="sm:col-span-2">
                   <FieldLabel htmlFor="streetLine1">{t('streetAddress')}</FieldLabel>
                   <Input id="streetLine1" autoComplete="address-line1" {...register('streetLine1', { required: t('streetRequired') })} disabled={isSubmitting}/>
@@ -161,18 +166,32 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
                   <Input id="postalCode" inputMode="numeric" autoComplete="postal-code" {...register('postalCode', { required: t('postalCodeRequired') })} disabled={isSubmitting}/>
                   <FieldError>{errors.postalCode?.message}</FieldError>
                 </Field>
-                <Field>
-                  <FieldLabel htmlFor="countryCode">{t('country')}</FieldLabel>
-                  <Controller
-                    name="countryCode"
-                    control={control}
-                    rules={{ required: t('countryRequired') }}
-                    render={({ field }) => (
-                      <CountrySelect countries={countries} value={field.value} onValueChange={field.onChange} disabled={isSubmitting}/>
-                    )}
-                  />
-                  <FieldError>{errors.countryCode?.message}</FieldError>
-                </Field>
+                {onlyCountry ? (
+                  <Field>
+                    <FieldLabel htmlFor="countryDisplay">{t('country')}</FieldLabel>
+                    <input type="hidden" {...register('countryCode', {required: true})}/>
+                    <Input
+                      id="countryDisplay"
+                      value={onlyCountry.name}
+                      readOnly
+                      aria-readonly="true"
+                      className="bg-muted/40 text-foreground"
+                    />
+                  </Field>
+                ) : (
+                  <Field>
+                    <FieldLabel htmlFor="countryCode">{t('country')}</FieldLabel>
+                    <Controller
+                      name="countryCode"
+                      control={control}
+                      rules={{ required: t('countryRequired') }}
+                      render={({ field }) => (
+                        <CountrySelect countries={countries} value={field.value} onValueChange={field.onChange} disabled={isSubmitting}/>
+                      )}
+                    />
+                    <FieldError>{errors.countryCode?.message}</FieldError>
+                  </Field>
+                )}
               </div>
             </section>
           </FieldGroup>

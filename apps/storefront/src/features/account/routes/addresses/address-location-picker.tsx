@@ -12,7 +12,7 @@ const AddressMap = dynamic(
   () => import('./address-map').then(module => module.AddressMap),
   {
     ssr: false,
-    loading: () => <div className="h-56 animate-pulse bg-muted sm:h-64 lg:h-72" aria-hidden="true"/>,
+    loading: () => <div className="h-56 animate-pulse bg-muted sm:h-64 lg:h-full" aria-hidden="true"/>,
   },
 );
 
@@ -26,10 +26,11 @@ export interface ResolvedMapAddress {
 
 interface AddressLocationPickerProps {
   onAddressResolved: (address: ResolvedMapAddress) => void;
+  allowedCountryCodes: string[];
   disabled?: boolean;
 }
 
-export function AddressLocationPicker({onAddressResolved, disabled}: AddressLocationPickerProps) {
+export function AddressLocationPicker({onAddressResolved, allowedCountryCodes, disabled}: AddressLocationPickerProps) {
   const t = useTranslations('Account');
   const locale = useLocale();
   const [position, setPosition] = useState<MapPosition | null>(null);
@@ -58,7 +59,16 @@ export function AddressLocationPicker({onAddressResolved, disabled}: AddressLoca
       });
       const response = await fetch(`/api/geocode/reverse?${params.toString()}`, {signal: controller.signal});
       if (!response.ok) throw new Error('reverse-geocode-failed');
-      onAddressResolved(await response.json() as ResolvedMapAddress);
+      const resolvedAddress = await response.json() as ResolvedMapAddress;
+      if (
+        resolvedAddress.countryCode &&
+        allowedCountryCodes.length > 0 &&
+        !allowedCountryCodes.includes(resolvedAddress.countryCode)
+      ) {
+        setError(t('deliveryLocationOutsideRegion'));
+        return;
+      }
+      onAddressResolved(resolvedAddress);
       setHasResolvedAddress(true);
     } catch (lookupError) {
       if (!(lookupError instanceof DOMException && lookupError.name === 'AbortError')) {
@@ -67,7 +77,7 @@ export function AddressLocationPicker({onAddressResolved, disabled}: AddressLoca
     } finally {
       if (requestController.current === controller) setIsResolving(false);
     }
-  }, [locale, onAddressResolved, t]);
+  }, [allowedCountryCodes, locale, onAddressResolved, t]);
 
   const useCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -96,7 +106,7 @@ export function AddressLocationPicker({onAddressResolved, disabled}: AddressLoca
   };
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-e1)]" aria-labelledby="address-map-title">
+    <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-e1)] lg:flex lg:h-full lg:min-h-0 lg:flex-col" aria-labelledby="address-map-title">
       <div className="flex flex-col gap-4 border-b border-border p-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 id="address-map-title" className="flex items-center gap-2 font-semibold">
@@ -119,7 +129,7 @@ export function AddressLocationPicker({onAddressResolved, disabled}: AddressLoca
         </Button>
       </div>
 
-      <div className="relative">
+      <div className="relative lg:min-h-0 lg:flex-1">
         <AddressMap
           position={position}
           onPositionChange={nextPosition => void resolvePosition(nextPosition)}
