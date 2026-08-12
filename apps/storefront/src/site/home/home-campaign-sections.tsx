@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import {ArrowRight, Heart, MapPin, PackageCheck} from 'lucide-react';
 import {getTranslations} from 'next-intl/server';
 
@@ -7,6 +6,62 @@ import {storefrontSectionClass} from '@/components/storefront-section';
 import {getActiveCustomer} from '@/features/account/customer';
 import {Link} from '@/platform/i18n/navigation';
 import {getRouteLocale} from '@/platform/i18n/server';
+
+const fashionLabels = [
+    {name: 'NORTH', detail: 'FORM', style: 'tracking-[0.22em]'},
+    {name: 'AVENUE', detail: 'EST. 2024', style: 'font-medium italic tracking-[-0.04em]'},
+    {name: 'MOTION', detail: 'DAILY GOODS', style: 'tracking-[0.08em]'},
+    {name: 'COMMON', detail: 'STUDIO', style: 'font-medium tracking-[-0.05em]'},
+    {name: 'ATELIER', detail: 'No. 07', style: 'tracking-[0.16em]'},
+    {name: 'ELAN', detail: 'MODERN UNIFORM', style: 'italic tracking-[0.02em]'},
+] as const;
+
+function FashionBrandMarquee({label}: {label: string}) {
+    return (
+        <div
+            className="relative min-h-[21rem] overflow-hidden rounded-3xl border border-white/20 bg-background text-foreground shadow-2xl sm:min-h-[25rem]"
+            role="img"
+            aria-label={label}
+        >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_10%,color-mix(in_oklch,var(--primary)_14%,transparent),transparent_42%),linear-gradient(145deg,var(--background),var(--secondary))]" />
+            <div className="relative flex items-center justify-between border-b border-border/70 px-5 py-4 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-muted-foreground sm:px-6">
+                <span>StyleMatch / Brand edit</span>
+                <span>01—06</span>
+            </div>
+
+            <div className="relative space-y-3 py-6 sm:py-8" aria-hidden="true">
+                {[fashionLabels, [...fashionLabels].reverse()].map((labels, rowIndex) => (
+                    <div key={rowIndex} className="brand-marquee-window overflow-hidden">
+                        <div className={`brand-marquee-track ${rowIndex === 1 ? 'brand-marquee-track-reverse' : ''}`}>
+                            {[0, 1].map((copyIndex) => (
+                                <div key={copyIndex} className="flex shrink-0 gap-3" aria-hidden={copyIndex === 1}>
+                                    {labels.map((brand) => (
+                                        <div
+                                            key={`${rowIndex}-${copyIndex}-${brand.name}`}
+                                            className="flex h-28 w-44 shrink-0 flex-col items-center justify-center rounded-2xl border border-border/80 bg-card/90 px-4 shadow-[var(--shadow-e1)] sm:h-32 sm:w-52"
+                                        >
+                                            <span className={`text-xl font-bold sm:text-2xl ${brand.style}`}>
+                                                {brand.name}
+                                            </span>
+                                            <span className="mt-2 text-[0.58rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+                                                {brand.detail}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between border-t border-border/70 bg-background/75 px-5 py-3 text-[0.6rem] font-medium uppercase tracking-[0.18em] text-muted-foreground backdrop-blur-sm sm:px-6">
+                <span>Independent design</span>
+                <span>Everyday wear</span>
+            </div>
+        </div>
+    );
+}
 
 export async function SeasonalCampaignSection() {
     const locale = await getRouteLocale();
@@ -51,15 +106,7 @@ export async function SeasonalCampaignSection() {
 
                         <div className="relative mx-auto w-full max-w-[31rem]">
                             <div className="absolute inset-6 rounded-full bg-cyan-200/20 blur-3xl" />
-                            <div className="relative rounded-3xl border border-white/20 bg-white/95 p-4 shadow-2xl sm:p-6">
-                                <Image
-                                    src="/storyset/choosing-clothes-cuate.svg"
-                                    alt={t('campaignAlt')}
-                                    width={520}
-                                    height={420}
-                                    className="h-auto w-full object-contain"
-                                />
-                            </div>
+                            <FashionBrandMarquee label={t('campaignAlt')} />
                         </div>
                     </div>
                 </div>

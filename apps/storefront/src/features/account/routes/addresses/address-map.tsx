@@ -49,7 +49,7 @@ export function AddressMap({position, onPositionChange, markerLabel}: AddressMap
       center={position ? [position.lat, position.lng] : DEFAULT_CENTER}
       zoom={position ? 16 : 12}
       scrollWheelZoom
-      className="h-72 w-full"
+      className="h-56 w-full sm:h-64 lg:h-72"
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
