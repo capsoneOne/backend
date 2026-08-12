@@ -2,7 +2,7 @@
 
 import {ChevronRight, LogIn, MapPin, Package, Settings, User, UserPlus} from 'lucide-react';
 
-import {Avatar, AvatarFallback} from '@/components/ui/avatar';
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {Button} from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -16,12 +16,14 @@ import {
 import {Link} from '@/platform/i18n/navigation';
 import {LoginButton} from '@/site/navigation/navbar/login-button';
 import {navbarIconClass} from '@/site/navigation/navigation-styles';
+import {getAvatarSrc} from '@/features/account/avatars';
 
 interface NavbarAccountMenuProps {
     customer: {
         firstName: string;
         lastName: string;
         emailAddress: string;
+        avatarKey?: string | null;
     } | null;
     labels: {
         profile: string;
@@ -38,6 +40,8 @@ const menuContentClass = 'z-[100] rounded-2xl border border-border/70 bg-popover
 const menuItemClass = 'min-h-11 rounded-xl px-3 py-2 font-medium focus:bg-primary/8 focus:text-primary';
 
 export function NavbarAccountMenu({customer, labels}: NavbarAccountMenuProps) {
+    const avatarSrc = getAvatarSrc(customer?.avatarKey);
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger
@@ -51,7 +55,13 @@ export function NavbarAccountMenu({customer, labels}: NavbarAccountMenuProps) {
                     />
                 )}
             >
-                <User className="size-5" />
+                {avatarSrc ? (
+                    <Avatar className="size-8">
+                        <AvatarImage src={avatarSrc} alt="" />
+                    </Avatar>
+                ) : (
+                    <User className="size-5" />
+                )}
             </DropdownMenuTrigger>
 
             {customer ? (
@@ -102,6 +112,7 @@ function AuthenticatedMenuContent({
 }) {
     const fullName = `${customer.firstName} ${customer.lastName}`.trim();
     const initials = `${customer.firstName.charAt(0)}${customer.lastName.charAt(0)}`.toUpperCase();
+    const avatarSrc = getAvatarSrc(customer.avatarKey);
     const items = [
         {href: '/account/profile', label: labels.profile, icon: User},
         {href: '/account/orders', label: labels.orders, icon: Package},
@@ -114,6 +125,7 @@ function AuthenticatedMenuContent({
             <div className="rounded-xl bg-gradient-to-br from-primary/12 via-primary/6 to-transparent p-3">
                 <div className="flex items-center gap-3">
                     <Avatar className="size-12 shadow-sm">
+                        {avatarSrc ? <AvatarImage src={avatarSrc} alt="" /> : null}
                         <AvatarFallback className="bg-primary text-base font-bold text-primary-foreground">
                             {initials || <User className="size-5" />}
                         </AvatarFallback>

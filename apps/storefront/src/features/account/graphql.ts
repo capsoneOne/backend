@@ -6,6 +6,9 @@ export const ActiveCustomerFragment = graphql(`
         firstName
         lastName
         emailAddress
+        customFields {
+            avatarKey
+        }
     }
 `);
 
@@ -244,6 +247,9 @@ export const UpdateCustomerMutation = graphql(`
             firstName
             lastName
             emailAddress
+            customFields {
+                avatarKey
+            }
         }
     }
 `);
