@@ -1,9 +1,11 @@
 'use client';
 
+import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
+import { CreditCardForm, type CardValidity } from '@/components/ui/credit-card-form';
 import { CreditCard } from 'lucide-react';
 import { useCheckout } from '../checkout-provider';
 import {useTranslations} from 'next-intl';
@@ -14,10 +16,37 @@ interface PaymentStepProps {
 
 export default function PaymentStep({ onComplete }: PaymentStepProps) {
   const t = useTranslations('Checkout');
-  const { paymentMethods, selectedPaymentMethodCode, setSelectedPaymentMethodCode } = useCheckout();
+  const {
+    order,
+    paymentMethods,
+    selectedPaymentMethodCode,
+    setSelectedPaymentMethodCode,
+  } = useCheckout();
+  const [isCardValid, setIsCardValid] = useState(false);
+
+  const selectedPaymentMethod = paymentMethods.find(
+    (method) => method.code === selectedPaymentMethodCode,
+  );
+  const requiresCardDetails = selectedPaymentMethod
+    ? /card|credit|stripe|standard-payment/i.test(
+        `${selectedPaymentMethod.code} ${selectedPaymentMethod.name}`,
+      )
+    : false;
+
+  const handleCardChange = useCallback(
+    (_state: unknown, validity: CardValidity) => {
+      setIsCardValid(validity.allValid);
+    },
+    [],
+  );
+
+  const handlePaymentMethodChange = (code: string) => {
+    setIsCardValid(false);
+    setSelectedPaymentMethodCode(code);
+  };
 
   const handleContinue = () => {
-    if (!selectedPaymentMethodCode) return;
+    if (!selectedPaymentMethodCode || (requiresCardDetails && !isCardValid)) return;
     onComplete();
   };
 
@@ -33,7 +62,7 @@ export default function PaymentStep({ onComplete }: PaymentStepProps) {
     <div className="space-y-6">
       <h3 className="font-medium">{t('selectPaymentMethod')}</h3>
 
-      <RadioGroup value={selectedPaymentMethodCode || ''} onValueChange={setSelectedPaymentMethodCode}>
+      <RadioGroup value={selectedPaymentMethodCode || ''} onValueChange={handlePaymentMethodChange}>
         {paymentMethods.map((method) => (
           <Label key={method.code} htmlFor={method.code} className="cursor-pointer">
             <Card className="gap-0 border-border p-4 transition-colors hover:border-primary/30">
@@ -52,9 +81,36 @@ export default function PaymentStep({ onComplete }: PaymentStepProps) {
         ))}
       </RadioGroup>
 
+      {requiresCardDetails && (
+        <div className="space-y-3">
+          <CreditCardForm
+            defaultHolder={
+              order.customer
+                ? `${order.customer.firstName} ${order.customer.lastName}`.trim()
+                : ''
+            }
+            showSubmit={false}
+            onChange={handleCardChange}
+            labels={{
+              cardNumber: t('cardNumber'),
+              cardHolder: t('cardHolder'),
+              cardHolderPlaceholder: t('cardHolderPlaceholder'),
+              expirationDate: t('expirationDate'),
+              month: t('expirationMonth'),
+              year: t('expirationYear'),
+              cvv: t('cvv'),
+              invalidCardNumber: t('invalidCardNumber'),
+            }}
+          />
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            {t('demoCardNotice')}
+          </p>
+        </div>
+      )}
+
       <Button
         onClick={handleContinue}
-        disabled={!selectedPaymentMethodCode}
+        disabled={!selectedPaymentMethodCode || (requiresCardDetails && !isCardValid)}
         className="min-h-11 w-full px-5"
       >
         {t('continueToReview')}
