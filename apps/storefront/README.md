@@ -86,6 +86,17 @@ Open [http://localhost:3001](http://localhost:3001) with your browser to see the
 
 The environment template also documents optional channel, metadata, authentication header, and cache revalidation settings.
 
+Stripe's Payment Element also requires the browser-safe publishable key in
+`.env.local`:
+
+```dotenv
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+```
+
+The corresponding secret and webhook signing secret belong only in the Vendure
+server environment. Card details are hosted by Stripe and must never be added to a
+storefront Server Action or Vendure payment metadata.
+
 ## Architecture
 
 Every human-authored storefront file is yours to change. The source is organized to keep those changes local and make future upgrades easier to reconcile:

@@ -22,6 +22,28 @@ npm run dev
 
 will start the Vendure server, [worker](https://www.vendure.io/docs/developer-guide/vendure-worker/) and Dashboard.
 
+### Stripe test payments
+
+Stripe checkout uses Vendure's Stripe PaymentIntent plugin. Keep the secret key and
+webhook signing secret in `apps/server/.env` only:
+
+```dotenv
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+For local webhook delivery, install and authenticate the Stripe CLI, then run:
+
+```shell
+stripe listen --events payment_intent.succeeded,payment_intent.payment_failed \
+  --forward-to localhost:3000/payments/stripe
+```
+
+Copy the `whsec_...` value printed by the CLI into `STRIPE_WEBHOOK_SECRET`, restart
+Vendure, and run `npm run seed` from the repository root. The seed creates the
+`stripe` payment method only when both secrets are configured. Do not use `sk_live_`
+credentials for this capstone unless it is intentionally converted into a real store.
+
 ## Build
 
 ```
