@@ -11,6 +11,7 @@ import { json } from 'express';
 import { AssetServerPlugin, configureS3AssetStorage } from '@vendure/asset-server-plugin';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
+import { StripePlugin } from '@vendure-community/stripe-plugin';
 import 'dotenv/config';
 import path from 'path';
 
@@ -165,6 +166,13 @@ export const config: VendureConfig = {
         DefaultSchedulerPlugin.init(),
         DefaultJobQueuePlugin.init({ useDatabaseForBuffer: true }),
         DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: true }),
+        StripePlugin.init({
+            // Stripe payment methods are configured per channel in Vendure. Keeping
+            // customer creation disabled avoids adding a schema-level custom field;
+            // the PaymentIntent still carries the Vendure order/channel metadata.
+            storeCustomersInStripe: false,
+            skipPaymentIntentsWithoutExpectedMetadata: true,
+        }),
         VisualSearchPlugin.init({
             embedderUrl: process.env.EMBEDDER_URL ?? 'http://localhost:8100',
         }),

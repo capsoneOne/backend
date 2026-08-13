@@ -19,12 +19,6 @@ const MARK_HEIGHT = 24;
 const paymentMethods = [
     {name: 'Visa', src: '/payments/visa.svg', width: 36},
     {name: 'Mastercard', src: '/payments/mastercard.svg', width: 40},
-    {name: 'KHQR', src: '/payments/khqr.svg', width: 58},
-    {name: 'Wing Bank', src: '/payments/wing-bank.svg', width: 71},
-    {name: 'Chip Mong Bank', src: '/payments/chip-mong-bank.svg', width: 90},
-    {name: 'ACLEDA Securities', src: '/payments/acleda-securities.svg', width: 88},
-    {name: 'ABA Bank', src: '/payments/aba-bank.svg', width: 61},
-    {name: 'Vattanac Bank', src: '/payments/vattanac-bank.svg', width: 77},
 ] as const;
 
 export function PaymentMethodMarks({title, description, demoNote}: PaymentMethodMarksProps) {

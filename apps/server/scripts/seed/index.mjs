@@ -32,6 +32,8 @@ import path from 'node:path';
 const ADMIN_API = process.env.VENDURE_ADMIN_API_URL ?? 'http://localhost:3000/admin-api';
 const USERNAME = process.env.SUPERADMIN_USERNAME ?? 'superadmin';
 const PASSWORD = process.env.SUPERADMIN_PASSWORD ?? 'superadmin';
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const IMAGE_DIR = path.join(import.meta.dirname, 'images');
 
 const PRODUCTS = [
@@ -499,6 +501,127 @@ async function ensureChannelSetup() {
     return zone;
 }
 
+/**
+ * Checkout methods needed by the storefront's delivery and payment steps.
+ *
+ * Shipping is always safe to seed. Stripe is only created when both server-side
+ * secrets are present, so a checkout can never advertise a payment method whose
+ * PaymentIntent or webhook verification would fail at runtime.
+ */
+async function ensureCheckoutMethods() {
+    const {shippingMethods} = await gql(`query {
+        shippingMethods(options: {take: 100}) { items { id code } }
+    }`);
+
+    if (!shippingMethods.items.some(method => method.code === 'standard-shipping')) {
+        await gql(
+            `mutation Create($input: CreateShippingMethodInput!) {
+                createShippingMethod(input: $input) { id code }
+            }`,
+            {
+                input: {
+                    code: 'standard-shipping',
+                    fulfillmentHandler: 'manual-fulfillment',
+                    checker: {
+                        code: 'default-shipping-eligibility-checker',
+                        arguments: [{name: 'orderMinimum', value: '0'}],
+                    },
+                    calculator: {
+                        code: 'default-shipping-calculator',
+                        arguments: [
+                            {name: 'rate', value: '500'},
+                            {name: 'includesTax', value: 'auto'},
+                            {name: 'taxRate', value: '0'},
+                        ],
+                    },
+                    translations: [
+                        {
+                            languageCode: 'en',
+                            name: 'Standard shipping',
+                            description: 'Delivery in 3–5 business days',
+                        },
+                        {
+                            languageCode: 'km',
+                            name: 'ការដឹកជញ្ជូនស្តង់ដារ',
+                            description: 'ដឹកជញ្ជូនក្នុងរយៈពេល ៣–៥ ថ្ងៃធ្វើការ',
+                        },
+                    ],
+                },
+            },
+        );
+        console.log('  shipping method standard-shipping');
+    }
+
+    if (!STRIPE_SECRET_KEY && !STRIPE_WEBHOOK_SECRET) {
+        console.log('  Stripe skipped (set STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET)');
+        return;
+    }
+    if (!STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SECRET) {
+        throw new Error(
+            'Stripe checkout requires both STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET',
+        );
+    }
+
+    const {paymentMethods} = await gql(`query {
+        paymentMethods(options: {take: 100}) { items { id code } }
+    }`);
+    const stripeInput = {
+        code: 'stripe',
+        enabled: true,
+        handler: {
+            code: 'stripe',
+            arguments: [
+                {name: 'apiKey', value: STRIPE_SECRET_KEY},
+                {name: 'webhookSecret', value: STRIPE_WEBHOOK_SECRET},
+            ],
+        },
+        translations: [
+            {
+                languageCode: 'en',
+                name: 'Card or digital wallet',
+                description: 'Secure payment powered by Stripe',
+            },
+            {
+                languageCode: 'km',
+                name: 'កាត ឬកាបូបឌីជីថល',
+                description: 'ការទូទាត់មានសុវត្ថិភាពដោយ Stripe',
+            },
+        ],
+    };
+    const existingStripe = paymentMethods.items.find(method => method.code === 'stripe');
+
+    if (existingStripe) {
+        await gql(
+            `mutation Update($input: UpdatePaymentMethodInput!) {
+                updatePaymentMethod(input: $input) { id code }
+            }`,
+            {input: {...stripeInput, id: existingStripe.id}},
+        );
+        console.log('  payment method stripe (updated)');
+    } else {
+        await gql(
+            `mutation Create($input: CreatePaymentMethodInput!) {
+                createPaymentMethod(input: $input) { id code }
+            }`,
+            {input: stripeInput},
+        );
+        console.log('  payment method stripe');
+    }
+
+    const legacyPayment = paymentMethods.items.find(
+        method => method.code === 'standard-payment',
+    );
+    if (legacyPayment) {
+        await gql(
+            `mutation Disable($input: UpdatePaymentMethodInput!) {
+                updatePaymentMethod(input: $input) { id code enabled }
+            }`,
+            {input: {id: legacyPayment.id, enabled: false}},
+        );
+        console.log('  payment method standard-payment disabled');
+    }
+}
+
 async function ensureProducts() {
     const {products} = await gql(`query {
         products(options: {take: 100}) {
@@ -683,6 +806,9 @@ console.log('authenticated as', await login());
 
 console.log('channel setup:');
 await ensureChannelSetup();
+
+console.log('checkout methods:');
+await ensureCheckoutMethods();
 
 console.log('catalog:');
 const catalog = await ensureProducts();

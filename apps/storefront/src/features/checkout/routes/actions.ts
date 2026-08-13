@@ -1,7 +1,7 @@
 'use server';
 
-import {mutate} from '@/platform/vendure/api';
-import {SetOrderShippingAddressMutation, SetOrderBillingAddressMutation, SetOrderShippingMethodMutation, AddPaymentToOrderMutation, TransitionOrderToStateMutation, SetCustomerForOrderMutation} from '@/features/checkout/graphql';
+import {mutate, query} from '@/platform/vendure/api';
+import {SetOrderShippingAddressMutation, SetOrderBillingAddressMutation, SetOrderShippingMethodMutation, AddPaymentToOrderMutation, TransitionOrderToStateMutation, SetCustomerForOrderMutation, CreateStripePaymentIntentMutation, GetActiveOrderForCheckoutQuery} from '@/features/checkout/graphql';
 import {CreateCustomerAddressMutation} from '@/features/account/graphql';
 import {revalidatePath, updateTag} from 'next/cache';
 import {redirect} from '@/platform/i18n/navigation';
@@ -135,6 +135,34 @@ export async function placeOrder(paymentMethodCode: string) {
 
     const locale = await getLocale();
     redirect({href: `/order-confirmation/${orderCode}`, locale});
+}
+
+export type PrepareStripePaymentResult =
+    | {success: true; clientSecret: string; orderCode: string}
+    | {success: false};
+
+export async function prepareStripePayment(): Promise<PrepareStripePaymentResult> {
+    try {
+        const [intentResult, orderResult] = await Promise.all([
+            mutate(CreateStripePaymentIntentMutation, {}, {useAuthToken: true}),
+            query(GetActiveOrderForCheckoutQuery, {}, {useAuthToken: true}),
+        ]);
+        const order = orderResult.data.activeOrder;
+        if (!order) {
+            return {success: false};
+        }
+
+        return {
+            success: true,
+            clientSecret: intentResult.data.createStripePaymentIntent,
+            orderCode: order.code,
+        };
+    } catch (error) {
+        console.error('Failed to prepare Stripe payment', error);
+        return {
+            success: false,
+        };
+    }
 }
 
 interface GuestCustomerInput {

@@ -13,6 +13,8 @@
   "OrderConfirmation": {
     "pageTitle": "Order Confirmation",
     "orderConfirmed": "Order Confirmed!",
+    "paymentProcessing": "Confirming your payment…",
+    "paymentProcessingDescription": "Stripe has returned you to the store. We are waiting for its signed webhook before marking this order as paid.",
     "thankYou": "Thank you for your order. Your order number is",
     "emailConfirmation": "We'll send you an email with your order details and tracking information.",
     "orderSummary": "Order Summary",

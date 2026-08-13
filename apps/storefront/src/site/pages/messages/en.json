@@ -22,7 +22,7 @@
         },
         {
           "heading": "This is a student project",
-          "body": "Lumé is a capstone project, not a live retailer. Orders placed here are processed against a test payment handler, no money changes hands, and nothing ships. Treat any product, price or delivery estimate on the site as sample data."
+          "body": "Lumé is a capstone project, not a live retailer. Checkout uses Stripe and should remain in Stripe test mode while the catalogue and fulfilment data are samples. Nothing ships from this project."
         }
       ]
     },
@@ -92,7 +92,7 @@
         },
         {
           "heading": "Who else sees your data",
-          "body": "Order and account data is held in this project's own database. It is not sold, and it is not shared with third parties for marketing. Email delivery and hosting providers process data strictly to run the service."
+          "body": "Order and account data is held in this project's own database. Stripe processes payment details directly and returns payment status; the storefront never receives a full card number or security code. Data is not sold or shared with third parties for marketing."
         },
         {
           "heading": "How long it is kept",
@@ -110,7 +110,7 @@
       "sections": [
         {
           "heading": "About this service",
-          "body": "Lumé is a student capstone project operated for educational purposes. It is not a commercial retailer. Products, prices, stock levels and delivery estimates shown on the site are sample data, and orders placed here are processed against a test payment handler — no money is taken and no goods are dispatched."
+          "body": "Lumé is a student capstone project operated for educational purposes, not a commercial retailer. Products, prices, stock and delivery estimates are sample data. Stripe checkout must remain in test mode unless the project is deliberately converted into an operational store with real fulfilment and policies."
         },
         {
           "heading": "Accounts",
@@ -168,7 +168,7 @@
         },
         {
           "question": "Is this a real shop?",
-          "answer": "No. Lumé is a student capstone project. Orders run against a test payment handler, no money is taken, and nothing is dispatched. Treat the products, prices and delivery estimates as sample data."
+          "answer": "No. Lumé is a student capstone project with sample products and fulfilment data. Stripe checkout should use test mode, and nothing is dispatched."
         }
       ]
     }
