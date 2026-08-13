@@ -36,7 +36,7 @@ const en: KnowledgeDocument[] = [
         id: 'demo-store',
         title: 'About this store',
         path: '/about',
-        content: 'StyleMatch is a student capstone project, not a live retailer. Payments use a test handler, no money is taken, and no physical goods are shipped. Products, prices, stock and delivery estimates are sample data.',
+        content: 'Lumé is a student capstone project, not a live retailer. Checkout uses Stripe and should remain in Stripe test mode. No physical goods are shipped, and products, prices, stock and delivery estimates are sample data.',
     },
 ];
 
@@ -69,11 +69,10 @@ const km: KnowledgeDocument[] = [
         id: 'demo-store',
         title: 'អំពីហាងនេះ',
         path: '/about',
-        content: 'StyleMatch ជាគម្រោងបញ្ចប់ការសិក្សា មិនមែនជាហាងពិតទេ។ ប្រព័ន្ធទូទាត់គឺសាកល្បង មិនកាត់ប្រាក់ និងមិនផ្ញើទំនិញពិតទេ។',
+        content: 'Lumé ជាគម្រោងបញ្ចប់ការសិក្សា មិនមែនជាហាងពិតទេ។ ការទូទាត់ប្រើ Stripe ហើយគួរប្រើ test mode។ មិនមានការផ្ញើទំនិញពិតទេ។',
     },
 ];
 
 export function getKnowledgeDocuments(languageCode: LanguageCode): KnowledgeDocument[] {
     return languageCode === LanguageCode.km ? km : en;
 }
-
