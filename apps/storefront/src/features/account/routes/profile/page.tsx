@@ -6,6 +6,7 @@ import { EditEmailForm } from './edit-email-form';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {getTranslations} from 'next-intl/server';
 import {AccountPageHeader} from '@/features/account/components/account-page-header';
+import {AvatarPicker} from './avatar-picker';
 
 export async function generateMetadata(): Promise<Metadata> {
     const locale = await getRouteLocale();
@@ -28,6 +29,7 @@ export default async function ProfilePage() {
             />
 
             <div className="space-y-6">
+                <AvatarPicker currentAvatar={customer?.customFields?.avatarKey} />
                 <EditProfileForm customer={customer} />
                 <EditEmailForm currentEmail={customer?.emailAddress || ''} />
                 <ChangePasswordForm />

@@ -28,7 +28,7 @@ export function buildSearchInput({ searchParams, collectionSlug }: BuildSearchIn
             : [searchParams.facets]
         : [];
 
-    // The URL stores `facetId:valueId`. Values selected inside one fashion facet
+    // The URL stores `facetId:valueId`. Values selected inside one product facet
     // (e.g. S or M) are ORed; separate facets (e.g. Size and Colour) remain ANDed.
     // Bare IDs from older URLs are retained as individual AND filters.
     const groupedFacets = new Map<string, string[]>();

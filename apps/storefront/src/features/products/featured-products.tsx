@@ -21,6 +21,9 @@ async function getFeaturedCollectionProducts(locale: string, currencyCode: strin
             take: 12,
             skip: 0,
             groupByProduct: true,
+            // Vendure otherwise returns the oldest seeded fashion products first.
+            // A stable name sort keeps this mixed-category edit balanced on reruns.
+            sort: {name: 'ASC'},
         },
     }, {languageCode: locale, currencyCode});
 

@@ -1,8 +1,8 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import {Crosshair, Loader2, MapPin} from 'lucide-react';
-import {useCallback, useState} from 'react';
+import {CheckCircle2, Crosshair, Loader2, MapPin} from 'lucide-react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {useLocale, useTranslations} from 'next-intl';
 
 import {Button} from '@/components/ui/button';
@@ -12,7 +12,7 @@ const AddressMap = dynamic(
   () => import('./address-map').then(module => module.AddressMap),
   {
     ssr: false,
-    loading: () => <div className="h-72 animate-pulse bg-muted" aria-hidden="true"/>,
+    loading: () => <div className="h-56 animate-pulse bg-muted sm:h-64 lg:h-full" aria-hidden="true"/>,
   },
 );
 
@@ -26,21 +26,30 @@ export interface ResolvedMapAddress {
 
 interface AddressLocationPickerProps {
   onAddressResolved: (address: ResolvedMapAddress) => void;
+  allowedCountryCodes: string[];
   disabled?: boolean;
 }
 
-export function AddressLocationPicker({onAddressResolved, disabled}: AddressLocationPickerProps) {
+export function AddressLocationPicker({onAddressResolved, allowedCountryCodes, disabled}: AddressLocationPickerProps) {
   const t = useTranslations('Account');
   const locale = useLocale();
   const [position, setPosition] = useState<MapPosition | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   const [isResolving, setIsResolving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasResolvedAddress, setHasResolvedAddress] = useState(false);
+  const requestController = useRef<AbortController | null>(null);
+
+  useEffect(() => () => requestController.current?.abort(), []);
 
   const resolvePosition = useCallback(async (nextPosition: MapPosition) => {
     setPosition(nextPosition);
     setError(null);
+    setHasResolvedAddress(false);
     setIsResolving(true);
+    requestController.current?.abort();
+    const controller = new AbortController();
+    requestController.current = controller;
 
     try {
       const params = new URLSearchParams({
@@ -48,15 +57,27 @@ export function AddressLocationPicker({onAddressResolved, disabled}: AddressLoca
         lng: String(nextPosition.lng),
         lang: locale,
       });
-      const response = await fetch(`/api/geocode/reverse?${params.toString()}`);
+      const response = await fetch(`/api/geocode/reverse?${params.toString()}`, {signal: controller.signal});
       if (!response.ok) throw new Error('reverse-geocode-failed');
-      onAddressResolved(await response.json() as ResolvedMapAddress);
-    } catch {
-      setError(t('mapLookupFailed'));
+      const resolvedAddress = await response.json() as ResolvedMapAddress;
+      if (
+        resolvedAddress.countryCode &&
+        allowedCountryCodes.length > 0 &&
+        !allowedCountryCodes.includes(resolvedAddress.countryCode)
+      ) {
+        setError(t('deliveryLocationOutsideRegion'));
+        return;
+      }
+      onAddressResolved(resolvedAddress);
+      setHasResolvedAddress(true);
+    } catch (lookupError) {
+      if (!(lookupError instanceof DOMException && lookupError.name === 'AbortError')) {
+        setError(t('mapLookupFailed'));
+      }
     } finally {
-      setIsResolving(false);
+      if (requestController.current === controller) setIsResolving(false);
     }
-  }, [locale, onAddressResolved, t]);
+  }, [allowedCountryCodes, locale, onAddressResolved, t]);
 
   const useCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -85,7 +106,7 @@ export function AddressLocationPicker({onAddressResolved, disabled}: AddressLoca
   };
 
   return (
-    <section className="col-span-2 overflow-hidden rounded-2xl border border-border bg-card" aria-labelledby="address-map-title">
+    <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-e1)] lg:flex lg:h-full lg:min-h-0 lg:flex-col" aria-labelledby="address-map-title">
       <div className="flex flex-col gap-4 border-b border-border p-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 id="address-map-title" className="flex items-center gap-2 font-semibold">
@@ -99,7 +120,7 @@ export function AddressLocationPicker({onAddressResolved, disabled}: AddressLoca
           variant="outline"
           onClick={useCurrentLocation}
           disabled={disabled || isLocating || isResolving}
-          className="min-h-11 shrink-0"
+          className="min-h-11 shrink-0 border-primary/25 bg-primary/5 text-primary hover:bg-primary/10"
         >
           {isLocating || isResolving
             ? <Loader2 className="size-4 animate-spin" aria-hidden="true"/>
@@ -108,7 +129,7 @@ export function AddressLocationPicker({onAddressResolved, disabled}: AddressLoca
         </Button>
       </div>
 
-      <div className="relative">
+      <div className="relative lg:min-h-0 lg:flex-1">
         <AddressMap
           position={position}
           onPositionChange={nextPosition => void resolvePosition(nextPosition)}
@@ -122,8 +143,17 @@ export function AddressLocationPicker({onAddressResolved, disabled}: AddressLoca
         )}
       </div>
 
-      <div className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
-        {error ? <p role="alert" className="text-destructive">{error}</p> : <p>{t('mapPinHint')}</p>}
+      <div className="min-h-12 border-t border-border px-4 py-3 text-xs text-muted-foreground">
+        {error ? (
+          <p role="alert" className="text-destructive">{error}</p>
+        ) : hasResolvedAddress ? (
+          <p role="status" className="flex items-center gap-2 font-medium text-emerald-700 dark:text-emerald-400">
+            <CheckCircle2 className="size-4 shrink-0" aria-hidden="true"/>
+            {t('addressFilledReview')}
+          </p>
+        ) : (
+          <p>{t('mapPinHint')}</p>
+        )}
       </div>
     </section>
   );

@@ -1,70 +1,266 @@
-import Image from 'next/image';
 import {ArrowRight, Heart, MapPin, PackageCheck} from 'lucide-react';
+import Image from 'next/image';
 import {getTranslations} from 'next-intl/server';
 
 import {Button} from '@/components/ui/button';
+import {TestimonialsSection} from '@/components/ui/testimonials-6';
 import {storefrontSectionClass} from '@/components/storefront-section';
 import {getActiveCustomer} from '@/features/account/customer';
 import {Link} from '@/platform/i18n/navigation';
 import {getRouteLocale} from '@/platform/i18n/server';
+
+const marketplaceBrands = [
+    {name: 'Apple', logo: 'apple', category: 'technology'},
+    {name: 'Samsung', logo: 'samsung', category: 'technology'},
+    {name: 'Sony', logo: 'sony', category: 'technology'},
+    {name: 'JBL', logo: 'jbl', category: 'technology'},
+    {name: 'UNIQLO', logo: 'uniqlo', category: 'fashion'},
+    {name: 'H&M', logo: 'hm', category: 'fashion'},
+    {name: 'Tommy Hilfiger', logo: 'tommy', category: 'fashion'},
+    {name: 'Calvin Klein', logo: 'calvin-klein', category: 'fashion'},
+    {name: 'Marithé + François Girbaud', logo: 'marithe', category: 'fashion'},
+    {name: 'Nike', logo: 'nike', category: 'sports'},
+    {name: 'adidas', logo: 'adidas', category: 'sports'},
+    {name: 'Sephora', logo: 'sephora', category: 'beauty'},
+    {name: "L'Oréal Paris", logo: 'loreal', category: 'beauty'},
+    {name: 'IKEA', logo: 'ikea', category: 'home'},
+    {name: 'Philips', logo: 'philips', category: 'home'},
+    {name: 'DAPPER', logo: 'dapper', category: 'fashion'},
+    {name: 'LYN', logo: 'lyn', category: 'fashion'},
+    {name: 'Padini Concept Store', logo: 'padini', category: 'fashion'},
+    {name: 'Xiaomi', logo: 'xiaomi', category: 'technology'},
+    {name: 'Bose', logo: 'bose', category: 'technology'},
+    {name: 'Canon', logo: 'canon', category: 'technology'},
+    {name: "Levi's", logo: 'levis', category: 'fashion'},
+    {name: 'New Balance', logo: 'new-balance', category: 'sports'},
+    {name: 'PUMA', logo: 'puma', category: 'sports'},
+    {name: 'NIVEA', logo: 'nivea', category: 'beauty'},
+    {name: 'COSRX', logo: 'cosrx', category: 'beauty'},
+    {name: 'MUJI', logo: 'muji', category: 'home'},
+    {name: 'Tefal', logo: 'tefal', category: 'home'},
+    {name: 'LEGO', logo: 'lego', category: 'toys'},
+    {name: 'Barbie', logo: 'barbie', category: 'toys'},
+] as const;
+
+type MarketplaceBrand = (typeof marketplaceBrands)[number];
+type MarketplaceCategory = MarketplaceBrand['category'];
+
+const brandRows = [
+    marketplaceBrands.slice(0, 10),
+    marketplaceBrands.slice(10, 20),
+    marketplaceBrands.slice(20),
+] as const;
+const marketplaceCategories = ['technology', 'fashion', 'beauty', 'home', 'sports', 'toys'] as const;
+
+function BrandLogo({brand}: {brand: MarketplaceBrand}) {
+    switch (brand.logo) {
+        case 'apple':
+            return <span className="text-4xl font-semibold tracking-[-0.08em]">Apple</span>;
+        case 'samsung':
+            return <span className="-skew-x-6 text-3xl font-black uppercase tracking-[-0.07em] text-[#0b4da2] dark:text-[#7bb7ff]">Samsung</span>;
+        case 'sony':
+            return <span className="font-serif text-4xl font-bold uppercase tracking-[-0.06em]">Sony</span>;
+        case 'jbl':
+            return <span className="rounded-sm bg-[#ff4f00] px-4 py-2 text-3xl font-black tracking-[-0.08em] text-white">JBL</span>;
+        case 'uniqlo':
+            return <Image src="/brands/uniqlo.svg" alt="" width={64} height={64} className="size-16 shadow-sm" />;
+        case 'hm':
+            return <Image src="/brands/hm.svg" alt="" width={72} height={72} className="size-16 object-contain" />;
+        case 'nike':
+            return <span className="-skew-x-12 text-4xl font-black italic uppercase tracking-[-0.1em]">Nike</span>;
+        case 'adidas':
+            return (
+                <span className="flex items-end gap-2 text-3xl font-bold lowercase tracking-[-0.08em]">
+                    <span className="flex h-7 items-end gap-0.5" aria-hidden="true">
+                        <span className="h-3 w-2 -skew-x-12 bg-current" />
+                        <span className="h-5 w-2 -skew-x-12 bg-current" />
+                        <span className="h-7 w-2 -skew-x-12 bg-current" />
+                    </span>
+                    adidas
+                </span>
+            );
+        case 'sephora':
+            return <span className="font-serif text-3xl uppercase tracking-[0.08em]">Sephora</span>;
+        case 'loreal':
+            return (
+                <span className="text-center">
+                    <span className="block text-2xl font-light tracking-[-0.05em]">L’ORÉAL</span>
+                    <span className="block text-[0.55rem] tracking-[0.45em]">PARIS</span>
+                </span>
+            );
+        case 'ikea':
+            return <span className="rounded-[50%] border-[7px] border-[#ffda1a] bg-[#0058a3] px-6 py-2 text-2xl font-black text-[#ffda1a]">IKEA</span>;
+        case 'philips':
+            return <span className="text-3xl font-black uppercase tracking-[-0.05em] text-[#0b5cab] dark:text-[#7bb7ff]">Philips</span>;
+        case 'xiaomi':
+            return (
+                <span className="flex items-center gap-3 text-3xl font-semibold tracking-[-0.08em]">
+                    <span className="grid size-10 place-items-center rounded-xl bg-[#ff6900] text-sm font-black text-white">mi</span>
+                    Xiaomi
+                </span>
+            );
+        case 'bose':
+            return <span className="-skew-x-12 text-4xl font-black uppercase tracking-[-0.1em]">Bose</span>;
+        case 'canon':
+            return <span className="font-serif text-4xl font-bold tracking-[-0.08em] text-[#cc0000] dark:text-[#ff7777]">Canon</span>;
+        case 'levis':
+            return <span className="rounded-t-lg bg-[#c41230] px-5 py-2 text-3xl font-bold text-white">Levi’s</span>;
+        case 'new-balance':
+            return (
+                <span className="flex items-center gap-2 text-2xl font-black italic tracking-[-0.08em] text-[#d71920] dark:text-[#ff7777]">
+                    <span className="text-4xl">NB</span> new balance
+                </span>
+            );
+        case 'puma':
+            return <span className="text-4xl font-black uppercase tracking-[0.04em]">PUMA</span>;
+        case 'nivea':
+            return <span className="grid size-20 place-items-center rounded-full bg-[#003d8f] text-xl font-black tracking-[0.08em] text-white">NIVEA</span>;
+        case 'cosrx':
+            return <span className="text-4xl font-light uppercase tracking-[0.04em]">COSRX</span>;
+        case 'muji':
+            return <span className="bg-[#7f0019] px-5 py-2 text-3xl font-bold tracking-[0.08em] text-white">無印良品</span>;
+        case 'tefal':
+            return <span className="text-4xl font-bold tracking-[-0.1em] text-[#e30613] dark:text-[#ff7777]">Tefal</span>;
+        case 'lego':
+            return <span className="rounded-lg border-4 border-[#ffcf00] bg-[#d71920] px-3 py-1 text-3xl font-black tracking-[-0.08em] text-white shadow-[inset_0_0_0_2px_#fff]">LEGO</span>;
+        case 'barbie':
+            return <span className="-rotate-6 font-serif text-4xl font-bold italic tracking-[-0.08em] text-[#e6008d] dark:text-[#ff75c5]">Barbie</span>;
+        case 'dapper':
+            return <span className="border-y-2 border-foreground py-1.5 text-3xl font-black tracking-[0.18em]">DAPPER</span>;
+        case 'marithe':
+            return (
+                <span className="max-w-52 text-center font-serif text-xl font-bold uppercase leading-[1.05] tracking-[-0.04em]">
+                    Marithé <span className="text-primary">+</span><br />François Girbaud
+                </span>
+            );
+        case 'tommy':
+            return (
+                <span className="flex items-center gap-3.5 text-[#101b33] dark:text-white">
+                    <span
+                        className="flex h-9 w-14 shrink-0 flex-col overflow-hidden rounded-[3px] bg-[#101f3c] p-[3px] shadow-[0_2px_8px_rgba(16,31,60,0.14)]"
+                        aria-hidden="true"
+                    >
+                        <span className="grid flex-1 grid-cols-2 overflow-hidden rounded-[1px]">
+                            <span className="bg-white" />
+                            <span className="bg-[#d71920]" />
+                        </span>
+                    </span>
+                    <span className="flex flex-col text-[1.05rem] font-semibold uppercase leading-[1.02] tracking-[0.15em]">
+                        <span>Tommy</span>
+                        <span className="mt-1.5">Hilfiger</span>
+                    </span>
+                </span>
+            );
+        case 'calvin-klein':
+            return <span className="text-3xl font-medium tracking-[-0.08em]">Calvin Klein</span>;
+        case 'lyn':
+            return <span className="border-b-2 border-foreground pb-1 text-5xl font-light tracking-[0.22em]">LYN</span>;
+        case 'padini':
+            return (
+                <span className="text-center">
+                    <span className="block text-3xl font-black tracking-[0.14em]">PADINI</span>
+                    <span className="mt-1 block text-[0.55rem] font-semibold uppercase tracking-[0.3em]">Concept Store</span>
+                </span>
+            );
+    }
+}
+
+function MarketplaceBrandMarquee({
+    label,
+    categoryLabels,
+}: {
+    label: string;
+    categoryLabels: Record<MarketplaceCategory, string>;
+}) {
+    return (
+        <div
+            className="relative overflow-hidden border-y border-border bg-muted/35 py-6 text-foreground sm:py-8"
+            role="group"
+            aria-label={label}
+        >
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_10%,color-mix(in_oklch,var(--primary)_10%,transparent),transparent_36%),radial-gradient(circle_at_85%_90%,color-mix(in_oklch,var(--chart-2)_9%,transparent),transparent_34%)]" />
+
+            <div className="brand-marquee-window relative space-y-3 overflow-hidden">
+                {brandRows.map((brands, rowIndex) => (
+                    <div
+                        key={rowIndex}
+                        className={`brand-marquee-track ${rowIndex === 1 ? 'brand-marquee-track-reverse' : ''} ${rowIndex === 2 ? 'brand-marquee-track-slow' : ''}`}
+                    >
+                        {[0, 1].map((copyIndex) => (
+                            <div key={copyIndex} className="flex shrink-0 gap-3" aria-hidden={copyIndex === 1}>
+                                {brands.map((brand) => (
+                                    <div
+                                        key={`${copyIndex}-${brand.name}`}
+                                        className="group relative flex h-28 w-60 shrink-0 items-center justify-center overflow-hidden rounded-[1.25rem] border border-border/70 bg-card px-6 shadow-[var(--shadow-e1)] transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-[var(--shadow-e2)] sm:w-64"
+                                        role="img"
+                                        aria-label={`${brand.name} logo, ${categoryLabels[brand.category]}`}
+                                    >
+                                        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_88%_10%,color-mix(in_oklch,var(--primary)_8%,transparent),transparent_42%)]" />
+                                        <span className="absolute left-4 top-3 rounded-full border border-primary/10 bg-primary/[0.06] px-2 py-1 text-[0.5rem] font-bold uppercase tracking-[0.16em] text-primary/75">
+                                            {categoryLabels[brand.category]}
+                                        </span>
+                                        <div className="relative flex translate-y-1.5 items-center justify-center transition-transform duration-300 group-hover:scale-[1.03]"><BrandLogo brand={brand} /></div>
+                                    </div>
+                                ))}
+                            </div>
+                        ))}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
 
 export async function SeasonalCampaignSection() {
     const locale = await getRouteLocale();
     const t = await getTranslations({locale, namespace: 'Home'});
 
     return (
-        <section className={`reveal-section ${storefrontSectionClass}`}>
-            <div className="container mx-auto px-4">
-                <div className="relative isolate overflow-hidden rounded-3xl bg-primary text-primary-foreground shadow-[var(--shadow-e3)]">
-                    <div className="pointer-events-none absolute -left-24 -top-28 size-72 rounded-full bg-white/10 blur-3xl" />
-                    <div className="pointer-events-none absolute -bottom-32 left-1/3 size-80 rounded-full bg-cyan-300/15 blur-3xl" />
-
-                    <div className="grid items-center gap-8 p-6 sm:p-8 lg:grid-cols-[1.05fr_0.95fr] lg:p-12">
-                        <div className="relative z-10 max-w-2xl">
-                            <h2 className="text-balance text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
-                                {t('campaignTitle')}
-                            </h2>
-                            <p className="mt-4 max-w-xl text-pretty font-light leading-relaxed text-primary-foreground/80 sm:text-lg">
-                                {t('campaignDescription')}
-                            </p>
-                            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                                <Button
-                                    render={<Link href="/featured" />}
-                                    nativeButton={false}
-                                    size="lg"
-                                    className="h-12 rounded-xl bg-background px-6 text-foreground shadow-md hover:bg-background/95"
-                                >
-                                    {t('campaignPrimary')}
-                                    <ArrowRight className="ml-1 size-4" aria-hidden="true" />
-                                </Button>
-                                <Button
-                                    render={<Link href="/search" />}
-                                    nativeButton={false}
-                                    variant="outline"
-                                    size="lg"
-                                    className="h-12 rounded-xl border-white/30 bg-white/5 px-6 text-primary-foreground hover:bg-white/12 hover:text-primary-foreground dark:border-white/25 dark:bg-white/5"
-                                >
-                                    {t('campaignSecondary')}
-                                </Button>
-                            </div>
-                        </div>
-
-                        <div className="relative mx-auto w-full max-w-[31rem]">
-                            <div className="absolute inset-6 rounded-full bg-cyan-200/20 blur-3xl" />
-                            <div className="relative rounded-3xl border border-white/20 bg-white/95 p-4 shadow-2xl sm:p-6">
-                                <Image
-                                    src="/storyset/choosing-clothes-cuate.svg"
-                                    alt={t('campaignAlt')}
-                                    width={520}
-                                    height={420}
-                                    className="h-auto w-full object-contain"
-                                />
-                            </div>
-                        </div>
-                    </div>
+        <section className={`reveal-section ${storefrontSectionClass} overflow-hidden`}>
+            <div className="container mx-auto px-4 text-center">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
+                    {t('campaignStoriesEyebrow')}
+                </p>
+                <h2 className="mt-3 text-balance text-3xl font-bold md:text-4xl">
+                    {t('campaignStoriesTitle')}
+                </h2>
+                <p className="mx-auto mt-3 max-w-2xl text-pretty font-light leading-relaxed text-muted-foreground sm:text-lg">
+                    {t('campaignStoriesDescription')}
+                </p>
+                <div className="mt-6 flex flex-wrap justify-center gap-2" aria-label={t('campaignCategoriesLabel')}>
+                    {marketplaceCategories.map((category) => (
+                        <span key={category} className="rounded-full border border-border bg-card/60 px-3 py-1.5 text-xs font-medium text-muted-foreground">
+                            {t(`campaignCategories.${category}`)}
+                        </span>
+                    ))}
                 </div>
             </div>
+
+            <div className="mt-10 w-screen max-w-none">
+                <MarketplaceBrandMarquee
+                    label={t('campaignAlt')}
+                    categoryLabels={Object.fromEntries(
+                        marketplaceCategories.map((category) => [category, t(`campaignCategories.${category}`)]),
+                    ) as Record<MarketplaceCategory, string>}
+                />
+            </div>
+
         </section>
+    );
+}
+
+export async function CustomerTestimonialsSection() {
+    const locale = await getRouteLocale();
+    const t = await getTranslations({locale, namespace: 'Home'});
+
+    return (
+        <TestimonialsSection
+            eyebrow={t('testimonials.eyebrow')}
+            title={t('testimonials.title')}
+            description={t('testimonials.description')}
+            reviewerLabel={t('testimonials.reviewerLabel')}
+            ratingLabel={t('testimonials.ratingLabel')}
+        />
     );
 }
 

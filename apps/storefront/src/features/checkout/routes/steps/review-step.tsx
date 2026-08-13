@@ -7,6 +7,8 @@ import { useCheckout } from '../checkout-provider';
 import { placeOrder as placeOrderAction } from '../actions';
 import { Price } from '@/features/pricing/price';
 import {useTranslations} from 'next-intl';
+import {StripePayment} from '@/features/checkout/stripe-payment';
+import {STRIPE_PAYMENT_METHOD_CODE} from '@/features/checkout/payment-methods';
 
 interface ReviewStepProps {
   onEditStep: (step: 'contact' | 'shipping' | 'delivery' | 'payment') => void;
@@ -20,6 +22,7 @@ export default function ReviewStep({ onEditStep }: ReviewStepProps) {
   const selectedPaymentMethod = paymentMethods.find(
     (method) => method.code === selectedPaymentMethodCode
   );
+  const isStripe = selectedPaymentMethodCode === STRIPE_PAYMENT_METHOD_CODE;
 
   const handlePlaceOrder = async () => {
     if (!selectedPaymentMethodCode) return;
@@ -159,15 +162,19 @@ export default function ReviewStep({ onEditStep }: ReviewStepProps) {
         </div>
       </div>
 
-      <Button
-        onClick={handlePlaceOrder}
-        disabled={loading || !order.shippingAddress || !order.shippingLines?.length || !selectedPaymentMethodCode}
-        size="lg"
-        className="min-h-11 w-full px-5"
-      >
-        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {t('placeOrder')}
-      </Button>
+      {isStripe ? (
+        <StripePayment />
+      ) : (
+        <Button
+          onClick={handlePlaceOrder}
+          disabled={loading || !order.shippingAddress || !order.shippingLines?.length || !selectedPaymentMethodCode}
+          size="lg"
+          className="min-h-11 w-full px-5"
+        >
+          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {t('placeOrder')}
+        </Button>
+      )}
 
       {(!order.shippingAddress || !order.shippingLines?.length || !selectedPaymentMethodCode) && (
         <p className="text-sm text-destructive text-center">

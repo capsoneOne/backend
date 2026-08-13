@@ -1,11 +1,13 @@
 import Image from 'next/image';
 import {ArrowRight, Check, LayoutGrid, ScanSearch, ShoppingBag} from 'lucide-react';
 import {getTranslations} from 'next-intl/server';
+import {Suspense} from 'react';
 
 import {Button} from '@/components/ui/button';
 import {StorefrontHero, StorefrontHeroHeading} from '@/components/storefront-hero';
 import {Link} from '@/platform/i18n/navigation';
 import {getRouteLocale} from '@/platform/i18n/server';
+import {WelcomeBar} from '@/site/home/welcome-bar';
 
 export async function HeroSection() {
     const locale = await getRouteLocale();
@@ -13,6 +15,11 @@ export async function HeroSection() {
 
     return (
         <StorefrontHero
+            topContent={(
+                <Suspense fallback={null}>
+                    <WelcomeBar />
+                </Suspense>
+            )}
             artwork={(
                 <Image
                     src="/storyset/ecommerce-web-page-cuate.svg"

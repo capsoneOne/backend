@@ -1,6 +1,6 @@
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
-import {Check, ShoppingBag, ClipboardList} from 'lucide-react';
+import {Check, ShoppingBag, ClipboardList, Loader2} from 'lucide-react';
 import { Link } from '@/platform/i18n/navigation';
 import Image from 'next/image';
 import {Separator} from '@/components/ui/separator';
@@ -11,6 +11,16 @@ import {getTranslations} from 'next-intl/server';
 import {query} from '@/platform/vendure/api';
 import {graphql} from '@/platform/vendure/graphql';
 import {StorefrontPageHeader, StorefrontPageShell} from '@/components/catalogue-page';
+import {PaymentStatusRefresh} from '@/features/orders/payment-status-refresh';
+
+const CONFIRMED_ORDER_STATES = new Set([
+    'PaymentAuthorized',
+    'PaymentSettled',
+    'PartiallyShipped',
+    'Shipped',
+    'PartiallyDelivered',
+    'Delivered',
+]);
 
 const GetOrderByCodeQuery = graphql(`
     query GetOrderByCode($code: String!) {
@@ -60,24 +70,34 @@ export async function OrderConfirmation({paramsPromise}: OrderConfirmationProps)
     const locale = await getRouteLocale();
     const t = await getTranslations({locale, namespace: 'OrderConfirmation'});
 
-    const {data} = await query(GetOrderByCodeQuery, {code}, {useAuthToken: true});
+    const {data} = await query(GetOrderByCodeQuery, {code}, {
+        useAuthToken: true,
+        fetch: {cache: 'no-store'},
+    });
     const order = data.orderByCode;
 
     if (!order) {
         notFound();
     }
 
+    const paymentConfirmed = CONFIRMED_ORDER_STATES.has(order.state);
+
     return (
         <StorefrontPageShell>
             <div className="max-w-3xl mx-auto">
+                {!paymentConfirmed && <PaymentStatusRefresh />}
                 <StorefrontPageHeader
                     variant="compact"
                     title={(
                         <span className="flex items-center gap-3">
                             <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-                                <Check className="size-5" strokeWidth={3} aria-hidden="true" />
+                                {paymentConfirmed ? (
+                                    <Check className="size-5" strokeWidth={3} aria-hidden="true" />
+                                ) : (
+                                    <Loader2 className="size-5 animate-spin" aria-hidden="true" />
+                                )}
                             </span>
-                            {t('orderConfirmed')}
+                            {paymentConfirmed ? t('orderConfirmed') : t('paymentProcessing')}
                         </span>
                     )}
                     description={(
@@ -86,7 +106,9 @@ export async function OrderConfirmation({paramsPromise}: OrderConfirmationProps)
                                 {t('thankYou')}{' '}
                                 <span className="font-semibold text-foreground">{order.code}</span>
                             </p>
-                            <p className="mt-1 text-sm">{t('emailConfirmation')}</p>
+                            <p className="mt-1 text-sm">
+                                {paymentConfirmed ? t('emailConfirmation') : t('paymentProcessingDescription')}
+                            </p>
                         </>
                     )}
                 />

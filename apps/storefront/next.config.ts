@@ -65,6 +65,14 @@ const nextConfig: NextConfig = {
     images: {
         // This is necessary to display images from your local Vendure instance
         dangerouslyAllowLocalIP: true,
+        // The optimizer rejects `image/svg+xml` by default, so every SVG rendered
+        // through `next/image` — the footer payment marks, the storyset empty-state
+        // illustrations, the brand logos — came back as a 400 and rendered nothing.
+        // The CSP below is what makes enabling this safe: served SVGs cannot run
+        // scripts or reach out to any other origin, which is the whole reason Next
+        // gates the format in the first place.
+        dangerouslyAllowSVG: true,
+        contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
         remotePatterns: [
             {
                 hostname: 'readonlydemo.vendure.io',

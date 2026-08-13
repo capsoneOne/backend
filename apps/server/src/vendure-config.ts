@@ -3,6 +3,7 @@ import {
     DefaultJobQueuePlugin,
     DefaultSchedulerPlugin,
     DefaultSearchPlugin,
+    LanguageCode,
     VendureConfig,
 } from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
@@ -10,10 +11,12 @@ import { json } from 'express';
 import { AssetServerPlugin, configureS3AssetStorage } from '@vendure/asset-server-plugin';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
+import { StripePlugin } from '@vendure-community/stripe-plugin';
 import 'dotenv/config';
 import path from 'path';
 
 import { VisualSearchPlugin } from './plugins/visual-search/visual-search.plugin';
+import { ChatAssistantPlugin } from './plugins/chat-assistant/chat-assistant.plugin';
 
 const IS_DEV = process.env.APP_ENV === 'dev';
 // PORT wins because hosting platforms inject it into the environment at runtime, and that
@@ -50,6 +53,11 @@ if (!R2_ENABLED && !IS_DEV) {
         '[assets] R2 is not configured — falling back to local disk. On a container host ' +
             'every uploaded image will be lost on the next restart.',
     );
+}
+
+function positiveInt(value: string | undefined, fallback: number): number {
+    const parsed = Number(value);
+    return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
 }
 
 export const config: VendureConfig = {
@@ -114,7 +122,18 @@ export const config: VendureConfig = {
     },
     // When adding or altering custom field definitions, the database will
     // need to be updated. See the "Migrations" section in README.md.
-    customFields: {},
+    customFields: {
+        Customer: [
+            {
+                name: 'avatarKey',
+                type: 'string',
+                length: 32,
+                nullable: true,
+                public: true,
+                description: [{languageCode: LanguageCode.en, value: 'Selected curated storefront avatar'}],
+            },
+        ],
+    },
     plugins: [
         GraphiqlPlugin.init(),
         AssetServerPlugin.init({
@@ -147,8 +166,30 @@ export const config: VendureConfig = {
         DefaultSchedulerPlugin.init(),
         DefaultJobQueuePlugin.init({ useDatabaseForBuffer: true }),
         DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: true }),
+        StripePlugin.init({
+            // Stripe payment methods are configured per channel in Vendure. Keeping
+            // customer creation disabled avoids adding a schema-level custom field;
+            // the PaymentIntent still carries the Vendure order/channel metadata.
+            storeCustomersInStripe: false,
+            skipPaymentIntentsWithoutExpectedMetadata: true,
+        }),
         VisualSearchPlugin.init({
             embedderUrl: process.env.EMBEDDER_URL ?? 'http://localhost:8100',
+        }),
+        ChatAssistantPlugin.init({
+            apiKey: process.env.OPENAI_API_KEY,
+            model: process.env.OPENAI_CHAT_MODEL ?? 'gpt-5.6-luna',
+            maxHistoryMessages: positiveInt(process.env.CHAT_MAX_HISTORY_MESSAGES, 8),
+            maxOutputTokens: positiveInt(process.env.CHAT_MAX_OUTPUT_TOKENS, 450),
+            anonymousRequestsPerMinute: positiveInt(process.env.CHAT_ANONYMOUS_REQUESTS_PER_MINUTE, 5),
+            anonymousRequestsPerDay: positiveInt(process.env.CHAT_ANONYMOUS_REQUESTS_PER_DAY, 30),
+            authenticatedRequestsPerMinute: positiveInt(process.env.CHAT_USER_REQUESTS_PER_MINUTE, 10),
+            authenticatedRequestsPerDay: positiveInt(process.env.CHAT_USER_REQUESTS_PER_DAY, 100),
+            globalRequestsPerDay: positiveInt(process.env.CHAT_GLOBAL_REQUESTS_PER_DAY, 5000),
+            globalInputTokensPerDay: positiveInt(process.env.CHAT_GLOBAL_INPUT_TOKENS_PER_DAY, 2_000_000),
+            globalOutputTokensPerDay: positiveInt(process.env.CHAT_GLOBAL_OUTPUT_TOKENS_PER_DAY, 250_000),
+            maxConcurrentRequests: positiveInt(process.env.CHAT_MAX_CONCURRENT_REQUESTS, 10),
+            leaseTtlSeconds: positiveInt(process.env.CHAT_LEASE_TTL_SECONDS, 45),
         }),
         EmailPlugin.init({
             devMode: true,

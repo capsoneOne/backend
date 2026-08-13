@@ -14,7 +14,14 @@ interface PaymentStepProps {
 
 export default function PaymentStep({ onComplete }: PaymentStepProps) {
   const t = useTranslations('Checkout');
-  const { paymentMethods, selectedPaymentMethodCode, setSelectedPaymentMethodCode } = useCheckout();
+  const {
+    paymentMethods,
+    selectedPaymentMethodCode,
+    setSelectedPaymentMethodCode,
+  } = useCheckout();
+  const handlePaymentMethodChange = (code: string) => {
+    setSelectedPaymentMethodCode(code);
+  };
 
   const handleContinue = () => {
     if (!selectedPaymentMethodCode) return;
@@ -33,7 +40,7 @@ export default function PaymentStep({ onComplete }: PaymentStepProps) {
     <div className="space-y-6">
       <h3 className="font-medium">{t('selectPaymentMethod')}</h3>
 
-      <RadioGroup value={selectedPaymentMethodCode || ''} onValueChange={setSelectedPaymentMethodCode}>
+      <RadioGroup value={selectedPaymentMethodCode || ''} onValueChange={handlePaymentMethodChange}>
         {paymentMethods.map((method) => (
           <Label key={method.code} htmlFor={method.code} className="cursor-pointer">
             <Card className="gap-0 border-border p-4 transition-colors hover:border-primary/30">

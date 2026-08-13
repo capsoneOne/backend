@@ -48,7 +48,7 @@
 }
 
 /* ---------------------------------------------------------------------------
-   StyleMatch — crisp blue, quiet neutrals, and focused hierarchy.
+   Lumé — crisp blue, quiet neutrals, and focused hierarchy.
 
    A cool white canvas and ink-blue type keep the catalogue calm. Cobalt is the
    single interface accent, reserved for actions, prices, links, and focus.
@@ -296,6 +296,171 @@ html[lang="km"] p:not([class*="leading-"]) {
   50% { transform: translateY(-7px) rotate(1.5deg); }
 }
 
+@keyframes stitch-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes loading-mark-breathe {
+  0%, 100% { opacity: 0.45; transform: scale(0.82); }
+  50% { opacity: 0.9; transform: scale(1.12); }
+}
+
+@keyframes loading-orbit-one {
+  from { transform: rotate(0deg) translateX(3.5rem) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(3.5rem) rotate(-360deg); }
+}
+
+@keyframes loading-orbit-two {
+  from { transform: rotate(210deg) translateX(3.5rem) rotate(-210deg); }
+  to { transform: rotate(570deg) translateX(3.5rem) rotate(-570deg); }
+}
+
+@keyframes loading-dot {
+  0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-0.2rem); }
+}
+
+/* Keep the orbit decoration composed even when animation is disabled. */
+.loading-orbit {
+  left: calc(50% - 0.25rem);
+  top: calc(50% - 0.25rem);
+  transform-origin: 0.25rem 0.25rem;
+}
+
+.loading-orbit-one { transform: translateX(3.5rem); }
+.loading-orbit-two { transform: rotate(210deg) translateX(3.5rem); }
+
+@keyframes brand-marquee {
+  to { transform: translateX(calc(-50% - 0.375rem)); }
+}
+
+@keyframes infinite-slider-vertical {
+  to { transform: translateY(calc(-50% - 0.75rem)); }
+}
+
+@keyframes infinite-slider-horizontal {
+  to { transform: translateX(calc(-50% - 0.75rem)); }
+}
+
+.brand-marquee-window {
+  mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+}
+
+.brand-marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 0.75rem;
+  padding-inline: 0.375rem;
+  will-change: transform;
+}
+
+.brand-marquee-track:hover,
+.brand-marquee-track:focus-within {
+  animation-play-state: paused;
+}
+
+.infinite-slider-track,
+.infinite-slider-copy {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.infinite-slider[data-direction="vertical"] .infinite-slider-track,
+.infinite-slider[data-direction="vertical"] .infinite-slider-copy {
+  flex-direction: column;
+}
+
+.infinite-slider[data-direction="horizontal"] .infinite-slider-track,
+.infinite-slider[data-direction="horizontal"] .infinite-slider-copy {
+  flex-direction: row;
+  width: max-content;
+}
+
+.infinite-slider-track {
+  will-change: transform;
+}
+
+.infinite-slider:hover .infinite-slider-track,
+.infinite-slider:focus-within .infinite-slider-track {
+  animation-duration: var(--infinite-slider-hover-duration);
+}
+
+/* --- Authentication fields -------------------------------------------------
+   Each field is a `.auth-field` wrapper holding a leading icon, the control,
+   and an underline. The wrapper owns the state so the icon and underline can
+   react to focus without any JS: `:focus-within` covers the input *and* the
+   password reveal button, and `data-invalid` is mirrored from react-hook-form.
+   Transitions are safe to declare unguarded — the reduce block near the end of
+   this file collapses every duration to ~0. */
+
+@keyframes field-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Deliberately small: this fires on a validation failure, so it has to read as
+   "look here" rather than as the form breaking. */
+@keyframes field-shake {
+  20% { transform: translateX(-3px); }
+  40% { transform: translateX(3px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+}
+
+.auth-field-underline {
+  transform: scaleX(0);
+  transform-origin: center;
+  opacity: 0;
+  transition:
+    transform var(--motion-base) var(--ease-emphasized),
+    opacity var(--motion-base) var(--ease-emphasized);
+}
+
+.auth-field:focus-within .auth-field-underline {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+/* Chrome paints autofilled inputs with an opaque blue of its own that ignores
+   the theme entirely — light in dark mode, and clashing with the card surface in
+   light mode. The colour is not directly settable, but clipping that background
+   to the glyphs makes it disappear and lets the field's own surface show. This
+   is preferred over the usual `inset 0 0 0 100px` box-shadow trick, which would
+   paint over the focus ring (also a box-shadow) and kill the focus state. */
+.auth-field input:-webkit-autofill,
+.auth-field input:-webkit-autofill:hover,
+.auth-field input:-webkit-autofill:focus,
+.auth-field input:-webkit-autofill:active {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: var(--foreground);
+  caret-color: var(--foreground);
+}
+
+/* The icon is a static affordance — no transition, no movement on focus. The
+   underline carries the focus feedback on its own; animating the glyph as well
+   made the field busier than every other input in the app. Only the error
+   colour changes, and that is a state, not an animation. */
+.auth-field[data-invalid="true"] .auth-field-icon {
+  color: var(--destructive);
+}
+
+.auth-field[data-invalid="true"] .auth-field-underline {
+  background: var(--destructive);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Fields cascade in rather than appearing as a block; the per-field delay is
+     set inline from the field's index so the order matches the tab order. */
+  .animate-field-rise {
+    animation: field-rise 460ms var(--ease-emphasized) backwards;
+  }
+
+  .auth-field[data-invalid="true"] {
+    animation: field-shake 380ms var(--ease-standard);
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
@@ -329,6 +494,50 @@ html[lang="km"] p:not([class*="leading-"]) {
 
   .animate-robot-hover {
     animation: robot-hover 3s ease-in-out infinite;
+  }
+
+  .stitch-spinner {
+    animation: stitch-spin 1.1s linear infinite;
+  }
+
+  .loading-mark-glow {
+    animation: loading-mark-breathe 2.4s var(--ease-standard) infinite;
+  }
+
+  .loading-orbit-one {
+    animation: loading-orbit-one 2.8s linear infinite;
+  }
+
+  .loading-orbit-two {
+    animation: loading-orbit-two 4.2s linear infinite;
+  }
+
+  .loading-dot {
+    animation: loading-dot 1.25s ease-in-out infinite;
+  }
+
+  .loading-dot:nth-child(2) { animation-delay: 140ms; }
+  .loading-dot:nth-child(3) { animation-delay: 280ms; }
+
+  .brand-marquee-track {
+    animation: brand-marquee 58s linear infinite;
+  }
+
+  .brand-marquee-track-reverse {
+    animation-direction: reverse;
+    animation-duration: 64s;
+  }
+
+  .brand-marquee-track-slow {
+    animation-duration: 72s;
+  }
+
+  .infinite-slider[data-direction="vertical"] .infinite-slider-track {
+    animation: infinite-slider-vertical var(--infinite-slider-duration) linear infinite;
+  }
+
+  .infinite-slider[data-direction="horizontal"] .infinite-slider-track {
+    animation: infinite-slider-horizontal var(--infinite-slider-duration) linear infinite;
   }
 
   .animate-page-enter {

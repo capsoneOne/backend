@@ -2,22 +2,40 @@
 
 import {FormEvent, KeyboardEvent, PointerEvent as ReactPointerEvent, useEffect, useRef, useState} from 'react';
 import {Bot, Heart, Plus, Send, Sparkles, X} from 'lucide-react';
-import {useTranslations} from 'next-intl';
+import Link from 'next/link';
+import {useLocale, useTranslations} from 'next-intl';
 
 import {Button} from '@/components/ui/button';
 import {cn} from '@/lib/utils';
 
 type SuggestionKey = 'findStyle' | 'delivery' | 'returns';
-type ChatMessage = {id: number; role: 'assistant' | 'user'; body: string};
+type ChatProduct = {
+    productId: string;
+    name: string;
+    slug: string;
+    priceWithTax: number;
+    currencyCode: string;
+    inStock: boolean;
+};
+type ChatSource = {label: string; path: string; kind: 'policy' | 'product' | 'cart' | 'order'};
+type ChatMessage = {
+    id: number;
+    role: 'assistant' | 'user';
+    body: string;
+    products?: ChatProduct[];
+    sources?: ChatSource[];
+};
 type Position = {x: number; y: number};
 
 const ROBOT_SIZE = 80;
 const VIEWPORT_PADDING = 12;
+const CLIENT_ID_KEY = 'stylematch-chat-client-id';
 
 const suggestionKeys: SuggestionKey[] = ['findStyle', 'delivery', 'returns'];
 
 export function ChatAssistant() {
     const t = useTranslations('ChatAssistant');
+    const locale = useLocale();
     const dragHint = t.has('dragHint') ? t('dragHint') : t('open');
     const [isOpen, setIsOpen] = useState(false);
     const [draft, setDraft] = useState('');
@@ -32,7 +50,7 @@ export function ChatAssistant() {
     const launcherRef = useRef<HTMLButtonElement>(null);
     const panelRef = useRef<HTMLElement>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
-    const responseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const activeRequest = useRef<AbortController | null>(null);
     const nextId = useRef(1);
     const suppressClick = useRef(false);
     const dragState = useRef<{
@@ -103,47 +121,89 @@ export function ChatAssistant() {
         setPanelPosition({x: left, y: Math.max(VIEWPORT_PADDING, top)});
     }, [isOpen, robotPosition]);
 
-    useEffect(() => () => {
-        if (responseTimer.current) window.clearTimeout(responseTimer.current);
-    }, []);
+    useEffect(() => () => activeRequest.current?.abort(), []);
 
     const resetConversation = () => {
-        if (responseTimer.current) window.clearTimeout(responseTimer.current);
+        activeRequest.current?.abort();
+        activeRequest.current = null;
         setIsTyping(false);
         setDraft('');
         setMessages([{id: nextId.current++, role: 'assistant', body: t('welcome')}]);
         inputRef.current?.focus();
     };
 
-    const addExchange = (question: string, responseKey: SuggestionKey | 'fallback') => {
+    const addExchange = async (question: string) => {
         const cleanQuestion = question.trim();
         if (!cleanQuestion || isTyping) return;
 
+        const history = messages.map(message => ({
+            role: message.role,
+            content: message.body,
+        }));
         setMessages(current => [
             ...current,
             {id: nextId.current++, role: 'user', body: cleanQuestion},
         ]);
         setDraft('');
         setIsTyping(true);
+        const controller = new AbortController();
+        activeRequest.current = controller;
 
-        responseTimer.current = setTimeout(() => {
+        try {
+            const response = await fetch('/api/chat-assistant', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    message: cleanQuestion,
+                    history,
+                    locale,
+                    clientId: getOrCreateClientId(),
+                }),
+                signal: controller.signal,
+            });
+            if (!response.ok) {
+                const payload = await response.json().catch(() => ({})) as {code?: string};
+                throw new ChatRequestError(payload.code);
+            }
+            const result = await response.json() as {
+                answer: string;
+                products?: ChatProduct[];
+                sources?: ChatSource[];
+            };
             setMessages(current => [
                 ...current,
-                {id: nextId.current++, role: 'assistant', body: t(`responses.${responseKey}`)},
+                {
+                    id: nextId.current++,
+                    role: 'assistant',
+                    body: result.answer,
+                    products: result.products,
+                    sources: result.sources,
+                },
             ]);
+        } catch (error) {
+            if ((error as Error).name === 'AbortError') return;
+            const messageKey = error instanceof ChatRequestError
+                ? quotaMessageKey(error.code)
+                : 'error';
+            setMessages(current => [
+                ...current,
+                {id: nextId.current++, role: 'assistant', body: t(messageKey)},
+            ]);
+        } finally {
+            if (activeRequest.current === controller) activeRequest.current = null;
             setIsTyping(false);
-        }, 650);
+        }
     };
 
     const submitMessage = (event: FormEvent) => {
         event.preventDefault();
-        addExchange(draft, 'fallback');
+        void addExchange(draft);
     };
 
     const handleInputKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
-            addExchange(draft, 'fallback');
+            void addExchange(draft);
         }
     };
 
@@ -264,16 +324,48 @@ export function ChatAssistant() {
                                         <Sparkles className="size-3.5" />
                                     </div>
                                 )}
-                                <p
-                                    className={cn(
-                                        'max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm',
-                                        message.role === 'assistant'
-                                            ? 'rounded-bl-md border border-border/70 bg-muted/65 text-foreground'
-                                            : 'rounded-br-md bg-primary text-primary-foreground'
+                                <div className={cn('max-w-[82%]', message.role === 'user' && 'flex justify-end')}>
+                                    <p
+                                        className={cn(
+                                            'whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm',
+                                            message.role === 'assistant'
+                                                ? 'rounded-bl-md border border-border/70 bg-muted/65 text-foreground'
+                                                : 'rounded-br-md bg-primary text-primary-foreground'
+                                        )}
+                                    >
+                                        {message.body}
+                                    </p>
+                                    {message.role === 'assistant' && message.products && message.products.length > 0 && (
+                                        <div className="mt-2 grid gap-1.5">
+                                            {message.products.slice(0, 3).map(product => (
+                                                <Link
+                                                    key={product.productId}
+                                                    href={`/${locale}/product/${product.slug}`}
+                                                    className="flex items-center justify-between gap-3 rounded-xl border border-primary/15 bg-card px-3 py-2 text-xs transition-colors hover:border-primary/35 hover:bg-primary/5"
+                                                >
+                                                    <span className="min-w-0 truncate font-medium">{product.name}</span>
+                                                    <span className="shrink-0 text-muted-foreground">
+                                                        {formatPrice(product.priceWithTax, product.currencyCode, locale)}
+                                                    </span>
+                                                </Link>
+                                            ))}
+                                        </div>
                                     )}
-                                >
-                                    {message.body}
-                                </p>
+                                    {message.role === 'assistant' && message.sources && message.sources.length > 0 && (
+                                        <div className="mt-2 flex flex-wrap gap-x-2 gap-y-1 px-1 text-[0.625rem] text-muted-foreground">
+                                            <span>{t('sources')}:</span>
+                                            {message.sources.slice(0, 4).map(source => (
+                                                <Link
+                                                    key={`${source.kind}:${source.path}`}
+                                                    href={`/${locale}${source.path}`}
+                                                    className="underline decoration-border underline-offset-2 hover:text-foreground"
+                                                >
+                                                    {source.label}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         ))}
 
@@ -287,7 +379,7 @@ export function ChatAssistant() {
                                         <button
                                             key={key}
                                             type="button"
-                                            onClick={() => addExchange(t(`suggestions.${key}`), key)}
+                                            onClick={() => void addExchange(t(`suggestions.${key}`))}
                                             className="rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5 text-left text-xs font-medium text-primary transition-colors hover:border-primary/40 hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                         >
                                             {t(`suggestions.${key}`)}
@@ -407,4 +499,37 @@ export function ChatAssistant() {
             </div>
         </aside>
     );
+}
+
+class ChatRequestError extends Error {
+    constructor(readonly code?: string) {
+        super(`Chat request failed: ${code ?? 'UNKNOWN'}`);
+    }
+}
+
+function quotaMessageKey(code: string | undefined): 'rateLimited' | 'dailyQuota' | 'serviceBusy' | 'error' {
+    if (code === 'RATE_LIMITED' || code === 'UPSTREAM_RATE_LIMITED') return 'rateLimited';
+    if (code === 'DAILY_QUOTA_EXCEEDED') return 'dailyQuota';
+    if (code === 'SERVICE_BUSY') return 'serviceBusy';
+    return 'error';
+}
+
+function getOrCreateClientId(): string | undefined {
+    try {
+        const existing = window.localStorage.getItem(CLIENT_ID_KEY);
+        if (existing && /^[a-zA-Z0-9_-]{16,128}$/.test(existing)) return existing;
+        const created = globalThis.crypto.randomUUID();
+        window.localStorage.setItem(CLIENT_ID_KEY, created);
+        return created;
+    } catch {
+        return undefined;
+    }
+}
+
+function formatPrice(value: number, currencyCode: string, locale: string): string {
+    try {
+        return new Intl.NumberFormat(locale, {style: 'currency', currency: currencyCode}).format(value / 100);
+    } catch {
+        return `${(value / 100).toFixed(2)} ${currencyCode}`;
+    }
 }

@@ -17,6 +17,7 @@ export async function NavbarUser() {
                 firstName: customer.firstName,
                 lastName: customer.lastName,
                 emailAddress: customer.emailAddress,
+                avatarKey: customer.customFields?.avatarKey,
             } : null}
             labels={{
                 profile: t('profile'),

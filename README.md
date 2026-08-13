@@ -41,6 +41,14 @@ npm run dev:storefront
 - **Admin GraphQL API**: http://localhost:3000/admin-api
 - **Storefront**: http://localhost:3001
 
+### AI shopping assistant
+
+Set `OPENAI_API_KEY` in `apps/server/.env`, then start the normal development
+stack. The floating StyleMatch assistant retrieves live catalog data, store policy
+passages, and the signed-in customer's active cart before generating each answer.
+See [the RAG chat assistant guide](docs/chat-assistant.md) for configuration and
+the API contract.
+
 ### Admin Credentials
 
 Use these credentials to log in to the Vendure Dashboard:

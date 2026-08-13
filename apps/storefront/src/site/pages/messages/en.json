@@ -1,16 +1,16 @@
 {
   "Pages": {
     "about": {
-      "title": "About StyleMatch",
-      "lede": "A complete clothing storefront for browsing everyday essentials, seasonal collections, shoes, and accessories in one place.",
+      "title": "About Lumé",
+      "lede": "A multi-category marketplace for discovering useful products across technology, fashion, beauty, home, sport, and more.",
       "sections": [
         {
-          "heading": "A complete fashion storefront",
-          "body": "StyleMatch brings clothing, shoes, and accessories into one multi-category catalogue. You can browse collections, filter by product details and price, save favourites, manage a basket, and move through checkout like any modern clothing shop."
+          "heading": "One complete marketplace",
+          "body": "Lumé brings products from every part of daily life into one searchable catalogue. Browse categories, filter by product details and price, save favourites, manage a cart, and move through one consistent checkout."
         },
         {
-          "heading": "Built for everyday style",
-          "body": "The catalogue is organised around how people actually shop for clothes: clear categories, useful filters, new-arrival edits, sale collections, product options, and stock-aware purchasing."
+          "heading": "Built around how people shop",
+          "body": "The catalogue is organised around clear departments and useful subcategories, with relevant filters, new arrivals, featured products, product options, and stock-aware purchasing."
         },
         {
           "heading": "The catalogue",
@@ -22,13 +22,13 @@
         },
         {
           "heading": "This is a student project",
-          "body": "StyleMatch is a capstone project, not a live retailer. Orders placed here are processed against a test payment handler, no money changes hands, and nothing ships. Treat any product, price or delivery estimate on the site as sample data."
+          "body": "Lumé is a capstone project, not a live retailer. Checkout uses Stripe and should remain in Stripe test mode while the catalogue and fulfilment data are samples. Nothing ships from this project."
         }
       ]
     },
     "contact": {
       "title": "Contact",
-      "lede": "Questions about an order, delivery, returns, sizing, or a product in the catalogue.",
+      "lede": "Questions about an order, delivery, returns, compatibility, sizing, or any product in the catalogue.",
       "sections": [
         {
           "heading": "Order and account questions",
@@ -36,11 +36,11 @@
         },
         {
           "heading": "Product questions",
-          "body": "Sizing, materials and compatibility details live on each product page. If what you need is not there, ask before ordering rather than after — it is much easier to answer a question than to process a return."
+          "body": "Specifications, dimensions, materials, sizing, and compatibility details live on each product page when relevant. If what you need is missing, ask before ordering rather than after."
         },
         {
-          "heading": "Sizing and fit questions",
-          "body": "Check the available options and product details before ordering. If a measurement, material, or fit note is missing, include the product name and variant when you get in touch."
+          "heading": "Product detail questions",
+          "body": "Check the available options and product details before ordering. If a measurement, material, compatibility note, or other specification is missing, include the product name and variant when you get in touch."
         },
         {
           "heading": "Response times",
@@ -92,7 +92,7 @@
         },
         {
           "heading": "Who else sees your data",
-          "body": "Order and account data is held in this project's own database. It is not sold, and it is not shared with third parties for marketing. Email delivery and hosting providers process data strictly to run the service."
+          "body": "Order and account data is held in this project's own database. Stripe processes payment details directly and returns payment status; the storefront never receives a full card number or security code. Data is not sold or shared with third parties for marketing."
         },
         {
           "heading": "How long it is kept",
@@ -110,7 +110,7 @@
       "sections": [
         {
           "heading": "About this service",
-          "body": "StyleMatch is a student capstone project operated for educational purposes. It is not a commercial retailer. Products, prices, stock levels and delivery estimates shown on the site are sample data, and orders placed here are processed against a test payment handler — no money is taken and no goods are dispatched."
+          "body": "Lumé is a student capstone project operated for educational purposes, not a commercial retailer. Products, prices, stock and delivery estimates are sample data. Stripe checkout must remain in test mode unless the project is deliberately converted into an operational store with real fulfilment and policies."
         },
         {
           "heading": "Accounts",
@@ -139,16 +139,16 @@
       "lede": "Answers to the questions that come up most often.",
       "faq": [
         {
-          "question": "How do I choose the right size?",
-          "answer": "Check the available size options and product details on each item before adding it to your basket. When measurements are listed, compare them with a similar piece you already own rather than relying only on the size name."
+          "question": "How do I choose the right product option?",
+          "answer": "Check every available option and the product details before adding an item to your cart. For clothing, compare listed measurements; for other products, confirm dimensions, compatibility, colour, capacity, or model as relevant."
         },
         {
-          "question": "How can I browse different clothing categories?",
+          "question": "How can I browse different product categories?",
           "answer": "Open Collections from the navigation to browse the full category structure, or use the category cards on the homepage. Each collection can include more specific subcategories to narrow the catalogue."
         },
         {
           "question": "How does the wishlist work?",
-          "answer": "Use the heart button on a product to add it to your wishlist. Your wishlist keeps products together while you compare styles, colours, and prices before deciding what belongs in your basket."
+          "answer": "Use the heart button on a product to add it to your wishlist. Your wishlist keeps products together while you compare features, options, and prices before deciding what belongs in your cart."
         },
         {
           "question": "What are your shipping options?",
@@ -168,7 +168,7 @@
         },
         {
           "question": "Is this a real shop?",
-          "answer": "No. StyleMatch is a student capstone project. Orders run against a test payment handler, no money is taken, and nothing is dispatched. Treat the products, prices and delivery estimates as sample data."
+          "answer": "No. Lumé is a student capstone project with sample products and fulfilment data. Stripe checkout should use test mode, and nothing is dispatched."
         }
       ]
     }

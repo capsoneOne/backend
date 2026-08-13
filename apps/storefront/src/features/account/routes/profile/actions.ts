@@ -4,6 +4,7 @@ import {mutate} from '@/platform/vendure/api';
 import {UpdateCustomerPasswordMutation, UpdateCustomerMutation, RequestUpdateCustomerEmailAddressMutation} from '@/features/account/graphql';
 import {revalidatePath} from 'next/cache';
 import {getLocale, getTranslations} from 'next-intl/server';
+import {isAvatarKey} from '@/features/account/avatars';
 
 export async function updatePasswordAction(prevState: { error?: string; success?: boolean } | undefined, formData: FormData) {
     const t = await getTranslations('Errors');
@@ -69,6 +70,34 @@ export async function updateCustomerAction(prevState: { error?: string; success?
         return {success: true};
     } catch {
         return {error: t('unexpectedError')};
+    }
+}
+
+export async function updateAvatarAction(
+    prevState: {error?: string; success?: boolean} | undefined,
+    formData: FormData,
+) {
+    const t = await getTranslations('Account');
+    const avatarKey = formData.get('avatarKey');
+
+    if (!isAvatarKey(avatarKey)) {
+        return {error: t('avatarInvalid')};
+    }
+
+    try {
+        const result = await mutate(UpdateCustomerMutation, {
+            input: {customFields: {avatarKey}},
+        }, {useAuthToken: true});
+
+        if (!result.data.updateCustomer?.id) {
+            return {error: t('avatarUpdateFailed')};
+        }
+
+        const locale = await getLocale();
+        revalidatePath(`/${locale}`, 'layout');
+        return {success: true};
+    } catch {
+        return {error: t('avatarUpdateFailed')};
     }
 }
 

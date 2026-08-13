@@ -2,10 +2,11 @@
 
 ## Direction
 
-StyleMatch uses a restrained, clothing-first visual language: cool white and
-soft blue surfaces, cobalt actions, ink-blue text, generous white space, and
-product photography as the strongest visual element. Visual search follows the
-same system and does not introduce a separate product identity.
+StyleMatch uses a restrained, category-neutral marketplace language: cool white
+and soft blue surfaces, cobalt actions, ink-blue text, generous white space, and
+product photography as the strongest visual element. No single department owns
+the brand identity. Visual search follows the same system and does not introduce
+a separate product identity.
 
 ## Core tokens
 
@@ -82,7 +83,7 @@ same system and does not introduce a separate product identity.
 ## Product-listing pages
 
 - `/search` is the canonical **Shop all** route; adding `?q=` changes the heading and results, not the page structure.
-- Keep text autocomplete and camera upload in the global search bar. The bar may include one lightweight category scope selector; detailed stock, size, colour, price, and availability filters stay in the listing-page rail or mobile filter drawer.
+- Keep text autocomplete and camera upload in the global search bar. The bar may include one lightweight category scope selector; department-specific facets, stock, price, and availability filters stay in the listing-page rail or mobile filter drawer.
 - Global search uses the shared `rounded-xl` control shape at 44px high. It has one clear action, one separated camera action, and a compact border-first results panel; never show both a browser-native clear button and a custom clear button.
 - Category scope uses one quiet selected-value trigger and a hierarchical menu: **All products**, then each parent category with an **All [category]** option followed by its subcategories. Do not use the browser-native select appearance or repeat a category name as both a group label and an identical option.
 - Desktop listing pages use one shared left rail: category links first, then stock and product-facet filters.
@@ -110,8 +111,8 @@ same system and does not introduce a separate product identity.
 ## Catalogue taxonomy
 
 - **Featured** is an editorial collection, not a product category. It may power home merchandising and `/featured`, but it does not appear inside category lists or filters.
-- Top-level categories use product-type groupings: **Clothing**, **Shoes**, and **Accessories**.
-- Subcategories stay task-focused and scannable: Jackets and Rainwear; Sneakers and Boots; Bags, Eyewear, and Scarves.
+- Top-level categories are broad marketplace departments such as **Technology**, **Fashion**, **Beauty**, **Home & Living**, and **Sports & Outdoors**. The storefront renders the taxonomy from Vendure rather than hard-coding a fixed department list.
+- Subcategories stay task-focused, mutually understandable, and scannable. Department menus must scroll or reflow safely as the catalogue expands.
 - Every category has a concise description, a representative product image, a working product filter, and a stable `/collection/[slug]` destination.
 
 ## Accessibility

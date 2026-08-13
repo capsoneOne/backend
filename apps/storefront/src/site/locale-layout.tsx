@@ -15,6 +15,11 @@ import {WishlistProvider} from "@/features/wishlist/wishlist-context";
 import {SITE_NAME, SITE_URL} from "@/config/metadata";
 import {ChatAssistant} from '@/site/chat-assistant/chat-assistant';
 
+// Locale messages and shared storefront chrome resolve at request time. Until
+// they move behind smaller streaming boundaries, this layout is intentionally
+// allowed to block instead of failing Next.js static-shell validation.
+export const instant = false;
+
 // Ubuntu has no 600. Loading 300/400/500/700 explicitly keeps the browser from
 // synthesising a semibold, which is what makes Ubuntu look smeared in headings.
 const ubuntu = Ubuntu({

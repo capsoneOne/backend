@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Field, FieldLabel, FieldError, FieldGroup } from '@/components/ui/field';
 import { useForm, Controller } from 'react-hook-form';
-import { Loader2 } from 'lucide-react';
+import { Loader2, MapPinned, UserRound } from 'lucide-react';
 import { CountrySelect } from '@/components/ui/country-select';
 import {useTranslations} from 'next-intl';
 import {AddressLocationPicker, type ResolvedMapAddress} from './address-location-picker';
@@ -48,10 +48,12 @@ interface AddressFormProps {
   onSubmit: (data: AddressFormData & { id?: string }) => Promise<void>;
   onCancel: () => void;
   isSubmitting: boolean;
+  submitError?: string | null;
 }
 
-export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitting }: AddressFormProps) {
+export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitting, submitError }: AddressFormProps) {
   const t = useTranslations('Account');
+  const onlyCountry = countries.length === 1 ? countries[0] : null;
   const { register, handleSubmit, formState: { errors }, control, setValue } = useForm<AddressFormData>({
     defaultValues: address ? {
       fullName: address.fullName || '',
@@ -64,7 +66,7 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
       countryCode: address.country.code,
       phoneNumber: address.phoneNumber || '',
     } : {
-      countryCode: countries[0]?.code || 'US',
+      countryCode: countries[0]?.code || 'KH',
     }
   });
 
@@ -85,110 +87,131 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)}>
-      <FieldGroup className="my-6">
-        <div className="grid grid-cols-2 gap-4">
-          <AddressLocationPicker onAddressResolved={applyMapAddress} disabled={isSubmitting}/>
-
-          <Field className="col-span-2">
-            <FieldLabel htmlFor="fullName">{t('fullName')}</FieldLabel>
-            <Input
-              id="fullName"
-              {...register('fullName', { required: t('fullNameRequired') })}
-              disabled={isSubmitting}
-            />
-            <FieldError>{errors.fullName?.message}</FieldError>
-          </Field>
-
-          <Field className="col-span-2">
-            <FieldLabel htmlFor="company">{t('company')}</FieldLabel>
-            <Input id="company" {...register('company')} disabled={isSubmitting} />
-          </Field>
-
-          <Field className="col-span-2">
-            <FieldLabel htmlFor="streetLine1">{t('streetAddress')}</FieldLabel>
-            <Input
-              id="streetLine1"
-              {...register('streetLine1', { required: t('streetRequired') })}
-              disabled={isSubmitting}
-            />
-            <FieldError>{errors.streetLine1?.message}</FieldError>
-          </Field>
-
-          <Field className="col-span-2">
-            <FieldLabel htmlFor="streetLine2">{t('apartment')}</FieldLabel>
-            <Input id="streetLine2" {...register('streetLine2')} disabled={isSubmitting} />
-          </Field>
-
-          <Field>
-            <FieldLabel htmlFor="city">{t('city')}</FieldLabel>
-            <Input
-              id="city"
-              {...register('city', { required: t('cityRequired') })}
-              disabled={isSubmitting}
-            />
-            <FieldError>{errors.city?.message}</FieldError>
-          </Field>
-
-          <Field>
-            <FieldLabel htmlFor="province">{t('stateProvince')}</FieldLabel>
-            <Input
-              id="province"
-              {...register('province', { required: t('stateProvinceRequired') })}
-              disabled={isSubmitting}
-            />
-            <FieldError>{errors.province?.message}</FieldError>
-          </Field>
-
-          <Field>
-            <FieldLabel htmlFor="postalCode">{t('postalCode')}</FieldLabel>
-            <Input
-              id="postalCode"
-              {...register('postalCode', { required: t('postalCodeRequired') })}
-              disabled={isSubmitting}
-            />
-            <FieldError>{errors.postalCode?.message}</FieldError>
-          </Field>
-
-          <Field>
-            <FieldLabel htmlFor="countryCode">{t('country')}</FieldLabel>
-            <Controller
-              name="countryCode"
-              control={control}
-              rules={{ required: t('countryRequired') }}
-              render={({ field }) => (
-                <CountrySelect
-                  countries={countries}
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  disabled={isSubmitting}
-                />
-              )}
-            />
-            <FieldError>{errors.countryCode?.message}</FieldError>
-          </Field>
-
-          <Field className="col-span-2">
-            <FieldLabel htmlFor="phoneNumber">{t('phoneNumberField')}</FieldLabel>
-            <Input
-              id="phoneNumber"
-              type="tel"
-              {...register('phoneNumber', { required: t('phoneRequired') })}
-              disabled={isSubmitting}
-            />
-            <FieldError>{errors.phoneNumber?.message}</FieldError>
-          </Field>
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="flex min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="min-h-0 flex-1 overflow-y-auto lg:grid lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:overflow-hidden">
+        <div className="border-b border-border bg-secondary/15 p-4 sm:p-5 lg:min-h-0 lg:border-b-0 lg:border-r">
+          <AddressLocationPicker
+            onAddressResolved={applyMapAddress}
+            allowedCountryCodes={countries.map(country => country.code)}
+            disabled={isSubmitting}
+          />
         </div>
-      </FieldGroup>
 
-      <div className="flex justify-end gap-3">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting} className="min-h-11 px-4">
-          {t('cancel')}
-        </Button>
-        <Button type="submit" disabled={isSubmitting} className="min-h-11 px-5">
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {address ? t('updateAddress') : t('saveAddress')}
-        </Button>
+        <div className="p-5 sm:p-6 lg:overflow-y-auto lg:[scrollbar-gutter:stable]">
+          <FieldGroup className="gap-5">
+            <section aria-labelledby="recipient-details-title">
+              <div className="mb-3 flex items-start gap-3">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
+                  <UserRound className="size-4" aria-hidden="true"/>
+                </span>
+                <div>
+                  <h3 id="recipient-details-title" className="font-semibold">{t('recipientDetails')}</h3>
+                  <p className="mt-0.5 text-sm text-muted-foreground">{t('recipientDetailsDescription')}</p>
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field>
+                  <FieldLabel htmlFor="fullName">{t('fullName')}</FieldLabel>
+                  <Input id="fullName" autoComplete="name" {...register('fullName', { required: t('fullNameRequired') })} disabled={isSubmitting}/>
+                  <FieldError>{errors.fullName?.message}</FieldError>
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="phoneNumber">{t('phoneNumberField')}</FieldLabel>
+                  <Input id="phoneNumber" type="tel" inputMode="tel" autoComplete="tel" {...register('phoneNumber', { required: t('phoneRequired') })} disabled={isSubmitting}/>
+                  <FieldError>{errors.phoneNumber?.message}</FieldError>
+                </Field>
+                <Field className="sm:col-span-2">
+                  <FieldLabel htmlFor="company">{t('companyOptional')}</FieldLabel>
+                  <Input id="company" autoComplete="organization" {...register('company')} disabled={isSubmitting}/>
+                </Field>
+              </div>
+            </section>
+
+            <div className="h-px bg-border"/>
+
+            <section aria-labelledby="delivery-details-title">
+              <div className="mb-3 flex items-start gap-3">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
+                  <MapPinned className="size-4" aria-hidden="true"/>
+                </span>
+                <div>
+                  <h3 id="delivery-details-title" className="font-semibold">{t('deliveryAddressDetails')}</h3>
+                  <p className="mt-0.5 text-sm text-muted-foreground">{t('deliveryAddressDetailsDescription')}</p>
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field className="sm:col-span-2">
+                  <FieldLabel htmlFor="streetLine1">{t('streetAddress')}</FieldLabel>
+                  <Input id="streetLine1" autoComplete="address-line1" {...register('streetLine1', { required: t('streetRequired') })} disabled={isSubmitting}/>
+                  <FieldError>{errors.streetLine1?.message}</FieldError>
+                </Field>
+                <Field className="sm:col-span-2">
+                  <FieldLabel htmlFor="streetLine2">{t('apartment')}</FieldLabel>
+                  <Input id="streetLine2" autoComplete="address-line2" {...register('streetLine2')} disabled={isSubmitting}/>
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="city">{t('city')}</FieldLabel>
+                  <Input id="city" autoComplete="address-level2" {...register('city', { required: t('cityRequired') })} disabled={isSubmitting}/>
+                  <FieldError>{errors.city?.message}</FieldError>
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="province">{t('stateProvince')}</FieldLabel>
+                  <Input id="province" autoComplete="address-level1" {...register('province', { required: t('stateProvinceRequired') })} disabled={isSubmitting}/>
+                  <FieldError>{errors.province?.message}</FieldError>
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="postalCode">{t('postalCode')}</FieldLabel>
+                  <Input id="postalCode" inputMode="numeric" autoComplete="postal-code" {...register('postalCode', { required: t('postalCodeRequired') })} disabled={isSubmitting}/>
+                  <FieldError>{errors.postalCode?.message}</FieldError>
+                </Field>
+                {onlyCountry ? (
+                  <Field>
+                    <FieldLabel htmlFor="countryDisplay">{t('country')}</FieldLabel>
+                    <input type="hidden" {...register('countryCode', {required: true})}/>
+                    <Input
+                      id="countryDisplay"
+                      value={onlyCountry.name}
+                      readOnly
+                      aria-readonly="true"
+                      className="bg-muted/40 text-foreground"
+                    />
+                  </Field>
+                ) : (
+                  <Field>
+                    <FieldLabel htmlFor="countryCode">{t('country')}</FieldLabel>
+                    <Controller
+                      name="countryCode"
+                      control={control}
+                      rules={{ required: t('countryRequired') }}
+                      render={({ field }) => (
+                        <CountrySelect countries={countries} value={field.value} onValueChange={field.onChange} disabled={isSubmitting}/>
+                      )}
+                    />
+                    <FieldError>{errors.countryCode?.message}</FieldError>
+                  </Field>
+                )}
+              </div>
+            </section>
+          </FieldGroup>
+        </div>
+      </div>
+
+      <div className="border-t border-border bg-background/95 px-5 py-4 backdrop-blur sm:px-6">
+        {submitError && <p role="alert" className="mb-3 text-sm font-medium text-destructive">{submitError}</p>}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs text-muted-foreground">{t('requiredFieldsHint')}</p>
+          <div className="flex gap-3">
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting} className="min-h-11 flex-1 px-5 sm:flex-none">
+              {t('cancel')}
+            </Button>
+            <Button type="submit" disabled={isSubmitting} className="min-h-11 flex-1 px-6 sm:flex-none">
+              {isSubmitting && <Loader2 className="size-4 animate-spin" aria-hidden="true"/>}
+              {address ? t('updateAddress') : t('saveAddress')}
+            </Button>
+          </div>
+        </div>
       </div>
     </form>
   );
