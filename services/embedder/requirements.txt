@@ -12,5 +12,21 @@ pytest==8.3.4
 httpx==0.28.1
 
 # --- Model dependencies ------------------------------------------------------
-# The modelling side adds its own here (torch, transformers, open_clip, ...).
 # Pin exact versions: a library upgrade that changes numerics is a REVISION bump.
+#
+# torch/torchvision versions are a matched pair — torchvision links against a specific
+# torch ABI, and a mismatch fails at import, not at install.
+#
+# NOTE FOR x86_64 DEPLOYS (Hugging Face Spaces): plain `torch` from PyPI pulls ~2.5 GB
+# of CUDA runtime on x86_64, which will not fit a free Space. Install from the CPU index
+# there: pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision
+# On linux/aarch64 (this Docker image on Apple Silicon) the PyPI wheel is already
+# CPU-only, so no extra index is needed locally.
+torch==2.5.1
+torchvision==0.20.1
+
+# The fine-tune ships in open_clip format — app/model_openclip.py.
+open_clip_torch==2.29.0
+
+# Stock OpenAI CLIP via transformers — app/model_clip.py, kept as an eval baseline.
+transformers==4.47.1

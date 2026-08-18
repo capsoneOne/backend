@@ -13,9 +13,25 @@ import { EmbedderHealth, EmbedResponse, EmbedResultItem, VisualSearchPluginOptio
  *
  * See docs/embedding-service-contract.md.
  */
+/**
+ * How long a cached /health response stays trusted.
+ *
+ * The revision it carries is stamped onto every vector written, so a stale cache is
+ * not a performance detail — it is silent index corruption. Swap the embedder to a
+ * different model without restarting Vendure and, with an unbounded cache, every row
+ * written afterwards claims the OLD revision while holding the NEW model's vector.
+ * Nothing errors; search simply starts mixing two incomparable spaces.
+ *
+ * A minute is short enough that a model swap self-heals before a reindex can do real
+ * damage, and long enough that per-product indexing is not making an extra HTTP call
+ * per job. Reindexes additionally force a refresh up front — see refreshHealth().
+ */
+const HEALTH_TTL_MS = 60_000;
+
 @Injectable()
 export class EmbedderService implements OnApplicationBootstrap {
     private health: EmbedderHealth | undefined;
+    private healthFetchedAt = 0;
 
     constructor(
         @Inject(VISUAL_SEARCH_PLUGIN_OPTIONS)
@@ -55,12 +71,39 @@ export class EmbedderService implements OnApplicationBootstrap {
     }
 
     async getHealth(force = false): Promise<EmbedderHealth> {
-        if (this.health && !force) {
+        const fresh = Date.now() - this.healthFetchedAt < HEALTH_TTL_MS;
+        if (this.health && fresh && !force) {
             return this.health;
         }
         const res = await this.fetch('/health', undefined, 'GET');
-        this.health = (await res.json()) as EmbedderHealth;
+        const next = (await res.json()) as EmbedderHealth;
+
+        // A revision change under a running server means someone swapped the model.
+        // Say so loudly: every vector written before this moment claims the old
+        // revision, and search filters on revision, so they have just become invisible.
+        if (this.health && this.health.revision !== next.revision) {
+            Logger.warn(
+                `Embedder revision changed under a running server: ` +
+                    `${this.health.revision} -> ${next.revision} (${next.model_id}). ` +
+                    'Existing vectors are now stale and excluded from search. Reindex.',
+                loggerCtx,
+            );
+        }
+
+        this.health = next;
+        this.healthFetchedAt = Date.now();
         return this.health;
+    }
+
+    /**
+     * Force a fresh /health read and return the revision.
+     *
+     * Called at the start of a reindex. A reindex is the one operation that writes
+     * thousands of revision-stamped rows, so it is worth one HTTP call to be certain
+     * the stamp matches the model that is actually about to do the work.
+     */
+    async refreshHealth(): Promise<EmbedderHealth> {
+        return this.getHealth(true);
     }
 
     /** Current embedder revision — stamped on every row written, and the staleness key. */

@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 350" width="1440" height="700" font-family="Inter, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="ai" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#1B1F27"/>
+    </marker>
+    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#0F6E66"/>
+    </marker>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#9C4A22"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="720" height="350" fill="#FFFFFF"/>
+  <text x="20" y="26" font-size="13" font-weight="700" fill="#1B1F27">System architecture — entities and how they communicate</text>
+
+  <rect x="176" y="52" width="266" height="80" rx="7" fill="none" stroke="#D6DBE3" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="182" y="146" font-size="10" fill="#5B6472">one deployable — server + worker</text>
+
+  <rect x="20" y="68" width="130" height="48" rx="5" fill="#FFFFFF" stroke="#1B1F27" stroke-width="1.4"/>
+  <text x="85" y="90" font-size="12.5" font-weight="600" fill="#1B1F27" text-anchor="middle">Storefront</text>
+  <text x="85" y="105" font-size="10" fill="#5B6472" text-anchor="middle">Next.js :3001</text>
+
+  <rect x="188" y="66" width="112" height="48" rx="5" fill="#FFFFFF" stroke="#1B1F27" stroke-width="1.4"/>
+  <text x="244" y="88" font-size="12" font-weight="600" fill="#1B1F27" text-anchor="middle">Vendure Server</text>
+  <text x="244" y="103" font-size="10" fill="#5B6472" text-anchor="middle">:3000</text>
+
+  <rect x="318" y="66" width="112" height="48" rx="5" fill="#FFFFFF" stroke="#1B1F27" stroke-width="1.4"/>
+  <text x="374" y="88" font-size="12" font-weight="600" fill="#1B1F27" text-anchor="middle">Vendure Worker</text>
+  <text x="374" y="103" font-size="10" fill="#5B6472" text-anchor="middle">job queue</text>
+
+  <rect x="248" y="192" width="132" height="48" rx="5" fill="#FFFFFF" stroke="#1B1F27" stroke-width="1.4"/>
+  <text x="314" y="214" font-size="12.5" font-weight="600" fill="#1B1F27" text-anchor="middle">Postgres</text>
+  <text x="314" y="229" font-size="10" fill="#5B6472" text-anchor="middle">pgvector · HNSW</text>
+
+  <rect x="508" y="66" width="140" height="48" rx="5" fill="#FFFFFF" stroke="#1B1F27" stroke-width="1.4"/>
+  <text x="578" y="88" font-size="12.5" font-weight="600" fill="#1B1F27" text-anchor="middle">Embedder</text>
+  <text x="578" y="103" font-size="10" fill="#5B6472" text-anchor="middle">FastAPI :8100</text>
+
+  <rect x="508" y="174" width="140" height="48" rx="5" fill="#FFFFFF" stroke="#1B1F27" stroke-width="1.4"/>
+  <text x="578" y="196" font-size="12.5" font-weight="600" fill="#1B1F27" text-anchor="middle">Cloudflare R2</text>
+  <text x="578" y="211" font-size="10" fill="#5B6472" text-anchor="middle">source + preview</text>
+
+  <rect x="508" y="276" width="140" height="48" rx="5" fill="#FFFFFF" stroke="#1B1F27" stroke-width="1.4"/>
+  <text x="578" y="298" font-size="12.5" font-weight="600" fill="#1B1F27" text-anchor="middle">Hugging Face</text>
+  <text x="578" y="313" font-size="10" fill="#5B6472" text-anchor="middle">model weights</text>
+
+  <line x1="150" y1="90" x2="184" y2="90" stroke="#1B1F27" stroke-width="1.3" marker-end="url(#ai)"/>
+  <text x="167" y="82" font-size="10.5" fill="#5B6472" text-anchor="middle">GraphQL</text>
+
+  <polyline points="244,66 244,42 566,42 566,64" fill="none" stroke="#9C4A22" stroke-width="1.3" marker-end="url(#ar)"/>
+  <text x="405" y="37" font-size="10.5" fill="#9C4A22" text-anchor="middle">query · 1 image</text>
+
+  <line x1="430" y1="86" x2="504" y2="86" stroke="#0F6E66" stroke-width="1.3" marker-end="url(#ag)"/>
+  <text x="467" y="78" font-size="10.5" fill="#0F6E66" text-anchor="middle">index · 32</text>
+
+  <line x1="430" y1="104" x2="504" y2="186" stroke="#0F6E66" stroke-width="1.3" marker-end="url(#ag)"/>
+  <text x="488" y="138" font-size="10.5" fill="#0F6E66" text-anchor="middle">source bytes</text>
+
+  <line x1="238" y1="114" x2="282" y2="190" stroke="#1B1F27" stroke-width="1.3" marker-end="url(#ai)"/>
+  <text x="228" y="160" font-size="10.5" fill="#5B6472" text-anchor="end">enqueue</text>
+
+  <line x1="374" y1="114" x2="346" y2="190" stroke="#1B1F27" stroke-width="1.3" marker-end="url(#ai)"/>
+  <text x="392" y="160" font-size="10.5" fill="#5B6472">poll · write vectors</text>
+
+  <polyline points="648,90 678,90 678,300 652,300" fill="none" stroke="#1B1F27" stroke-width="1.3" marker-end="url(#ai)"/>
+  <text x="694" y="198" font-size="10.5" fill="#5B6472" text-anchor="middle" transform="rotate(90 694 198)">weights, first load</text>
+
+  <polyline points="85,116 85,336 578,336 578,226" fill="none" stroke="#1B1F27" stroke-width="1.3" marker-end="url(#ai)"/>
+  <text x="330" y="330" font-size="10.5" fill="#5B6472" text-anchor="middle">product images, straight from the bucket</text>
+</svg>

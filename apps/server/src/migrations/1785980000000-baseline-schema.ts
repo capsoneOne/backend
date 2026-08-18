@@ -16,15 +16,49 @@ import {MigrationInterface, QueryRunner} from "typeorm";
  * AddVisualSearch1785990000000, which creates it as `vector(512)` — hence the timestamp
  * here is earlier, so this migration always runs first.
  *
- * An existing database that was built with `synchronize: true` should record this
- * migration as already applied rather than run it:
- *
- *     INSERT INTO migrations (timestamp, name)
- *     VALUES (1785980000000, 'BaselineSchema1785980000000');
+ * An existing database built with `synchronize: true` needs no manual step: `up()`
+ * detects that the schema is already there, logs, and returns without running, which
+ * makes TypeORM record the migration as applied. The old manual workaround
+ * (`INSERT INTO migrations ...`) is no longer required.
  */
 export class BaselineSchema1785980000000 implements MigrationInterface {
 
    public async up(queryRunner: QueryRunner): Promise<any> {
+        // Self-heal for databases that predate this migration.
+        //
+        // The Vendure scaffold builds its schema with `synchronize` on first run, so an
+        // existing checkout has all 91 tables but no row in `migrations`. Without this
+        // guard every boot fails with `relation "collection_asset" already exists` — an
+        // error whose text gives no hint that the fix is to record the migration as
+        // applied rather than run it.
+        //
+        // TypeORM writes the `migrations` row whenever `up()` resolves, so returning
+        // early here produces exactly the same end state as inserting that row by hand.
+        if (await queryRunner.hasTable('product')) {
+            // A half-built schema must not be silently accepted: recording the baseline
+            // as applied would strand the missing tables with no way to notice.
+            const probes = ['collection_asset', 'facet_value', 'order_line', 'session', 'zone'];
+            const absent: string[] = [];
+            for (const table of probes) {
+                if (!(await queryRunner.hasTable(table))) {
+                    absent.push(table);
+                }
+            }
+            if (absent.length > 0) {
+                throw new Error(
+                    `BaselineSchema: the database is partially built — "product" exists but ` +
+                        `${absent.join(', ')} ${absent.length === 1 ? 'is' : 'are'} missing. ` +
+                        'Refusing to record this migration as applied. Drop the database and ' +
+                        'let migrations rebuild it, or restore the missing tables by hand.',
+                );
+            }
+            // eslint-disable-next-line no-console
+            console.log(
+                '[BaselineSchema] core schema already present — recorded as applied without running.',
+            );
+            return;
+        }
+
         await queryRunner.query(`CREATE TABLE "collection_asset" ("createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "assetId" integer NOT NULL, "position" integer NOT NULL, "collectionId" integer NOT NULL, "id" SERIAL NOT NULL, CONSTRAINT "PK_a2adab6fd086adfb7858f1f110c" PRIMARY KEY ("id"))`, undefined);
         await queryRunner.query(`CREATE INDEX "IDX_51da53b26522dc0525762d2de8" ON "collection_asset" ("assetId") `, undefined);
         await queryRunner.query(`CREATE INDEX "IDX_1ed9e48dfbf74b5fcbb35d3d68" ON "collection_asset" ("collectionId") `, undefined);

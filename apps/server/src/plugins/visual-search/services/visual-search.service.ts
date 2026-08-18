@@ -13,6 +13,7 @@ import {
     TransactionalConnection,
     Translated,
 } from '@vendure/core';
+import { In } from 'typeorm';
 
 import { EMBEDDING_DIM, INDEX_PRODUCT_QUEUE, loggerCtx } from '../constants';
 import { ProductAssetEmbedding } from '../entities/product-asset-embedding.entity';
@@ -26,9 +27,22 @@ export interface VisualSearchHit {
     assetId: ID;
 }
 
+/**
+ * Products per index job.
+ *
+ * Matched to the embedder's own per-request cap (32), so one job becomes one HTTP call
+ * for a catalogue with one photo per product. Larger would just be re-chunked inside
+ * EmbedderService while making each job's failure blast radius bigger — a job retries
+ * as a unit, so 32 is also the most work a transient embedder error can cost.
+ */
+const INDEX_BATCH_SIZE = 32;
+
+/** Accepts the batch shape and the pre-batch single-product shape jobs may still hold. */
+type IndexJobData = { productIds?: ID[]; productId?: ID };
+
 @Injectable()
 export class VisualSearchService implements OnModuleInit {
-    private indexQueue: JobQueue<{ productId: ID }>;
+    private indexQueue: JobQueue<IndexJobData>;
 
     constructor(
         private connection: TransactionalConnection,
@@ -41,22 +55,30 @@ export class VisualSearchService implements OnModuleInit {
     ) {}
 
     async onModuleInit(): Promise<void> {
-        this.indexQueue = await this.jobQueueService.createQueue<{ productId: ID }>({
+        this.indexQueue = await this.jobQueueService.createQueue<IndexJobData>({
             name: INDEX_PRODUCT_QUEUE,
             process: async job => {
                 // NOT RequestContext.empty() — that context carries no channel, so
                 // channel-scoped lookups like productService.findOne() return undefined
                 // and the job completes successfully having done nothing. Silent no-op.
                 const ctx = await this.requestContextService.create({ apiType: 'admin' });
-                await this.indexProduct(ctx, job.data.productId);
+                // Tolerate the old single-product payload: jobs queued before this
+                // change may still be sitting in the database when it deploys.
+                const ids = job.data.productIds ?? (job.data.productId != null ? [job.data.productId] : []);
+                await this.indexProducts(ctx, ids);
             },
         });
     }
 
     // --- Indexing ------------------------------------------------------------
 
-    /** Enqueue every non-deleted product. Returns how many jobs were queued. */
+    /** Enqueue every non-deleted product, in batches. Returns how many were queued. */
     async reindexAll(ctx: RequestContext): Promise<number> {
+        // Force a fresh /health before writing thousands of revision-stamped rows. A
+        // cached revision from before a model swap would stamp every one of them with
+        // an identity the vectors do not belong to, and nothing would report an error.
+        const health = await this.embedder.refreshHealth();
+
         const products = await this.connection
             .getRepository(ctx, Product)
             .createQueryBuilder('product')
@@ -64,85 +86,126 @@ export class VisualSearchService implements OnModuleInit {
             .where('product.deletedAt IS NULL')
             .getMany();
 
-        for (const p of products) {
-            await this.indexQueue.add({ productId: p.id }, { retries: 2 });
+        let jobs = 0;
+        for (let i = 0; i < products.length; i += INDEX_BATCH_SIZE) {
+            const productIds = products.slice(i, i + INDEX_BATCH_SIZE).map(p => p.id);
+            await this.indexQueue.add({ productIds }, { retries: 2 });
+            jobs++;
         }
-        Logger.info(`Queued ${products.length} products for embedding`, loggerCtx);
+        Logger.info(
+            `Queued ${products.length} products for embedding in ${jobs} job(s) ` +
+                `at revision ${health.revision}`,
+            loggerCtx,
+        );
         return products.length;
     }
 
     async enqueueProduct(productId: ID): Promise<void> {
-        await this.indexQueue.add({ productId }, { retries: 2 });
+        await this.indexQueue.add({ productIds: [productId] }, { retries: 2 });
+    }
+
+    /** Embed one product's assets. Thin wrapper — the batch path does the work. */
+    async indexProduct(ctx: RequestContext, productId: ID): Promise<number> {
+        return this.indexProducts(ctx, [productId]);
     }
 
     /**
-     * Embed every asset of one product and replace its rows.
+     * Embed every asset of several products in one pass, and replace their rows.
+     *
+     * Batching products rather than looping one at a time is the whole point. The
+     * embedder accepts up to 32 images per call, but a catalogue where each product has
+     * a single photo could never fill that when the unit of work was one product — so
+     * a full reindex paid one HTTP round trip, and one job-queue poll, per image.
      *
      * Reads the *source* file, not the preview: the preview is capped at 1600px and
-     * already EXIF-rotated by Sharp, whereas the contract wants original bytes with
-     * all preprocessing done inside the embedder. The embedder applies its own EXIF
+     * already EXIF-rotated by Sharp, whereas the contract wants original bytes with all
+     * preprocessing done inside the embedder. The embedder applies its own EXIF
      * transpose, so orientation is handled there.
      */
-    async indexProduct(ctx: RequestContext, productId: ID): Promise<number> {
-        const product = await this.productService.findOne(ctx, productId);
-        if (!product) {
-            // Log rather than return quietly: the usual cause is a context without a
-            // channel, which produces 'success, indexed nothing' across every job.
-            Logger.warn(`Product ${productId} not visible in this context; skipped`, loggerCtx);
-            return 0;
-        }
-        const assets = (await this.assetService.getEntityAssets(ctx, product)) ?? [];
-        if (assets.length === 0) {
-            Logger.verbose(`Product ${productId} has no assets; skipped`, loggerCtx);
+    async indexProducts(ctx: RequestContext, productIds: ID[]): Promise<number> {
+        if (productIds.length === 0) {
             return 0;
         }
 
         const storage = this.configService.assetOptions.assetStorageStrategy;
-        const revision = await this.embedder.getRevision();
         const health = await this.embedder.getHealth();
+        const revision = health.revision;
 
+        // Item ids are composite, not bare asset ids. An asset can legitimately belong
+        // to more than one product, and the contract rejects duplicate ids within a
+        // request (§3.5) — keying on assetId alone would fail the whole batch the first
+        // time two products shared a photo.
         const payload: Array<{ id: string; data: Buffer }> = [];
-        for (const asset of assets) {
-            try {
-                payload.push({ id: String(asset.id), data: await storage.readFileToBuffer(asset.source) });
-            } catch (e: any) {
-                Logger.warn(`Asset ${asset.id}: cannot read ${asset.source} (${e.message})`, loggerCtx);
+        const owner = new Map<string, { productId: ID; assetId: ID }>();
+        const indexed: ID[] = [];
+        let assetCount = 0;
+
+        for (const productId of productIds) {
+            const product = await this.productService.findOne(ctx, productId);
+            if (!product) {
+                // Log rather than return quietly: the usual cause is a context without a
+                // channel, which produces 'success, indexed nothing' across every job.
+                Logger.warn(`Product ${productId} not visible in this context; skipped`, loggerCtx);
+                continue;
+            }
+            indexed.push(productId);
+
+            const assets = (await this.assetService.getEntityAssets(ctx, product)) ?? [];
+            if (assets.length === 0) {
+                Logger.verbose(`Product ${productId} has no assets; skipped`, loggerCtx);
+                continue;
+            }
+            assetCount += assets.length;
+
+            for (const asset of assets) {
+                const key = `${productId}:${asset.id}`;
+                try {
+                    payload.push({ id: key, data: await storage.readFileToBuffer(asset.source) });
+                    owner.set(key, { productId, assetId: asset.id });
+                } catch (e: any) {
+                    Logger.warn(`Asset ${asset.id}: cannot read ${asset.source} (${e.message})`, loggerCtx);
+                }
             }
         }
 
-        const results = await this.embedder.embedImages(payload);
+        const results = payload.length > 0 ? await this.embedder.embedImages(payload) : [];
         const repo = this.connection.getRepository(ctx, ProductAssetEmbedding);
 
-        // Replace the product's rows wholesale rather than upserting per asset. This
-        // makes reindexing idempotent AND drops rows for assets that were detached
-        // from the product since the last run, which a per-asset upsert would strand.
-        await repo.delete({ productId });
+        // Replace rows wholesale rather than upserting per asset. This makes reindexing
+        // idempotent AND drops rows for assets detached from the product since the last
+        // run, which a per-asset upsert would strand. Scoped to products actually seen,
+        // so a product that vanished mid-batch keeps whatever it had.
+        if (indexed.length > 0) {
+            await repo.delete({ productId: In(indexed as any[]) });
+        }
 
         const rows = results
             .filter(r => {
                 if (!r.vector) {
-                    Logger.warn(`Asset ${r.id}: ${r.error?.code} ${r.error?.message}`, loggerCtx);
+                    Logger.warn(`Item ${r.id}: ${r.error?.code} ${r.error?.message}`, loggerCtx);
                 }
                 return r.vector != null;
             })
-            .map(
-                r =>
-                    new ProductAssetEmbedding({
-                        productId,
-                        assetId: r.id as unknown as ID,
-                        embedding: r.vector as number[],
-                        revision,
-                        modelId: health.model_id,
-                    }),
-            );
+            .map(r => {
+                const o = owner.get(r.id)!;
+                return new ProductAssetEmbedding({
+                    productId: o.productId,
+                    assetId: o.assetId,
+                    embedding: r.vector as number[],
+                    revision,
+                    modelId: health.model_id,
+                });
+            });
 
         if (rows.length > 0) {
             await repo.save(rows);
         }
-        const written = rows.length;
 
-        Logger.verbose(`Product ${productId}: embedded ${written}/${assets.length} assets`, loggerCtx);
-        return written;
+        Logger.verbose(
+            `Indexed ${indexed.length} product(s): embedded ${rows.length}/${assetCount} assets`,
+            loggerCtx,
+        );
+        return rows.length;
     }
 
     // --- Query ---------------------------------------------------------------
