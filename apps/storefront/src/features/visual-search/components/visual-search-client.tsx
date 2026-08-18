@@ -1,14 +1,15 @@
 'use client';
 
-import {useCallback, useEffect, useMemo, useRef, useState, useTransition} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState, useTransition, type ReactNode} from 'react';
 import Image from 'next/image';
 import {useLocale, useTranslations} from 'next-intl';
-import {AlertCircle, Crop, ImageUp, RotateCcw, SearchX, SlidersHorizontal} from 'lucide-react';
+import {AlertCircle, Check, Crop, ImageUp, RotateCcw, SearchX, SlidersHorizontal} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {NativeSelect, NativeSelectOption} from '@/components/ui/native-select';
 import {ProductTile, ProductTileSkeleton} from '@/components/product-tile';
 import {Price} from '@/features/pricing/price';
 import {Link} from '@/platform/i18n/navigation';
+import {cn} from '@/lib/utils';
 import {VISUAL_SEARCH_MAX_FILE_BYTES, VISUAL_SEARCH_MAX_FILE_MB} from '../limits';
 import type {VisualSearchErrorCode, VisualSearchHit, VisualSearchState} from '../types';
 import {searchByImageUpload, searchSimilarProduct} from '../upload';
@@ -24,6 +25,32 @@ const ERROR_KEYS: Record<VisualSearchErrorCode, string> = {
     FAILED: 'errorFailed',
 };
 
+/**
+ * The viewfinder brackets. Four corners rather than a full border: a closed box
+ * reads as one more card, while the open corners read as an aiming frame, which
+ * is what this panel actually is.
+ */
+const RETICLE_CORNERS = [
+    'left-4 top-4 rounded-tl-sm border-l-2 border-t-2',
+    'right-4 top-4 rounded-tr-sm border-r-2 border-t-2',
+    'bottom-4 left-4 rounded-bl-sm border-b-2 border-l-2',
+    'bottom-4 right-4 rounded-br-sm border-b-2 border-r-2',
+];
+
+/** The scan sweep, shared by the empty frame and the uploaded photo. */
+function ScanSweep({className}: {className?: string}) {
+    return (
+        <span
+            aria-hidden="true"
+            className={cn(
+                'animate-scan-art pointer-events-none absolute inset-x-5 top-0 h-px',
+                'bg-gradient-to-r from-transparent via-primary to-transparent',
+                className,
+            )}
+        />
+    );
+}
+
 interface InitialProduct {
     id: string;
     name: string;
@@ -31,7 +58,14 @@ interface InitialProduct {
     assetId?: string;
 }
 
-export function VisualSearchClient({initialProduct}: {initialProduct?: InitialProduct}) {
+export function VisualSearchClient({
+    initialProduct,
+    heading,
+}: {
+    initialProduct?: InitialProduct;
+    /** The page's headline block, rendered on the server beside the scanner. */
+    heading?: ReactNode;
+}) {
     const t = useTranslations('VisualSearch');
     const locale = useLocale();
     const [preview, setPreview] = useState<string | null>(null);
@@ -127,125 +161,183 @@ export function VisualSearchClient({initialProduct}: {initialProduct?: InitialPr
 
     const openPicker = () => inputRef.current?.click();
 
+    const sourceImage = preview ?? (showInitialProduct ? initialProduct?.imageUrl ?? null : null);
+    const hasImage = Boolean(sourceImage);
+
     return (
-        <div id="visual-search-upload" className="reveal-section scroll-mt-28 space-y-10">
-            <input
-                ref={inputRef}
-                type="file"
-                accept="image/*"
-                aria-label={t('chooseImage')}
-                className="sr-only"
-                // Focusable only through the visible button below, which forwards the click.
-                tabIndex={-1}
-                onChange={e => {
-                    const file = e.target.files?.[0];
-                    if (file) handleFile(file);
-                }}
-            />
+        <>
+            <section className="border-b border-border bg-secondary/20 pt-[4.5rem]">
+                {/* No minimum height: the scanner sets the hero's size, so the band is
+                    exactly as tall as the instrument needs and the results land a
+                    short scroll below it rather than under a screen of air. */}
+                <div className="container mx-auto grid items-center gap-12 px-4 py-12 md:py-16 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16">
+                    <div className="relative z-10 max-w-2xl">{heading}</div>
 
-            <div
-                onDragOver={e => {
-                    e.preventDefault();
-                    setDragging(true);
-                }}
-                onDragLeave={() => setDragging(false)}
-                onDrop={e => {
-                    e.preventDefault();
-                    setDragging(false);
-                    const file = e.dataTransfer.files?.[0];
-                    if (file) handleFile(file);
-                }}
-                className={`relative mx-auto max-w-4xl overflow-hidden rounded-xl border bg-card p-8 transition-colors duration-200 sm:p-12 ${
-                    dragging
-                        ? 'border-primary bg-accent/50'
-                        : 'border-border hover:border-primary/35'
-                }`}
-            >
-                <div className="pointer-events-none absolute inset-0 bg-dotfield opacity-60 [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,black,transparent)]" />
+                    <input
+                        ref={inputRef}
+                        type="file"
+                        accept="image/*"
+                        aria-label={t('chooseImage')}
+                        className="sr-only"
+                        // Focusable only through the visible button below, which forwards the click.
+                        tabIndex={-1}
+                        onChange={e => {
+                            const file = e.target.files?.[0];
+                            if (file) handleFile(file);
+                        }}
+                    />
 
-                {preview && cropping ? (
-                    <div className="relative">
-                        <ImageCropper src={preview} onApply={applyCrop} onCancel={() => setCropping(false)} />
-                    </div>
-                ) : preview ? (
-                    <div className="relative flex flex-col items-center gap-7 sm:flex-row sm:items-center sm:justify-center">
-                        <div className="relative size-44 shrink-0 overflow-hidden rounded-xl bg-muted">
-                            <Image src={preview} alt={t('yourImage')} fill sizes="176px" className="object-contain" unoptimized/>
-                        </div>
-                        <div className="space-y-3 text-center sm:text-left">
-                            <p className="text-lg font-medium">{t('yourImage')}</p>
-                            <p className="max-w-xs font-light text-muted-foreground">{t('previewHint')}</p>
-                            <div className="flex flex-wrap justify-center gap-2 pt-1 sm:justify-start">
-                                <Button type="button" variant="default" size="sm" onClick={() => setCropping(true)} className="min-h-11 rounded-lg">
-                                    <Crop className="mr-2 size-4"/>
-                                    {t('cropImage')}
-                                </Button>
-                                <Button type="button" variant="outline" size="sm" onClick={openPicker} className="min-h-11 rounded-lg">
-                                    <ImageUp className="mr-2 size-4"/>
-                                    {t('replaceImage')}
-                                </Button>
-                                <Button type="button" variant="ghost" size="sm" onClick={reset} className="min-h-11 rounded-lg">
-                                    <RotateCcw className="mr-2 size-4"/>
-                                    {t('startOver')}
-                                </Button>
+                    <div
+                        id="visual-search-upload"
+                        className="animate-fade-up scroll-mt-28 [animation-delay:160ms]"
+                    >
+                        <div
+                            onDragOver={e => {
+                                e.preventDefault();
+                                setDragging(true);
+                            }}
+                            onDragLeave={() => setDragging(false)}
+                            onDrop={e => {
+                                e.preventDefault();
+                                setDragging(false);
+                                const file = e.dataTransfer.files?.[0];
+                                if (file) handleFile(file);
+                            }}
+                            className={cn(
+                                'elevate-3 relative overflow-hidden rounded-2xl border bg-card transition-colors duration-200',
+                                dragging ? 'border-primary bg-accent/40' : 'border-border',
+                            )}
+                        >
+                            <span
+                                aria-hidden="true"
+                                className="bg-dotfield pointer-events-none absolute inset-0 opacity-60 [mask-image:radial-gradient(ellipse_75%_70%_at_50%_45%,black,transparent)]"
+                            />
+
+                            {RETICLE_CORNERS.map(corner => (
+                                <span
+                                    key={corner}
+                                    aria-hidden="true"
+                                    className={cn(
+                                        'pointer-events-none absolute size-9 transition-colors duration-200',
+                                        dragging ? 'border-primary' : 'border-primary/40',
+                                        corner,
+                                    )}
+                                />
+                            ))}
+
+                            {/* Ambient on the empty frame — it says "put something here".
+                                Once a photo is in the frame the sweep moves onto the photo
+                                itself, and only while the search is actually running. */}
+                            {!cropping && !hasImage ? <ScanSweep /> : null}
+
+                            <div className="relative flex min-h-[25rem] flex-col items-center justify-center px-5 py-10 text-center sm:px-9 lg:min-h-[27rem]">
+                                {preview && cropping ? (
+                                    <ImageCropper src={preview} onApply={applyCrop} onCancel={() => setCropping(false)} />
+                                ) : sourceImage ? (
+                                    <>
+                                        <div className="elevate-2 relative w-full max-w-[17rem] overflow-hidden rounded-xl bg-muted">
+                                            <div className="relative aspect-square">
+                                                <Image
+                                                    src={sourceImage}
+                                                    alt={preview ? t('yourImage') : initialProduct?.name ?? t('yourImage')}
+                                                    fill
+                                                    sizes="272px"
+                                                    priority={!preview}
+                                                    className={preview ? 'object-contain' : 'object-cover'}
+                                                    unoptimized={Boolean(preview)}
+                                                />
+                                            </div>
+                                            {pending ? <ScanSweep className="inset-x-0" /> : null}
+                                        </div>
+
+                                        {preview ? (
+                                            <>
+                                                <p className="mt-6 text-lg font-medium">{t('yourImage')}</p>
+                                                <p className="mt-2 max-w-sm text-sm font-light leading-relaxed text-muted-foreground">
+                                                    {t('previewHint')}
+                                                </p>
+                                                <div className="mt-6 flex flex-wrap justify-center gap-2">
+                                                    <Button type="button" size="sm" onClick={() => setCropping(true)} className="min-h-11 rounded-lg">
+                                                        <Crop className="mr-2 size-4" />
+                                                        {t('cropImage')}
+                                                    </Button>
+                                                    <Button type="button" variant="outline" size="sm" onClick={openPicker} className="min-h-11 rounded-lg">
+                                                        <ImageUp className="mr-2 size-4" />
+                                                        {t('replaceImage')}
+                                                    </Button>
+                                                    <Button type="button" variant="ghost" size="sm" onClick={reset} className="min-h-11 rounded-lg">
+                                                        <RotateCcw className="mr-2 size-4" />
+                                                        {t('startOver')}
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <p className="mt-6 text-sm font-medium uppercase tracking-[0.16em] text-primary">
+                                                    {t('similarTo')}
+                                                </p>
+                                                <p className="mt-2 max-w-sm text-balance text-xl font-bold tracking-tight">
+                                                    {initialProduct?.name}
+                                                </p>
+                                                <p className="mt-2 max-w-sm text-sm font-light leading-relaxed text-muted-foreground">
+                                                    {t('similarProductHint')}
+                                                </p>
+                                                <Button type="button" variant="outline" size="sm" onClick={openPicker} className="mt-6 min-h-11 rounded-lg">
+                                                    <ImageUp className="mr-2 size-4" />
+                                                    {t('searchWithOwnImage')}
+                                                </Button>
+                                            </>
+                                        )}
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className="elevate-2 flex size-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+                                            <ImageUp className="size-7" aria-hidden="true" />
+                                        </span>
+                                        <p className="mt-7 text-balance text-2xl font-bold tracking-tight">
+                                            {t('dropzoneTitle')}
+                                        </p>
+                                        <p className="mt-2 font-light text-muted-foreground">
+                                            {t('dropzoneHint', {max: VISUAL_SEARCH_MAX_FILE_MB})}
+                                        </p>
+                                        {/* A real button, so the flow works from the keyboard and reads
+                                            correctly to a screen reader. The bare div this replaced was
+                                            reachable by mouse only. */}
+                                        <Button
+                                            type="button"
+                                            size="lg"
+                                            onClick={openPicker}
+                                            className="elevate-2 mt-8 h-12 rounded-lg px-8 text-base"
+                                        >
+                                            {t('chooseImage')}
+                                        </Button>
+                                        <ul className="mt-9 flex w-full max-w-md flex-wrap justify-center gap-x-5 gap-y-2 border-t border-border/70 pt-6 text-xs text-muted-foreground">
+                                            {[t('photoTipOne'), t('photoTipTwo'), t('photoTipThree')].map(tip => (
+                                                <li key={tip} className="flex items-center gap-1.5">
+                                                    <Check className="size-3 text-primary" aria-hidden="true" />
+                                                    {tip}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
-                ) : showInitialProduct && initialProduct ? (
-                    <div className="relative flex flex-col items-center gap-7 sm:flex-row sm:justify-center">
-                        <div className="relative size-44 shrink-0 overflow-hidden rounded-xl bg-muted">
-                            {initialProduct.imageUrl ? (
-                                <Image src={initialProduct.imageUrl} alt={initialProduct.name} fill sizes="176px" priority className="object-cover" />
-                            ) : null}
-                        </div>
-                        <div className="max-w-sm space-y-3 text-center sm:text-left">
-                            <p className="text-sm font-medium uppercase tracking-[0.16em] text-primary">{t('similarTo')}</p>
-                            <p className="text-xl font-semibold">{initialProduct.name}</p>
-                            <p className="font-light text-muted-foreground">{t('similarProductHint')}</p>
-                            <Button type="button" variant="outline" size="sm" onClick={openPicker} className="min-h-11 rounded-lg">
-                                <ImageUp className="mr-2 size-4" />
-                                {t('searchWithOwnImage')}
-                            </Button>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="relative flex flex-col items-center text-center">
-                        <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
-                            {t('uploadStep')}
-                        </p>
-                        <div className="mt-5 flex size-16 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-                            <ImageUp className="size-7"/>
-                        </div>
-                        <p className="mt-6 text-xl font-medium">{t('dropzoneTitle')}</p>
-                        <p className="mt-1.5 font-light text-muted-foreground">
-                            {t('dropzoneHint', {max: VISUAL_SEARCH_MAX_FILE_MB})}
-                        </p>
-                        {/* A real button, so the flow works from the keyboard and reads
-                            correctly to a screen reader. The bare div this replaced was
-                            reachable by mouse only. */}
-                        <Button
-                            type="button"
-                            size="lg"
-                            onClick={openPicker}
-                            className="mt-7 h-12 rounded-lg px-7 text-base elevate-2"
-                        >
-                            {t('chooseImage')}
-                        </Button>
-                        <div className="mt-8 flex flex-wrap justify-center gap-x-5 gap-y-2 border-t border-border/70 pt-6 text-xs text-muted-foreground">
-                            <span>{t('photoTipOne')}</span>
-                            <span>{t('photoTipTwo')}</span>
-                            <span>{t('photoTipThree')}</span>
-                        </div>
-                    </div>
-                )}
-            </div>
+                </div>
+            </section>
 
             {/* Announced to assistive tech as results arrive, since the change is visual
-                and happens well after the click. */}
-            <div aria-live="polite" aria-atomic="false">
+                and happens well after the click. Collapses entirely while idle so the
+                page below the scanner is the explainer, not an empty band. */}
+            <div
+                aria-live="polite"
+                aria-atomic="false"
+                className="container mx-auto px-4 py-12 empty:hidden md:py-16"
+            >
                 {pending && (
-                    <div className="space-y-4">
-                        <p className="text-center text-sm text-muted-foreground">{t('searching')}</p>
+                    <div className="space-y-6">
+                        <p className="text-sm text-muted-foreground">{t('searching')}</p>
                         <div className="grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
                             {Array.from({length: 8}).map((_, i) => (
                                 <ProductTileSkeleton key={i}/>
@@ -257,7 +349,7 @@ export function VisualSearchClient({initialProduct}: {initialProduct?: InitialPr
                 {!pending && state.status === 'error' && (
                     <div
                         role="alert"
-                        className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-xl border border-destructive/25 bg-destructive/5 px-6 py-9 text-center"
+                        className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-2xl border border-destructive/25 bg-destructive/5 px-6 py-9 text-center"
                     >
                         <AlertCircle className="size-6 text-destructive"/>
                         <p className="text-sm text-destructive">
@@ -278,7 +370,7 @@ export function VisualSearchClient({initialProduct}: {initialProduct?: InitialPr
                     />
                 )}
             </div>
-        </div>
+        </>
     );
 }
 
@@ -334,7 +426,7 @@ function Results({
 
     if (items.length === 0) {
         return (
-            <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-xl border border-dashed border-border px-6 py-14 text-center">
+            <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-2xl border border-dashed border-border px-6 py-14 text-center">
                 <div className="rounded-full bg-muted p-4">
                     <SearchX className="size-6 text-muted-foreground"/>
                 </div>
@@ -353,76 +445,78 @@ function Results({
     }
 
     return (
-        <div className="space-y-6">
-            <div className="flex items-baseline justify-between gap-4 border-b border-border pb-4">
-                <h2 className="text-lg font-medium" aria-live="polite">
-                    {t('resultsTitle', {count: filteredItems.length})}
-                </h2>
-            </div>
+        <div className="space-y-8">
+            <h2 className="text-balance text-3xl font-bold tracking-tight md:text-4xl" aria-live="polite">
+                {t('resultsTitle', {count: filteredItems.length})}
+            </h2>
 
-            <section className="rounded-xl border border-border bg-muted/20 p-4 sm:p-5" aria-labelledby="visual-result-filters-title">
-                <div className="mb-4 flex items-center justify-between gap-4">
-                    <h3 id="visual-result-filters-title" className="flex items-center gap-2 font-semibold">
+            {/* A rule-bound toolbar rather than a card: the controls sit in the page's
+                own grid, so the products stay the only boxed things on the screen. */}
+            <section className="border-y border-border py-4" aria-labelledby="visual-result-filters-title">
+                <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
+                    <h3 id="visual-result-filters-title" className="flex min-h-10 items-center gap-2 text-sm font-bold uppercase tracking-[0.14em] text-muted-foreground">
                         <SlidersHorizontal className="size-4 text-primary" aria-hidden="true" />
                         {t('filtersTitle')}
                     </h3>
+
+                    <div className="grid flex-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <label className="space-y-1.5 text-sm font-medium">
+                            <span>{t('sortLabel')}</span>
+                            <NativeSelect
+                                value={sort}
+                                onChange={event => setSort(event.target.value as typeof sort)}
+                                className="w-full [&_select]:h-11"
+                            >
+                                <NativeSelectOption value="match">{t('sortBestMatch')}</NativeSelectOption>
+                                <NativeSelectOption value="price-asc">{t('sortPriceAsc')}</NativeSelectOption>
+                                <NativeSelectOption value="price-desc">{t('sortPriceDesc')}</NativeSelectOption>
+                            </NativeSelect>
+                        </label>
+                        <label className="space-y-1.5 text-sm font-medium">
+                            <span>{t('minimumMatchLabel')}</span>
+                            <NativeSelect
+                                value={String(minimumMatch)}
+                                onChange={event => setMinimumMatch(Number(event.target.value))}
+                                className="w-full [&_select]:h-11"
+                            >
+                                <NativeSelectOption value="0">{t('matchAny')}</NativeSelectOption>
+                                {[60, 75, 90].map(score => (
+                                    <NativeSelectOption key={score} value={String(score)}>
+                                        {t('matchAtLeast', {score})}
+                                    </NativeSelectOption>
+                                ))}
+                            </NativeSelect>
+                        </label>
+                        <label className="space-y-1.5 text-sm font-medium sm:col-span-2 lg:col-span-1">
+                            <span className="flex items-center justify-between gap-3">
+                                {t('maximumPriceLabel')}
+                                <strong className="font-bold tabular-nums">
+                                    <Price value={maximumPrice} currencyCode={items[0]?.product.variants[0]?.currencyCode}/>
+                                </strong>
+                            </span>
+                            <input
+                                type="range"
+                                min={0}
+                                max={maxAvailablePrice}
+                                step={100}
+                                value={maximumPrice}
+                                disabled={maxAvailablePrice === 0}
+                                onChange={event => setMaximumPrice(Number(event.target.value))}
+                                className="h-11 w-full cursor-pointer accent-primary disabled:cursor-not-allowed disabled:opacity-50"
+                            />
+                        </label>
+                    </div>
+
                     {filtersActive ? (
                         <Button type="button" variant="ghost" size="sm" onClick={resetFilters} className="min-h-10">
                             {t('resetFilters')}
                         </Button>
                     ) : null}
                 </div>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    <label className="space-y-1.5 text-sm font-medium">
-                        <span>{t('sortLabel')}</span>
-                        <NativeSelect
-                            value={sort}
-                            onChange={event => setSort(event.target.value as typeof sort)}
-                            className="w-full [&_select]:h-11"
-                        >
-                            <NativeSelectOption value="match">{t('sortBestMatch')}</NativeSelectOption>
-                            <NativeSelectOption value="price-asc">{t('sortPriceAsc')}</NativeSelectOption>
-                            <NativeSelectOption value="price-desc">{t('sortPriceDesc')}</NativeSelectOption>
-                        </NativeSelect>
-                    </label>
-                    <label className="space-y-1.5 text-sm font-medium">
-                        <span>{t('minimumMatchLabel')}</span>
-                        <NativeSelect
-                            value={String(minimumMatch)}
-                            onChange={event => setMinimumMatch(Number(event.target.value))}
-                            className="w-full [&_select]:h-11"
-                        >
-                            <NativeSelectOption value="0">{t('matchAny')}</NativeSelectOption>
-                            {[60, 75, 90].map(score => (
-                                <NativeSelectOption key={score} value={String(score)}>
-                                    {t('matchAtLeast', {score})}
-                                </NativeSelectOption>
-                            ))}
-                        </NativeSelect>
-                    </label>
-                    <label className="space-y-1.5 text-sm font-medium sm:col-span-2 lg:col-span-1">
-                        <span className="flex items-center justify-between gap-3">
-                            {t('maximumPriceLabel')}
-                            <strong className="font-semibold">
-                                <Price value={maximumPrice} currencyCode={items[0]?.product.variants[0]?.currencyCode}/>
-                            </strong>
-                        </span>
-                        <input
-                            type="range"
-                            min={0}
-                            max={maxAvailablePrice}
-                            step={100}
-                            value={maximumPrice}
-                            disabled={maxAvailablePrice === 0}
-                            onChange={event => setMaximumPrice(Number(event.target.value))}
-                            className="h-11 w-full cursor-pointer accent-primary disabled:cursor-not-allowed disabled:opacity-50"
-                        />
-                    </label>
-                </div>
             </section>
 
             {filteredItems.length === 0 ? (
-                <div className="mx-auto flex max-w-lg flex-col items-center gap-3 rounded-xl border border-dashed border-border px-6 py-12 text-center" role="status">
+                <div className="mx-auto flex max-w-lg flex-col items-center gap-3 rounded-2xl border border-dashed border-border px-6 py-12 text-center" role="status">
                     <div className="rounded-full bg-muted p-4">
                         <SearchX className="size-6 text-muted-foreground" aria-hidden="true" />
                     </div>
@@ -457,13 +551,25 @@ function Results({
                             priority={index < 4}
                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                             badge={
-                                <span className="rounded-full bg-background/85 px-2.5 py-1 text-xs font-medium text-foreground elevate-1 backdrop-blur-md">
+                                <span
+                                    className={cn(
+                                        'elevate-1 rounded-full px-2.5 py-1 text-xs font-bold tabular-nums backdrop-blur-md',
+                                        // The score is the one piece of evidence that the
+                                        // match was computed rather than guessed, so it is
+                                        // ranked visually the way it is ranked numerically.
+                                        similarity >= 90
+                                            ? 'bg-primary text-primary-foreground'
+                                            : similarity >= 75
+                                                ? 'bg-background/90 text-primary ring-1 ring-inset ring-primary/30'
+                                                : 'bg-background/85 font-medium text-muted-foreground',
+                                    )}
+                                >
                                     {t('matchScore', {score: similarity})}
                                 </span>
                             }
                             footer={
                                 variant ? (
-                                    <p className="text-[0.9375rem] font-bold tracking-tight">
+                                    <p className="text-[0.9375rem] font-bold tabular-nums tracking-tight">
                                         {minPrice !== maxPrice ? (
                                             <span className="mr-1 text-xs font-normal text-muted-foreground">{t('from')}</span>
                                         ) : null}
