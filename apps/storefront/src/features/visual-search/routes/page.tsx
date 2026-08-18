@@ -1,14 +1,12 @@
 import type {Metadata} from 'next';
-import Image from 'next/image';
 import {Suspense} from 'react';
-import {ArrowDown, Check, Crop, ScanSearch, ShoppingBag} from 'lucide-react';
+import {Check} from 'lucide-react';
 import {getTranslations} from 'next-intl/server';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {SITE_NAME, noIndexRobots} from '@/config/metadata';
 import {VisualSearchClient} from '@/features/visual-search/components/visual-search-client';
 import {GetVisualSearchSourceProductQuery} from '@/features/visual-search/graphql';
 import {query} from '@/platform/vendure/api';
-import {StorefrontHero, StorefrontHeroHeading} from '@/components/storefront-hero';
 
 export async function generateMetadata(): Promise<Metadata> {
     const locale = await getRouteLocale();
@@ -50,108 +48,111 @@ async function VisualSearchPageContent({
 
     return (
         <div>
-            <StorefrontHero
-                artwork={(
-                    <Image
-                        src="/storyset/online-shopping-cuate.svg"
-                        alt={t('illustrationAlt')}
-                        width={500}
-                        height={500}
-                        priority
-                        className="h-auto w-full object-contain"
-                    />
-                )}
-            >
-                <StorefrontHeroHeading
-                    eyebrow={t('eyebrow')}
-                    title={(
-                        <>
+            {/* The scanner is the hero. This page's whole promise is "put a photo in
+                and get matches out", so the instrument sits in the first viewport
+                instead of an illustration pointing at it a scroll further down. */}
+            <VisualSearchClient
+                initialProduct={source ? {
+                    id: source.id,
+                    name: source.name,
+                    imageUrl: sourceImage?.preview ?? null,
+                    assetId: requestedAssetId,
+                } : undefined}
+                heading={(
+                    <>
+                        <h1 className="animate-fade-up text-balance text-4xl font-bold leading-[1.04] sm:text-5xl md:text-6xl">
                             {t('pageTitle')}{' '}
                             <span className="text-primary">{t('titleHighlight')}</span>
-                        </>
-                    )}
-                    description={t('pageSubtitle')}
-                />
-
-                <div className="animate-fade-up mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted-foreground [animation-delay:180ms]">
-                    {[t('benefitOne'), t('benefitTwo'), t('benefitThree')].map(benefit => (
-                        <span key={benefit} className="flex items-center gap-2">
-                            <span className="flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                                <Check className="size-3" aria-hidden="true" />
-                            </span>
-                            {benefit}
-                        </span>
-                    ))}
-                </div>
-
-                <a
-                    href="#visual-search-upload"
-                    className="animate-fade-up mt-9 inline-flex min-h-12 items-center rounded-lg bg-primary px-6 font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/30 [animation-delay:240ms]"
-                >
-                    {t('heroCta')}
-                    <ArrowDown className="ml-2 size-4" aria-hidden="true" />
-                </a>
-            </StorefrontHero>
-
-            <section className="container mx-auto px-4 py-14 md:py-16">
-                <div className="reveal-section mx-auto mb-10 max-w-2xl text-center">
-                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">{t('uploadEyebrow')}</p>
-                    <h2 className="mt-3 text-balance text-3xl font-bold md:text-4xl">{t('uploadTitle')}</h2>
-                    <p className="mt-4 text-pretty font-light leading-relaxed text-muted-foreground md:text-lg">
-                        {t('uploadDescription')}
-                    </p>
-                </div>
-
-                <VisualSearchClient
-                    initialProduct={source ? {
-                        id: source.id,
-                        name: source.name,
-                        imageUrl: sourceImage?.preview ?? null,
-                        assetId: requestedAssetId,
-                    } : undefined}
-                />
-
-                <div className="reveal-section mx-auto mt-16 max-w-5xl border-t border-border pt-12">
-                    <div className="grid gap-5 md:grid-cols-3">
-                        {[
-                            {icon: ShoppingBag, step: '01', title: t('stepOneTitle'), body: t('stepOneDescription')},
-                            {icon: Crop, step: '02', title: t('stepTwoTitle'), body: t('stepTwoDescription')},
-                            {icon: ScanSearch, step: '03', title: t('stepThreeTitle'), body: t('stepThreeDescription')},
-                        ].map(({icon: Icon, step, title, body}) => (
-                            <div key={step} className="rounded-xl border border-border bg-card p-6">
-                                <div className="flex items-center justify-between">
-                                    <span className="flex size-11 items-center justify-center rounded-xl bg-secondary text-primary">
-                                        <Icon className="size-5" aria-hidden="true" />
+                        </h1>
+                        <p className="animate-fade-up mt-7 max-w-xl text-pretty text-lg font-light leading-relaxed text-muted-foreground md:text-xl [animation-delay:60ms]">
+                            {t('pageSubtitle')}
+                        </p>
+                        <ul className="animate-fade-up mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted-foreground [animation-delay:120ms]">
+                            {[t('benefitOne'), t('benefitTwo'), t('benefitThree')].map(benefit => (
+                                <li key={benefit} className="flex items-center gap-2">
+                                    <span className="flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                                        <Check className="size-3" aria-hidden="true" />
                                     </span>
-                                    <span className="text-sm font-bold text-primary/45">{step}</span>
-                                </div>
-                                <h3 className="mt-5 text-lg font-bold">{title}</h3>
-                                <p className="mt-2 text-sm font-light leading-relaxed text-muted-foreground">{body}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
+                                    {benefit}
+                                </li>
+                            ))}
+                        </ul>
+                    </>
+                )}
+            />
+
+            <HowItWorks />
         </div>
+    );
+}
+
+/**
+ * The explainer, below the instrument rather than above it.
+ *
+ * Deliberately not three cards: the steps are a sequence, so they are an ordered
+ * list divided by rules, with the numerals carrying the structure. Boxing them
+ * would put three more cards on a page whose only cards should be products.
+ */
+async function HowItWorks() {
+    const locale = await getRouteLocale();
+    const t = await getTranslations({locale, namespace: 'VisualSearch'});
+
+    const steps = [
+        {title: t('stepOneTitle'), body: t('stepOneDescription')},
+        {title: t('stepTwoTitle'), body: t('stepTwoDescription')},
+        {title: t('stepThreeTitle'), body: t('stepThreeDescription')},
+    ];
+
+    return (
+        <section className="container mx-auto px-4 pb-16 pt-14 md:pb-24 md:pt-16">
+            {/* Left-aligned, not centred: the heading shares an edge with step 01
+                below it, so the whole band hangs off one line. */}
+            <div className="reveal-section max-w-2xl">
+                <h2 className="text-balance text-3xl font-bold tracking-tight md:text-4xl">
+                    {t('uploadTitle')}
+                </h2>
+                <p className="mt-4 text-pretty font-light leading-relaxed text-muted-foreground md:text-lg">
+                    {t('uploadDescription')}
+                </p>
+            </div>
+
+            <ol className="reveal-section mt-12 grid border-t border-border sm:grid-cols-3">
+                {steps.map(({title, body}, index) => (
+                    <li
+                        key={title}
+                        className="border-b border-border px-1 py-8 sm:border-b-0 sm:px-7 sm:py-9 sm:first:pl-0 sm:last:pr-0 sm:[&+li]:border-l"
+                    >
+                        <span
+                            aria-hidden="true"
+                            className="block text-5xl font-bold tabular-nums leading-none tracking-tight text-primary/25"
+                        >
+                            {String(index + 1).padStart(2, '0')}
+                        </span>
+                        <h3 className="mt-6 text-lg font-bold">{title}</h3>
+                        <p className="mt-2 text-sm font-light leading-relaxed text-muted-foreground">{body}</p>
+                    </li>
+                ))}
+            </ol>
+        </section>
     );
 }
 
 function VisualSearchPageSkeleton() {
     return (
-        <div className="mt-[4.5rem]">
-            <div className="border-b border-border bg-secondary/50">
-                <div className="container mx-auto grid items-center gap-12 px-4 py-12 md:py-20 lg:min-h-[46rem] lg:grid-cols-2">
+        <div>
+            <div className="border-b border-border bg-secondary/20 pt-[4.5rem]">
+                <div className="container mx-auto grid items-center gap-12 px-4 py-12 md:py-16 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16">
                     <div className="space-y-5">
-                        <div className="h-8 w-36 animate-pulse rounded-full bg-muted" />
                         <div className="h-28 w-full max-w-xl animate-pulse rounded-xl bg-muted" />
                         <div className="h-14 w-full max-w-lg animate-pulse rounded-xl bg-muted" />
+                        <div className="h-5 w-72 animate-pulse rounded-full bg-muted" />
                     </div>
-                    <div className="mx-auto aspect-square w-full max-w-[28rem] animate-pulse rounded-xl bg-muted" />
+                    <div className="min-h-[25rem] w-full animate-pulse rounded-2xl bg-muted lg:min-h-[27rem]" />
                 </div>
             </div>
-            <div className="container mx-auto px-4 py-16">
-                <div className="mx-auto h-24 max-w-2xl animate-pulse rounded-xl bg-muted" />
-                <div className="mx-auto mt-10 h-80 max-w-4xl animate-pulse rounded-xl bg-muted" />
+            <div className="container mx-auto px-4 pb-16 pt-14 md:pb-24 md:pt-20">
+                <div className="h-24 max-w-2xl animate-pulse rounded-xl bg-muted" />
+                <div className="mt-12 h-44 animate-pulse rounded-xl bg-muted" />
             </div>
         </div>
     );
