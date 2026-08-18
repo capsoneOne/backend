@@ -1,0 +1,125 @@
+<mxfile host="app.diagrams.net" type="device">
+  <diagram name="End-to-end sequence" id="seq-e2e">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1450" pageHeight="1250" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="visual-search-capstone — end to end sequence" style="text;html=1;fontSize=18;fontStyle=1;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="700" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Indexing builds the vectors. Query reads them back. Both halves meet at the embedder, the only place a model runs." style="text;html=1;fontSize=12;fontColor=#475569;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="48" width="900" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="band_a" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDFA;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="150" width="1360" height="500" as="geometry" />
+        </mxCell>
+        <mxCell id="band_a_lbl" value="A · INDEXING — builds the vectors" style="text;html=1;fontSize=12;fontStyle=1;fontColor=#0F766E;align=left;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="52" y="158" width="400" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="band_b" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="670" width="1360" height="450" as="geometry" />
+        </mxCell>
+        <mxCell id="band_b_lbl" value="B · QUERY — the user upload, end to end" style="text;html=1;fontSize=12;fontStyle=1;fontColor=#9C4A22;align=left;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="52" y="678" width="400" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ll_shopper" value="Shopper / Admin" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#E2E8F0;strokeColor=#475569;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="90" width="150" height="1060" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_store" value="Storefront" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#DBEAFE;strokeColor=#2563EB;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="90" width="150" height="1060" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_server" value="Vendure Server" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#EDE9FE;strokeColor=#7C3AED;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="90" width="150" height="1060" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_worker" value="Vendure Worker" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#CCFBF1;strokeColor=#0F766E;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="630" y="90" width="150" height="1060" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_embedder" value="Embedder" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FEE2E2;strokeColor=#B91C1C;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="820" y="90" width="150" height="1060" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_pg" value="Postgres + pgvector" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#DBEAFE;strokeColor=#1D4ED8;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="90" width="150" height="1060" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_r2" value="Cloudflare R2" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FFEDD5;strokeColor=#EA580C;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="90" width="150" height="1060" as="geometry" />
+        </mxCell>
+
+        <mxCell id="m1" value="1. reindexVisualSearch" style="html=1;verticalAlign=bottom;endArrow=block;strokeColor=#0F766E;strokeWidth=1.6;fontSize=11;fontColor=#0F766E;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="135" y="200" as="sourcePoint" /><mxPoint x="515" y="200" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m2" value="2. GET /health, forced refresh so the revision matches the model about to run" style="html=1;verticalAlign=bottom;endArrow=block;strokeColor=#0F766E;strokeWidth=1.6;fontSize=11;fontColor=#0F766E;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="515" y="246" as="sourcePoint" /><mxPoint x="895" y="246" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m3" value="3. revision + dim=512" style="html=1;verticalAlign=bottom;endArrow=open;endSize=8;dashed=1;strokeColor=#0F766E;strokeWidth=1.4;fontSize=11;fontColor=#0F766E;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="895" y="292" as="sourcePoint" /><mxPoint x="515" y="292" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m4" value="4. INSERT jobs, 32 products each" style="html=1;verticalAlign=bottom;endArrow=block;strokeColor=#0F766E;strokeWidth=1.6;fontSize=11;fontColor=#0F766E;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="515" y="338" as="sourcePoint" /><mxPoint x="1085" y="338" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m5" value="5. poll queue, concurrency 4" style="html=1;verticalAlign=bottom;endArrow=block;strokeColor=#0F766E;strokeWidth=1.6;fontSize=11;fontColor=#0F766E;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="705" y="384" as="sourcePoint" /><mxPoint x="1085" y="384" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m6" value="6. GET source bytes, one per asset" style="html=1;verticalAlign=bottom;endArrow=block;strokeColor=#0F766E;strokeWidth=1.6;fontSize=11;fontColor=#0F766E;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="705" y="430" as="sourcePoint" /><mxPoint x="1275" y="430" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m7" value="7. POST /embed/images, batch of 32" style="html=1;verticalAlign=bottom;endArrow=block;strokeColor=#0F766E;strokeWidth=1.6;fontSize=11;fontColor=#0F766E;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="705" y="476" as="sourcePoint" /><mxPoint x="895" y="476" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m8" value="8. preprocess, ViT-B/32 forward pass, L2 normalize" style="html=1;verticalAlign=bottom;endArrow=block;strokeColor=#B91C1C;strokeWidth=1.6;fontSize=11;fontColor=#B91C1C;rounded=0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="895" y="512" as="sourcePoint" />
+            <mxPoint x="899" y="556" as="targetPoint" />
+            <Array as="points"><mxPoint x="980" y="512" /><mxPoint x="980" y="556" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m9" value="9. 512-d unit vectors" style="html=1;verticalAlign=bottom;endArrow=open;endSize=8;dashed=1;strokeColor=#0F766E;strokeWidth=1.4;fontSize=11;fontColor=#0F766E;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="895" y="592" as="sourcePoint" /><mxPoint x="705" y="592" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m10" value="10. DELETE old rows, INSERT vector + revision + modelId" style="html=1;verticalAlign=bottom;endArrow=block;strokeColor=#0F766E;strokeWidth=1.6;fontSize=11;fontColor=#0F766E;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="705" y="628" as="sourcePoint" /><mxPoint x="1085" y="628" as="targetPoint" /></mxGeometry>
+        </mxCell>
+
+        <mxCell id="m11" value="11. uploads a photo" style="html=1;verticalAlign=bottom;endArrow=block;strokeColor=#9C4A22;strokeWidth=1.6;fontSize=11;fontColor=#9C4A22;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="135" y="726" as="sourcePoint" /><mxPoint x="325" y="726" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m12" value="12. searchByImage(image: base64)" style="html=1;verticalAlign=bottom;endArrow=block;strokeColor=#9C4A22;strokeWidth=1.6;fontSize=11;fontColor=#9C4A22;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="325" y="772" as="sourcePoint" /><mxPoint x="515" y="772" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m13" value="13. POST /embed/images, a single image" style="html=1;verticalAlign=bottom;endArrow=block;strokeColor=#9C4A22;strokeWidth=1.6;fontSize=11;fontColor=#9C4A22;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="515" y="818" as="sourcePoint" /><mxPoint x="895" y="818" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m14" value="14. 512-d unit vector" style="html=1;verticalAlign=bottom;endArrow=open;endSize=8;dashed=1;strokeColor=#9C4A22;strokeWidth=1.4;fontSize=11;fontColor=#9C4A22;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="895" y="864" as="sourcePoint" /><mxPoint x="515" y="864" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m15" value="15. ORDER BY embedding &lt;=&gt; $1 WHERE revision = current, HNSW index" style="html=1;verticalAlign=bottom;endArrow=block;strokeColor=#9C4A22;strokeWidth=1.6;fontSize=11;fontColor=#9C4A22;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="515" y="910" as="sourcePoint" /><mxPoint x="1085" y="910" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m16" value="16. nearest products + cosine distance" style="html=1;verticalAlign=bottom;endArrow=open;endSize=8;dashed=1;strokeColor=#9C4A22;strokeWidth=1.4;fontSize=11;fontColor=#9C4A22;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="1085" y="956" as="sourcePoint" /><mxPoint x="515" y="956" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m17" value="17. items + revision" style="html=1;verticalAlign=bottom;endArrow=open;endSize=8;dashed=1;strokeColor=#9C4A22;strokeWidth=1.4;fontSize=11;fontColor=#9C4A22;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="515" y="1002" as="sourcePoint" /><mxPoint x="325" y="1002" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m18" value="18. loads matched product images straight from the bucket" style="html=1;verticalAlign=bottom;endArrow=block;strokeColor=#9C4A22;strokeWidth=1.6;fontSize=11;fontColor=#9C4A22;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="325" y="1048" as="sourcePoint" /><mxPoint x="1275" y="1048" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m19" value="19. ranked results" style="html=1;verticalAlign=bottom;endArrow=open;endSize=8;dashed=1;strokeColor=#9C4A22;strokeWidth=1.4;fontSize=11;fontColor=#9C4A22;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="325" y="1094" as="sourcePoint" /><mxPoint x="135" y="1094" as="targetPoint" /></mxGeometry>
+        </mxCell>
+
+        <mxCell id="note_rev" value="Steps 2 and 15 are the two halves of one mechanism.&#10;Step 2 pins the revision that step 10 stamps on every row.&#10;Step 15 filters on it, so vectors from any other model are&#10;excluded rather than silently compared." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;align=left;verticalAlign=top;spacing=10;fontSize=11;fontColor=#334155;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1170" width="380" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="note_batch" value="Step 7 carries 32 images in one call, step 13 carries one.&#10;Batching is 3.5x faster per image (71.8 ms to 20.4 ms), which&#10;is why it matters for indexing and not for a user query." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;align=left;verticalAlign=top;spacing=10;fontSize=11;fontColor=#334155;" vertex="1" parent="1">
+          <mxGeometry x="470" y="1170" width="400" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="note_legend" value="Solid arrow = call.  Dashed arrow = response.&#10;Teal = indexing path.  Rust = query path." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;align=left;verticalAlign=top;spacing=10;fontSize=11;fontColor=#334155;" vertex="1" parent="1">
+          <mxGeometry x="900" y="1170" width="330" height="80" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

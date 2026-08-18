@@ -4,3 +4,13 @@ admin-ui
 static/assets
 static/email/test-emails
 .vendure/
+
+# Local .env backups, these hold live credentials
+.env.bak*
+
+# Bulk import dataset and generated artefacts (~79 MB, not source)
+
+
+# ignore dataset images of products.
+static/a/*
+static/

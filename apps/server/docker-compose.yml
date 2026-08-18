@@ -50,12 +50,17 @@ services:
             # `compose up --build` re-downloads the encoder (~600 MB for CLIP).
             - embedder_cache:/cache
         environment:
-            # stub = deterministic, no semantic meaning (default).
-            # sim  = colour/structure encoder with a real shared image/text space —
-            #        good enough to build ranking UI and integration tests against,
-            #        not good enough to report numbers from. Distinct REVISION, so its
-            #        vectors can never mix with the stub's or the real model's.
+            # stub     = deterministic, no semantic meaning (default).
+            # sim      = colour/structure encoder with a real shared image/text space —
+            #            good enough to build ranking UI and integration tests against,
+            #            not good enough to report numbers from.
+            # clip     = stock OpenAI CLIP ViT-B/32, kept as an eval baseline.
+            # openclip = Panavath/fashion-clip-b32, the team's fine-tune. The real one.
+            # Each declares a distinct REVISION, so their vectors can never mix.
             EMBEDDER_MODEL: ${EMBEDDER_MODEL:-stub}
+            # Cap CPU threads so a reindex cannot starve Postgres and Vendure, which
+            # share this machine. Unset lets torch grab every core.
+            TORCH_NUM_THREADS: ${TORCH_NUM_THREADS:-4}
             # Simulated model load and per-item inference. Non-zero on purpose: an
             # instant embedder hides every cold-start and latency bug. Set both to 0
             # in CI. Raise SIM_LOAD_SECONDS to rehearse a slept Hugging Face Space.
@@ -63,13 +68,14 @@ services:
             SIM_LATENCY_MS: ${SIM_LATENCY_MS:-45}
         healthcheck:
             # /health returns 503 until model weights are loaded and warmed, so nothing
-            # routes traffic to a cold service. start_period covers slow model loads;
-            # raise it when a real encoder replaces the stub.
+            # routes traffic to a cold service. start_period covers slow model loads:
+            # a real encoder's FIRST start also downloads ~600 MB of weights into the
+            # cache volume, which 30s does not cover on any normal connection.
             test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
             interval: 10s
             timeout: 5s
             retries: 5
-            start_period: 30s
+            start_period: 600s
         labels:
             - "io.vendure.create.name=visual-search-capstone"
 
