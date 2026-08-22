@@ -42,12 +42,40 @@ export const adminApiExtensions = gql`
         products: Int!
     }
 
+    """
+    The embedder's own account of itself. Never errors when the service is down:
+    reachable=false plus a populated error field is the answer in that case.
+    """
+    type VisualSearchEmbedderHealth {
+        reachable: Boolean!
+        status: String
+        modelId: String
+        revision: String
+        embeddingDim: Int
+        "What this build's schema expects. A mismatch means writes will fail."
+        expectedDim: Int!
+        dimMatches: Boolean!
+        normalized: Boolean
+        modalities: [String!]
+        sharedSpace: Boolean
+        "False when the embedder could not resolve a commit sha. Reindexing is refused in this state."
+        pinned: Boolean!
+        "Populated only when reachable is false."
+        error: String
+    }
+
     extend type Query {
         visualSearchIndexStatus: VisualSearchIndexStatus!
+        visualSearchEmbedderHealth: VisualSearchEmbedderHealth!
     }
 
     extend type Mutation {
-        "Queue every product for re-embedding. Returns the number of jobs queued."
-        reindexVisualSearch: Int!
+        """
+        Queue products for re-embedding. Returns the number queued.
+
+        Pass onlyMissing: true to resume an interrupted reindex — it enqueues just the
+        products with no embedding at the live revision, instead of starting over.
+        """
+        reindexVisualSearch(onlyMissing: Boolean): Int!
     }
 `;

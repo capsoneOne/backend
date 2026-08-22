@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import {
     AssetService,
     ConfigService,
@@ -15,8 +15,15 @@ import {
 } from '@vendure/core';
 import { In } from 'typeorm';
 
-import { EMBEDDING_DIM, INDEX_PRODUCT_QUEUE, loggerCtx } from '../constants';
+import {
+    EMBEDDING_DIM,
+    INDEX_PRODUCT_QUEUE,
+    loggerCtx,
+    UNPINNED_REVISION_MARKER,
+    VISUAL_SEARCH_PLUGIN_OPTIONS,
+} from '../constants';
 import { ProductAssetEmbedding } from '../entities/product-asset-embedding.entity';
+import { VisualSearchPluginOptions } from '../types';
 import { EmbedderService } from './embedder.service';
 
 export interface VisualSearchHit {
@@ -37,8 +44,17 @@ export interface VisualSearchHit {
  */
 const INDEX_BATCH_SIZE = 32;
 
-/** Accepts the batch shape and the pre-batch single-product shape jobs may still hold. */
-type IndexJobData = { productIds?: ID[]; productId?: ID };
+/**
+ * Accepts the batch shape and the pre-batch single-product shape jobs may still hold.
+ *
+ * `revision` is the embedder identity the job was queued against. A full reindex runs
+ * for minutes; if the embedder is swapped or restarts into a different revision partway
+ * through, the remaining jobs would stamp rows with the new identity and leave the index
+ * split across two incomparable vector spaces. Carrying the expectation in the payload
+ * lets each job detect that and refuse. Absent for event-driven single-product jobs,
+ * which should simply use whatever model is current.
+ */
+type IndexJobData = { productIds?: ID[]; productId?: ID; revision?: string };
 
 @Injectable()
 export class VisualSearchService implements OnModuleInit {
@@ -52,7 +68,44 @@ export class VisualSearchService implements OnModuleInit {
         private configService: ConfigService,
         private requestContextService: RequestContextService,
         private embedder: EmbedderService,
+        @Inject(VISUAL_SEARCH_PLUGIN_OPTIONS)
+        private options: VisualSearchPluginOptions,
     ) {}
+
+    /**
+     * Read one asset, but never wait forever.
+     *
+     * `readFileToBuffer` resolves or rejects at the storage driver's discretion, and
+     * the S3 driver will happily hang on a connection that is open but silent. There
+     * is no AbortSignal on the strategy interface, so the losing request is abandoned
+     * rather than cancelled — it keeps its socket until the driver gives up. That is
+     * an accepted leak: an orphaned fetch costs one socket, whereas an un-timed await
+     * costs the entire reindex, because four parked jobs fill the queue's concurrency
+     * and everything behind them stops with nothing logged.
+     *
+     * A timeout surfaces as a normal read failure, so the product keeps the vectors it
+     * already had instead of being emptied.
+     */
+    private async readAsset(source: string): Promise<Buffer> {
+        const ms = this.options.assetReadTimeoutMs ?? 15_000;
+        const storage = this.configService.assetOptions.assetStorageStrategy;
+        let timer: NodeJS.Timeout | undefined;
+        try {
+            return await Promise.race([
+                storage.readFileToBuffer(source),
+                new Promise<never>((_, reject) => {
+                    timer = setTimeout(
+                        () => reject(new Error(`timed out after ${ms}ms`)),
+                        ms,
+                    );
+                }),
+            ]);
+        } finally {
+            if (timer) {
+                clearTimeout(timer);
+            }
+        }
+    }
 
     async onModuleInit(): Promise<void> {
         this.indexQueue = await this.jobQueueService.createQueue<IndexJobData>({
@@ -65,36 +118,71 @@ export class VisualSearchService implements OnModuleInit {
                 // Tolerate the old single-product payload: jobs queued before this
                 // change may still be sitting in the database when it deploys.
                 const ids = job.data.productIds ?? (job.data.productId != null ? [job.data.productId] : []);
-                await this.indexProducts(ctx, ids);
+                await this.indexProducts(ctx, ids, job.data.revision);
             },
         });
     }
 
     // --- Indexing ------------------------------------------------------------
 
-    /** Enqueue every non-deleted product, in batches. Returns how many were queued. */
-    async reindexAll(ctx: RequestContext): Promise<number> {
+    /**
+     * Enqueue non-deleted products for embedding, in batches. Returns how many were
+     * queued.
+     *
+     * `onlyMissing` makes the operation resumable. A reindex is hundreds of independent
+     * jobs with no progress file, so a cancelled or crashed run leaves the index part
+     * built with no record of where it stopped. Re-running with `onlyMissing` enqueues
+     * just the products that have no row at the live revision, which turns "start over"
+     * into "finish the job" — the difference between minutes and a full re-run.
+     */
+    async reindexAll(ctx: RequestContext, onlyMissing = false): Promise<number> {
         // Force a fresh /health before writing thousands of revision-stamped rows. A
         // cached revision from before a model swap would stamp every one of them with
         // an identity the vectors do not belong to, and nothing would report an error.
         const health = await this.embedder.refreshHealth();
 
-        const products = await this.connection
+        // Refuse to build an index against an identity that will not survive a restart.
+        // The vectors would be perfectly good and every row would still be orphaned the
+        // moment the embedder next resolves its real revision, with no error anywhere.
+        if (health.revision.includes(UNPINNED_REVISION_MARKER)) {
+            throw new Error(
+                `Embedder revision is unpinned (${health.revision}): it could not reach the ` +
+                    'model hub to resolve a commit sha, so this identity will change on its ' +
+                    'next successful start and orphan everything written now. Restart the ' +
+                    'embedder with working network access, confirm GET /health, then retry.',
+            );
+        }
+
+        const qb = this.connection
             .getRepository(ctx, Product)
             .createQueryBuilder('product')
             .select(['product.id'])
-            .where('product.deletedAt IS NULL')
-            .getMany();
+            .where('product.deletedAt IS NULL');
+
+        if (onlyMissing) {
+            // Products with no assets never produce a row, so they are re-queued every
+            // time. That is cheap — two lookups and no embedding — and keeps the check
+            // honest about what "indexed" means rather than tracking attempts.
+            qb.andWhere(
+                `NOT EXISTS (
+                    SELECT 1 FROM product_asset_embedding e
+                    WHERE e."productId" = product.id AND e.revision = :revision
+                )`,
+                { revision: health.revision },
+            );
+        }
+
+        const products = await qb.getMany();
 
         let jobs = 0;
         for (let i = 0; i < products.length; i += INDEX_BATCH_SIZE) {
             const productIds = products.slice(i, i + INDEX_BATCH_SIZE).map(p => p.id);
-            await this.indexQueue.add({ productIds }, { retries: 2 });
+            await this.indexQueue.add({ productIds, revision: health.revision }, { retries: 2 });
             jobs++;
         }
         Logger.info(
             `Queued ${products.length} products for embedding in ${jobs} job(s) ` +
-                `at revision ${health.revision}`,
+                `at revision ${health.revision}${onlyMissing ? ' (missing only)' : ''}`,
             loggerCtx,
         );
         return products.length;
@@ -121,15 +209,35 @@ export class VisualSearchService implements OnModuleInit {
      * already EXIF-rotated by Sharp, whereas the contract wants original bytes with all
      * preprocessing done inside the embedder. The embedder applies its own EXIF
      * transpose, so orientation is handled there.
+     *
+     * A product only joins the replace set once all of its images have been read. The
+     * replace is a delete followed by an insert, so admitting a product whose source
+     * image is unreachable would drop the vectors it already had and write nothing back
+     * — losing it from search entirely while the job still reported success.
      */
-    async indexProducts(ctx: RequestContext, productIds: ID[]): Promise<number> {
+    async indexProducts(
+        ctx: RequestContext,
+        productIds: ID[],
+        expectedRevision?: string,
+    ): Promise<number> {
         if (productIds.length === 0) {
             return 0;
         }
 
-        const storage = this.configService.assetOptions.assetStorageStrategy;
         const health = await this.embedder.getHealth();
         const revision = health.revision;
+
+        // The embedder changed identity between this job being queued and it running.
+        // Writing now would put two incomparable vector spaces under one index with no
+        // error anywhere, so fail instead: the job retries, then surfaces as failed, and
+        // the operator restarts the reindex against a single model.
+        if (expectedRevision && expectedRevision !== revision) {
+            throw new Error(
+                `embedder revision changed mid-run: this job was queued at ` +
+                    `${expectedRevision} but the embedder now reports ${revision}. ` +
+                    'Nothing was written. Re-run the reindex against one model.',
+            );
+        }
 
         // Item ids are composite, not bare asset ids. An asset can legitimately belong
         // to more than one product, and the contract rejects duplicate ids within a
@@ -138,6 +246,7 @@ export class VisualSearchService implements OnModuleInit {
         const payload: Array<{ id: string; data: Buffer }> = [];
         const owner = new Map<string, { productId: ID; assetId: ID }>();
         const indexed: ID[] = [];
+        const unreadable: ID[] = [];
         let assetCount = 0;
 
         for (const productId of productIds) {
@@ -148,24 +257,67 @@ export class VisualSearchService implements OnModuleInit {
                 Logger.warn(`Product ${productId} not visible in this context; skipped`, loggerCtx);
                 continue;
             }
-            indexed.push(productId);
 
             const assets = (await this.assetService.getEntityAssets(ctx, product)) ?? [];
             if (assets.length === 0) {
+                // Still a member of the replace set: replacing with nothing is how rows
+                // for images detached since the last run get dropped.
                 Logger.verbose(`Product ${productId} has no assets; skipped`, loggerCtx);
+                indexed.push(productId);
                 continue;
             }
-            assetCount += assets.length;
+
+            // Staged per product, and only merged into the batch once every one of this
+            // product's images has been read. The replace below is a delete, so a
+            // partially-read product would have its existing vectors dropped and only
+            // partly rewritten — a transient storage error would silently shrink the
+            // index while the job still reported success.
+            const staged: Array<{ id: string; data: Buffer }> = [];
+            let readFailed = false;
 
             for (const asset of assets) {
                 const key = `${productId}:${asset.id}`;
                 try {
-                    payload.push({ id: key, data: await storage.readFileToBuffer(asset.source) });
+                    staged.push({ id: key, data: await this.readAsset(asset.source) });
                     owner.set(key, { productId, assetId: asset.id });
                 } catch (e: any) {
                     Logger.warn(`Asset ${asset.id}: cannot read ${asset.source} (${e.message})`, loggerCtx);
+                    readFailed = true;
+                    break;
                 }
             }
+
+            if (readFailed) {
+                // Leave this product exactly as it was, including its owner entries, so
+                // nothing downstream can attribute a vector to it.
+                for (const item of staged) {
+                    owner.delete(item.id);
+                }
+                unreadable.push(productId);
+                continue;
+            }
+
+            assetCount += assets.length;
+            indexed.push(productId);
+            payload.push(...staged);
+        }
+
+        if (unreadable.length > 0) {
+            Logger.error(
+                `${unreadable.length} product(s) kept their existing vectors because a source ` +
+                    `image could not be read: ${unreadable.join(', ')}`,
+                loggerCtx,
+            );
+        }
+
+        // Every product carrying images failed to read. That is a storage fault, not a
+        // data fault, so fail the job: it retries, and then surfaces as failed instead
+        // of reporting success for a batch that indexed nothing.
+        if (unreadable.length > 0 && payload.length === 0) {
+            throw new Error(
+                `could not read any source image for ${unreadable.length} product(s); ` +
+                    `check asset storage before retrying`,
+            );
         }
 
         const results = payload.length > 0 ? await this.embedder.embedImages(payload) : [];
@@ -173,8 +325,9 @@ export class VisualSearchService implements OnModuleInit {
 
         // Replace rows wholesale rather than upserting per asset. This makes reindexing
         // idempotent AND drops rows for assets detached from the product since the last
-        // run, which a per-asset upsert would strand. Scoped to products actually seen,
-        // so a product that vanished mid-batch keeps whatever it had.
+        // run, which a per-asset upsert would strand. Scoped to products whose images
+        // were *fully* read, so neither a product that vanished mid-batch nor one whose
+        // source images are unreachable loses what it already had.
         if (indexed.length > 0) {
             await repo.delete({ productId: In(indexed as any[]) });
         }
@@ -202,7 +355,8 @@ export class VisualSearchService implements OnModuleInit {
         }
 
         Logger.verbose(
-            `Indexed ${indexed.length} product(s): embedded ${rows.length}/${assetCount} assets`,
+            `Indexed ${indexed.length} product(s): embedded ${rows.length}/${assetCount} assets` +
+                (unreadable.length > 0 ? `, ${unreadable.length} left untouched` : ''),
             loggerCtx,
         );
         return rows.length;
@@ -363,5 +517,66 @@ export class VisualSearchService implements OnModuleInit {
             stale: total - current,
             products: Number(distinct[0]?.count ?? 0),
         };
+    }
+
+    /**
+     * The embedder's own account of itself, for the admin health panel.
+     *
+     * Unlike every other call into EmbedderService this one never throws. A health
+     * check that errors when the thing it checks is down tells the operator nothing
+     * except that something is broken — the panel needs to render "unreachable, here
+     * is why" instead of an empty page. Forces a refresh: a cached answer is exactly
+     * what you do not want when you are asking whether the service is alive.
+     */
+    async getEmbedderHealth(): Promise<{
+        reachable: boolean;
+        status: string | null;
+        modelId: string | null;
+        revision: string | null;
+        embeddingDim: number | null;
+        expectedDim: number;
+        dimMatches: boolean;
+        normalized: boolean | null;
+        modalities: string[] | null;
+        sharedSpace: boolean | null;
+        pinned: boolean;
+        error: string | null;
+    }> {
+        const unreachable = {
+            reachable: false,
+            status: null,
+            modelId: null,
+            revision: null,
+            embeddingDim: null,
+            expectedDim: EMBEDDING_DIM,
+            dimMatches: false,
+            normalized: null,
+            modalities: null,
+            sharedSpace: null,
+            pinned: false,
+            error: null as string | null,
+        };
+        try {
+            const h = await this.embedder.getHealth(true);
+            return {
+                reachable: true,
+                status: h.status,
+                modelId: h.model_id,
+                revision: h.revision,
+                embeddingDim: h.embedding_dim,
+                expectedDim: EMBEDDING_DIM,
+                dimMatches: h.embedding_dim === EMBEDDING_DIM,
+                normalized: h.normalized,
+                modalities: h.modalities,
+                sharedSpace: h.shared_space,
+                // Surfaced because reindexAll refuses to run in this state, and the
+                // operator otherwise has no way to see why from the dashboard.
+                pinned: !h.revision.includes(UNPINNED_REVISION_MARKER),
+                error: null,
+            };
+        } catch (e: any) {
+            Logger.warn(`Embedder health check failed: ${e.message}`, loggerCtx);
+            return { ...unreachable, error: e.message };
+        }
     }
 }

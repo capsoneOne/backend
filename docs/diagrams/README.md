@@ -1,6 +1,6 @@
 # Diagram descriptions
 
-Report-ready text for the three diagrams in this folder. Each entry gives a short figure
+Report-ready text for the diagrams in this folder. Each entry gives a short figure
 caption and a longer description.
 
 Source files:
@@ -9,6 +9,8 @@ Source files:
 - `sequence-end-to-end.drawio`
 - `erd-core.drawio` (generated from `erd-core.sql`)
 - `use-case.drawio`
+- `activity-visual-search.drawio`
+- `activity-indexing.drawio`
 
 ---
 
@@ -185,3 +187,65 @@ behaviour layered onto the product page rather than a step the base case always 
 On the administration side, rebuilding the visual search index includes embedding the
 catalogue images, which is the batch counterpart of the same operation the query path
 performs one image at a time.
+
+---
+
+## Figure 5. Visual search activity
+
+**Caption**
+
+> Activity diagram of the shopper-initiated visual search, showing the validation
+> branches, the optional crop step, and the terminal states the flow can reach.
+
+**Description**
+
+Where Figure 2 traces the messages exchanged between components, this diagram traces the
+decisions the flow makes. The path from a chosen photograph to a ranked result set passes
+four decision points, and three of them can end the interaction without any results being
+shown.
+
+Validation happens before anything is transmitted. The file type and the six-megabyte size
+limit are both checked in the browser, and a failure at either point returns the shopper to
+the selection step rather than terminating the flow, which is the same recovery applied when
+the embedding service is unreachable. The crop step is optional and sits between preview and
+upload, because cropping alters the bytes that are embedded rather than filtering the results
+afterwards; the embedding covers the whole frame, so a photograph with a busy background is
+partly a query for that background.
+
+Two loops appear after results are returned. Refining by sort order, minimum match, or
+maximum price operates on the returned set without re-querying the database, and where a
+filter combination leaves nothing visible the shopper is returned to the unfiltered results
+rather than to an empty screen. The flow terminates in one of three states: a product page
+opened from a match, a no-results state offering the catalogue as an alternative, or an error
+state offering another attempt.
+
+---
+
+## Figure 6. Indexing activity
+
+**Caption**
+
+> Activity diagram of the indexing pipeline that populates the vector index, showing the
+> dimension guard, the batch loop, per-item failure handling, and job retry.
+
+**Description**
+
+This diagram covers the same workload as phase A of Figure 2, but shows what a sequence
+diagram cannot: the loops and the failure paths. Indexing begins either from a product event
+or from an administrator-triggered reindex, and both routes converge on the same first step,
+reading the embedding service's health endpoint to establish which model is about to run.
+
+The dimension guard is the first decision and the only one that aborts outright. If the
+service reports a vector width other than the one the database column was created with, no
+work is queued at all, because vectors of the wrong width cannot be stored and a partially
+written index would be worse than none.
+
+Beyond that point, every failure is designed to degrade rather than stop. A product with no
+assets is skipped rather than treated as an error. An image that the model cannot process is
+recorded and the remaining items in its batch of thirty-two still complete, so one unreadable
+photograph cannot cost the other thirty-one. A job that fails as a whole is retried twice
+before being abandoned. The write itself deletes the product's existing rows before inserting
+the new ones, which makes re-indexing idempotent and also removes vectors for assets that have
+been detached from the product since the previous run. Each inserted row carries the revision
+and model identifier established at the start, which is what allows a query to exclude
+everything an earlier model produced.

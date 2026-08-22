@@ -58,6 +58,9 @@ services:
             # openclip = Panavath/fashion-clip-b32, the team's fine-tune. The real one.
             # Each declares a distinct REVISION, so their vectors can never mix.
             EMBEDDER_MODEL: ${EMBEDDER_MODEL:-stub}
+            # Which fine-tune `openclip` loads. Compose reads the default from this
+            # directory's .env; the code falls back to the same repo if unset.
+            EMBEDDER_OPENCLIP_REPO: ${EMBEDDER_OPENCLIP_REPO:-Panavath/fashion-clip-b32}
             # Cap CPU threads so a reindex cannot starve Postgres and Vendure, which
             # share this machine. Unset lets torch grab every core.
             TORCH_NUM_THREADS: ${TORCH_NUM_THREADS:-4}

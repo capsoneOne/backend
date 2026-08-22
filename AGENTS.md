@@ -43,6 +43,32 @@ backend can be built and changed independently.
   ranking, and read `eval/README.md` first: the committed query set is synthetic and the
   catalog is small, so recall@5 and recall@10 are near their ceiling by construction.
 
+### Reindex runbook
+
+A full reindex is ~4,295 images in ~135 jobs and takes minutes, so the failures that
+matter are the silent ones. In order:
+
+1. `docker compose -f apps/server/docker-compose.yml build embedder` if any `.py`
+   changed. There is no bind mount; without this the container runs the old code and
+   may report a revision the source no longer produces.
+2. `curl localhost:8100/health` and check `revision`. If it contains `unpinned`, the
+   embedder could not reach the hub and `reindexVisualSearch` will refuse — restart it
+   with working network access rather than overriding.
+3. Do not run `catalog:import` or bulk product edits during a reindex. Every
+   `ProductEvent` enqueues another job, and they compete with the batch jobs.
+4. Run the `reindexVisualSearch` mutation. Watch for `VisualSearchPlugin` errors: a
+   product whose source image cannot be read now keeps its existing vectors and is
+   logged at error level rather than silently dropped.
+5. Verify with `visualSearchIndexStatus`. Expect `current` = 4,295 and `stale` = 0.
+   `products` below the catalog count means images went unread.
+6. If the run was interrupted, re-run with `onlyMissing: true` — it enqueues just the
+   products lacking a row at the live revision instead of starting over.
+
+Memory is the one environmental trap: Postgres, Vendure, the storefront and float32
+torch share the machine, and Docker Desktop's default VM allocation is smaller than the
+host's RAM. An OOM-killed embedder fails safe (the HTTP error aborts the job before any
+delete), but it wastes the run.
+
 ## Database Setup
 
 - The schema is built entirely from migrations: `BaselineSchema1785980000000` creates

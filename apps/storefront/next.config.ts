@@ -71,6 +71,13 @@ const nextConfig: NextConfig = {
         // The CSP below is what makes enabling this safe: served SVGs cannot run
         // scripts or reach out to any other origin, which is the whole reason Next
         // gates the format in the first place.
+        // R2 serves these objects with no Cache-Control header at all — only an ETag —
+        // so the optimizer has nothing to honour and falls back to this value. Next's
+        // default is 4 hours, which means every image variant is re-fetched from the
+        // bucket several times a day for a catalogue that never changes in place:
+        // Vendure writes a new asset path when an image is replaced, so a given URL is
+        // immutable and can be held for as long as we like. 30 days.
+        minimumCacheTTL: 60 * 60 * 24 * 30,
         dangerouslyAllowSVG: true,
         contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
         remotePatterns: [
