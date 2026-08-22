@@ -133,7 +133,7 @@ export class EmbedderService implements OnApplicationBootstrap {
 
         for (let i = 0; i < items.length; i += batchSize) {
             const chunk = items.slice(i, i + batchSize);
-            const res = await this.fetch(path, { items: chunk });
+            const res = await this.fetch(path, { items: chunk }, 'POST', this.timeoutFor(chunk.length));
             const body = (await res.json()) as EmbedResponse;
 
             if (body.embedding_dim !== EMBEDDING_DIM) {
@@ -146,9 +146,32 @@ export class EmbedderService implements OnApplicationBootstrap {
         return out;
     }
 
-    private async fetch(path: string, body?: unknown, method: 'GET' | 'POST' = 'POST') {
+    /**
+     * Deadline for one request. A single item is the query path and keeps the flat
+     * timeout; anything larger is an indexing batch, whose cost grows with the number
+     * of images and which no user is waiting on. Without this, a full batch on a slow
+     * host aborts at 30s, the job retries into the same overloaded embedder, and the
+     * reindex fails in a way that looks like a network fault rather than a slow model.
+     */
+    private timeoutFor(itemCount: number): number {
+        const base = this.options.timeoutMs ?? 30_000;
+        if (itemCount <= 1) {
+            return base;
+        }
+        return base + (this.options.perItemTimeoutMs ?? 2_000) * itemCount;
+    }
+
+    private async fetch(
+        path: string,
+        body?: unknown,
+        method: 'GET' | 'POST' = 'POST',
+        timeoutMs?: number,
+    ) {
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), this.options.timeoutMs ?? 30_000);
+        const timer = setTimeout(
+            () => controller.abort(),
+            timeoutMs ?? this.options.timeoutMs ?? 30_000,
+        );
         try {
             const res = await fetch(`${this.options.embedderUrl}${path}`, {
                 method,

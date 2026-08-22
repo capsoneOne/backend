@@ -41,6 +41,9 @@ import { VisualSearchPluginOptions } from './types';
         resolvers: [VisualSearchAdminResolver],
     },
     compatibility: '^3.0.0',
+    // Admin page: embedder identity + index coverage + the reindex controls. Resolved
+    // by the Vite dashboard build, which scans the config for plugins declaring this.
+    dashboard: './dashboard/index.tsx',
 })
 export class VisualSearchPlugin implements OnApplicationBootstrap {
     static options: VisualSearchPluginOptions;

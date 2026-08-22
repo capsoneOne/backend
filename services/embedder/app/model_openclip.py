@@ -90,6 +90,15 @@ def _resolve_revision() -> str:
 
 REVISION = _resolve_revision()
 
+# Marker embedded in the revision string when the hub could not be reached. The backend
+# reads this to refuse a full reindex against an identity that will change on the next
+# successful start — see the guard in VisualSearchService.reindexAll().
+UNPINNED_MARKER = "-unpinned-"
+
+
+def _is_unpinned(revision: str) -> bool:
+    return UNPINNED_MARKER in revision
+
 # The tokenizer is addressed by architecture, not by hub id, on the team's explicit
 # instruction. For a ViT-B-32 fine-tune this is the standard CLIP BPE vocabulary with a
 # 77-token context, which is what the weights were trained against. Resolving it from the
@@ -130,7 +139,25 @@ def load_model() -> None:
     model allocates buffers and resolves kernels, costing seconds. Paying it here means
     the first real request does not.
     """
-    global _model, _preprocess, _tokenizer
+    global _model, _preprocess, _tokenizer, REVISION
+
+    # REVISION is resolved at import time, which is the earliest /health can need it but
+    # also the moment least likely to have working egress — a container that starts
+    # before its network is ready falls back to "unpinned" permanently, and every vector
+    # written in that process claims an identity the next start will not reproduce.
+    # Retry here, where the hub is about to be contacted for weights anyway.
+    if _is_unpinned(REVISION):
+        retried = _resolve_revision()
+        if not _is_unpinned(retried):
+            logger.info("revision resolved on retry: %s -> %s", REVISION, retried)
+            REVISION = retried
+        else:
+            logger.error(
+                "revision is still unpinned (%s). The service will serve queries, but a "
+                "full reindex stamped with this identity is invalid: the next start that "
+                "reaches the hub will resolve a different revision and orphan every row.",
+                REVISION,
+            )
 
     threads = os.getenv("TORCH_NUM_THREADS")
     if threads:

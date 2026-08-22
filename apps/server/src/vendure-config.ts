@@ -193,6 +193,14 @@ export const config: VendureConfig = {
         }),
         VisualSearchPlugin.init({
             embedderUrl: process.env.EMBEDDER_URL ?? 'http://localhost:8100',
+            // Applies to a single-item request: the user-facing query path, which the
+            // contract budgets at p95 < 800 ms, so this is a backstop and not a target.
+            // Indexing batches scale from it — see EmbedderService.timeoutFor().
+            timeoutMs: positiveInt(process.env.EMBEDDER_TIMEOUT_MS, 30_000),
+            perItemTimeoutMs: positiveInt(process.env.EMBEDDER_PER_ITEM_TIMEOUT_MS, 2_000),
+            // Object storage can go quiet without failing. Four hung reads fill the job
+            // queue's concurrency and stop a reindex dead, with no error to show for it.
+            assetReadTimeoutMs: positiveInt(process.env.ASSET_READ_TIMEOUT_MS, 15_000),
         }),
         ChatAssistantPlugin.init({
             apiKey: process.env.OPENAI_API_KEY,
