@@ -17,6 +17,7 @@ import path from 'path';
 
 import { VisualSearchPlugin } from './plugins/visual-search/visual-search.plugin';
 import { ChatAssistantPlugin } from './plugins/chat-assistant/chat-assistant.plugin';
+import { ContactPlugin } from './plugins/contact/contact.plugin';
 
 const IS_DEV = process.env.APP_ENV === 'dev';
 // PORT wins because hosting platforms inject it into the environment at runtime, and that
@@ -223,6 +224,13 @@ export const config: VendureConfig = {
             globalOutputTokensPerDay: positiveInt(process.env.CHAT_GLOBAL_OUTPUT_TOKENS_PER_DAY, 250_000),
             maxConcurrentRequests: positiveInt(process.env.CHAT_MAX_CONCURRENT_REQUESTS, 10),
             leaseTtlSeconds: positiveInt(process.env.CHAT_LEASE_TTL_SECONDS, 45),
+        }),
+        ContactPlugin.init({
+            maxSubmissionsPerHour: positiveInt(process.env.CONTACT_MAX_SUBMISSIONS_PER_HOUR, 5),
+            maxGlobalSubmissionsPerHour: positiveInt(process.env.CONTACT_MAX_GLOBAL_SUBMISSIONS_PER_HOUR, 100),
+            // Falls back to the cookie secret so the hash is never unsalted, but set
+            // CONTACT_HASH_SALT to rotate it without invalidating sessions.
+            hashSalt: process.env.CONTACT_HASH_SALT ?? process.env.COOKIE_SECRET ?? 'contact-salt',
         }),
         EmailPlugin.init({
             devMode: true,

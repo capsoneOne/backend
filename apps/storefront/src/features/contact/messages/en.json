@@ -1,0 +1,39 @@
+{
+  "Contact": {
+    "heading": "Send a message",
+    "lede": "Everything above answers most questions faster. If yours is still open, this reaches the same place.",
+    "fields": {
+      "name": "Your name",
+      "email": "Email address",
+      "topic": "What is this about?",
+      "orderCode": "Order code",
+      "orderCodePlaceholder": "e.g. 000123",
+      "orderCodeHint": "Optional, but it is the fastest way to trace an order.",
+      "message": "Message",
+      "messagePlaceholder": "Include the product name and variant if you are asking about an item."
+    },
+    "topics": {
+      "order": "An order or my account",
+      "product": "A product question",
+      "other": "Something else"
+    },
+    "send": "Send message",
+    "sending": "Sending…",
+    "success": {
+      "title": "Message received.",
+      "body": "This is a student project maintained by one person, so expect a reply in days rather than hours, and no cover on weekends or holidays.",
+      "sendAnother": "Send another"
+    },
+    "validation": {
+      "nameRequired": "Please tell us your name.",
+      "email": "Please enter a valid email address.",
+      "messageTooShort": "Please add a little more detail so this can actually be answered."
+    },
+    "errors": {
+      "required": "Please fill in your name, email and message.",
+      "invalid": "Something in the form was not accepted. Please check and try again.",
+      "rateLimited": "That is several messages in a short time. Please wait an hour before sending another.",
+      "unavailable": "The message could not be sent just now. Please try again shortly."
+    }
+  }
+}
