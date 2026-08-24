@@ -2,6 +2,10 @@
   "name": "visual-search-capstone",
   "version": "0.1.0",
   "private": true,
+  "//engines": "Buildpacks (Nixpacks on Railway) read this to pick a Node version. Without it Railway built on Node 18, below what @aws-sdk and Vendure need. Keep aligned with the version used locally.",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev:all": "npm run infra:up && STOP_INFRA=1 bash scripts/dev.sh",
     "dev": "bash scripts/dev.sh",
