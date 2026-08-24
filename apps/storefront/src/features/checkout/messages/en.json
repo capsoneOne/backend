@@ -90,6 +90,23 @@
     "toBeCalculated": "To be calculated",
     "total": "Total",
     "item": "item",
-    "items": "items"
+    "items": "items",
+    "card": {
+      "title": "Card details",
+      "name": "Name on card",
+      "number": "Card number",
+      "expiry": "Expiry",
+      "cvc": "CVC",
+      "nameRequired": "Please enter the name on the card.",
+      "numberRequired": "Please enter a card number.",
+      "numberInvalid": "That card number is not valid. Please check the digits.",
+      "expiryFormat": "Enter the expiry as MM / YY.",
+      "expiryInvalid": "That expiry date has passed.",
+      "cvcInvalid": "The CVC must be {length} digits.",
+      "declined": "That card was declined. Please try a different card.",
+      "demoNotice": "Demo checkout — no card is charged and no card number leaves your browser.",
+      "demoApproves": "approves;",
+      "demoDeclines": "declines."
+    }
   }
 }

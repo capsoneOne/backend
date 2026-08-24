@@ -85,16 +85,42 @@ export async function transitionToArrangingPayment() {
 
     if (result.data.transitionOrderToState?.__typename === 'OrderStateTransitionError') {
         const errorResult = result.data.transitionOrderToState;
-        throw new Error(
-            `Failed to transition order state: ${errorResult.errorCode} - ${errorResult.message}`
-        );
+
+        // Being there already is not a failure. A declined card leaves the order in
+        // ArrangingPayment, so every retry asks for a transition it has already made
+        // — and treating that as fatal is what made a second card impossible.
+        const {data} = await query(GetActiveOrderForCheckoutQuery, {}, {useAuthToken: true});
+        if (data.activeOrder?.state !== 'ArrangingPayment') {
+            throw new Error(
+                `Failed to transition order state: ${errorResult.errorCode} - ${errorResult.message}`
+            );
+        }
     }
 
     const locale = await getLocale();
     revalidatePath(`/${locale}/checkout`);
 }
 
-export async function placeOrder(paymentMethodCode: string) {
+/**
+ * What the browser reports after validating a card locally.
+ *
+ * Note what is absent: the card number. A real gateway's client library tokenises
+ * in the browser precisely so the number never reaches the merchant's server, and
+ * the demo keeps that boundary — there is no reason for a simulated flow to handle
+ * a PAN when the real one would not.
+ */
+export interface DemoCardPayment {
+    outcome: 'approved' | 'declined';
+    brand: string;
+    last4: string;
+}
+
+export type PlaceOrderResult = { success: false; errorCode: string; message: string };
+
+export async function placeOrder(
+    paymentMethodCode: string,
+    card?: DemoCardPayment,
+): Promise<PlaceOrderResult | void> {
     // First, transition the order to ArrangingPayment state
     await transitionToArrangingPayment();
 
@@ -103,9 +129,16 @@ export async function placeOrder(paymentMethodCode: string) {
 
     // For standard payment, include the required fields
     if (paymentMethodCode === 'standard-payment') {
-        metadata.shouldDecline = false;
+        metadata.shouldDecline = card?.outcome === 'declined';
         metadata.shouldError = false;
         metadata.shouldErrorOnSettle = false;
+        if (card) {
+            // Recorded so the admin sees which card was presented, in the same
+            // shape a real gateway reports it: brand and last four, nothing more.
+            metadata.simulated = true;
+            metadata.cardBrand = card.brand;
+            metadata.cardLast4 = card.last4;
+        }
     }
 
     // Add payment to the order
@@ -122,9 +155,14 @@ export async function placeOrder(paymentMethodCode: string) {
 
     if (result.data.addPaymentToOrder.__typename !== 'Order') {
         const errorResult = result.data.addPaymentToOrder;
-        throw new Error(
-            `Failed to place order: ${errorResult.errorCode} - ${errorResult.message}`
-        );
+        // A declined card is an expected outcome, not a crash. Returning it lets the
+        // form say so and keeps the order in ArrangingPayment so another card can be
+        // tried, which is what throwing here used to prevent.
+        return {
+            success: false,
+            errorCode: errorResult.errorCode,
+            message: errorResult.message,
+        };
     }
 
     const orderCode = result.data.addPaymentToOrder.code;

@@ -8,7 +8,8 @@ import { placeOrder as placeOrderAction } from '../actions';
 import { Price } from '@/features/pricing/price';
 import {useTranslations} from 'next-intl';
 import {StripePayment} from '@/features/checkout/stripe-payment';
-import {STRIPE_PAYMENT_METHOD_CODE} from '@/features/checkout/payment-methods';
+import {STRIPE_PAYMENT_METHOD_CODE, DEMO_CARD_PAYMENT_METHOD_CODE} from '@/features/checkout/payment-methods';
+import {DemoCardForm} from '@/features/checkout/demo-card-form';
 
 interface ReviewStepProps {
   onEditStep: (step: 'contact' | 'shipping' | 'delivery' | 'payment') => void;
@@ -23,6 +24,10 @@ export default function ReviewStep({ onEditStep }: ReviewStepProps) {
     (method) => method.code === selectedPaymentMethodCode
   );
   const isStripe = selectedPaymentMethodCode === STRIPE_PAYMENT_METHOD_CODE;
+  const isDemoCard = selectedPaymentMethodCode === DEMO_CARD_PAYMENT_METHOD_CODE;
+  const readyToPay = Boolean(
+    order.shippingAddress && order.shippingLines?.length && selectedPaymentMethodCode,
+  );
 
   const handlePlaceOrder = async () => {
     if (!selectedPaymentMethodCode) return;
@@ -164,10 +169,12 @@ export default function ReviewStep({ onEditStep }: ReviewStepProps) {
 
       {isStripe ? (
         <StripePayment />
+      ) : isDemoCard ? (
+        <DemoCardForm disabled={!readyToPay} />
       ) : (
         <Button
           onClick={handlePlaceOrder}
-          disabled={loading || !order.shippingAddress || !order.shippingLines?.length || !selectedPaymentMethodCode}
+          disabled={loading || !readyToPay}
           size="lg"
           className="min-h-11 w-full px-5"
         >
@@ -176,7 +183,7 @@ export default function ReviewStep({ onEditStep }: ReviewStepProps) {
         </Button>
       )}
 
-      {(!order.shippingAddress || !order.shippingLines?.length || !selectedPaymentMethodCode) && (
+      {!readyToPay && (
         <p className="text-sm text-destructive text-center">
           {t('completeAllSteps')}
         </p>
