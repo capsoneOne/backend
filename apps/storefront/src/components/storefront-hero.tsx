@@ -4,10 +4,16 @@ interface StorefrontHeroProps {
     children: ReactNode;
     artwork: ReactNode;
     topContent?: ReactNode;
+    /**
+     * Illustrations need the card's padding and translucent fill to read as art on
+     * the section background; photography needs the opposite — it has to run to the
+     * frame's edge or the inset border reads as a mistake.
+     */
+    artworkFrame?: 'padded' | 'bleed';
 }
 
 /** Shared display hero for the storefront's primary discovery experiences. */
-export function StorefrontHero({children, artwork, topContent}: StorefrontHeroProps) {
+export function StorefrontHero({children, artwork, topContent, artworkFrame = 'padded'}: StorefrontHeroProps) {
     return (
         <section className="border-b border-border bg-secondary/20 pt-[4.5rem]">
             {topContent}
@@ -15,7 +21,11 @@ export function StorefrontHero({children, artwork, topContent}: StorefrontHeroPr
                 <div className="relative z-10 max-w-3xl">
                     {children}
                 </div>
-                <div className="animate-fade-up relative mx-auto w-full max-w-[34rem] overflow-hidden rounded-xl border border-border bg-background/70 p-5 [animation-delay:100ms]">
+                <div
+                    className={`animate-fade-up relative mx-auto w-full max-w-[34rem] overflow-hidden rounded-xl border border-border [animation-delay:100ms] ${
+                        artworkFrame === 'bleed' ? 'bg-muted' : 'bg-background/70 p-5'
+                    }`}
+                >
                     {artwork}
                 </div>
             </div>

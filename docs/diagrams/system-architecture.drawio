@@ -1,0 +1,112 @@
+<mxfile host="app.diagrams.net" type="device">
+  <diagram name="System Architecture" id="sysarch">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="visual-search-capstone — system architecture" style="text;html=1;fontSize=18;fontStyle=1;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="600" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="host_railway" value="Railway" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 6;fillColor=#F8FAFC;strokeColor=#94A3B8;verticalAlign=top;align=left;spacingLeft=14;spacingTop=6;fontSize=13;fontStyle=1;fontColor=#475569;" vertex="1" parent="1">
+          <mxGeometry x="400" y="90" width="440" height="480" as="geometry" />
+        </mxCell>
+        <mxCell id="host_hf" value="Hugging Face" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 6;fillColor=#FFFBEB;strokeColor=#D97706;verticalAlign=top;align=left;spacingLeft=14;spacingTop=6;fontSize=13;fontStyle=1;fontColor=#B45309;" vertex="1" parent="1">
+          <mxGeometry x="920" y="90" width="300" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="host_cf" value="Cloudflare" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 6;fillColor=#FFF7ED;strokeColor=#F97316;verticalAlign=top;align=left;spacingLeft=14;spacingTop=6;fontSize=13;fontStyle=1;fontColor=#C2410C;" vertex="1" parent="1">
+          <mxGeometry x="920" y="530" width="300" height="190" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_shopper" value="Shopper" style="sketch=0;outlineConnect=0;fontColor=#1B1F27;gradientColor=none;fillColor=#475569;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;fontStyle=1;shape=mxgraph.networks.users;" vertex="1" parent="1">
+          <mxGeometry x="70" y="250" width="80" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_storefront" value="Storefront&#10;Next.js :3001" style="sketch=0;outlineConnect=0;fontColor=#1B1F27;gradientColor=none;fillColor=#2563EB;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;fontStyle=1;shape=mxgraph.networks.web_server;" vertex="1" parent="1">
+          <mxGeometry x="230" y="240" width="80" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_server" value="Vendure Server&#10;Shop + Admin API :3000" style="sketch=0;outlineConnect=0;fontColor=#1B1F27;gradientColor=none;fillColor=#7C3AED;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;fontStyle=1;shape=mxgraph.networks.server;" vertex="1" parent="1">
+          <mxGeometry x="450" y="150" width="80" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_worker" value="Vendure Worker&#10;job queue, concurrency 4" style="sketch=0;outlineConnect=0;fontColor=#1B1F27;gradientColor=none;fillColor=#0F766E;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;fontStyle=1;shape=mxgraph.networks.virtual_server;" vertex="1" parent="1">
+          <mxGeometry x="700" y="150" width="80" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_pg" value="Postgres + pgvector&#10;catalog · vectors · job queue" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fillColor=#DBEAFE;strokeColor=#1D4ED8;verticalLabelPosition=bottom;verticalAlign=top;fontSize=13;fontStyle=1;fontColor=#1B1F27;" vertex="1" parent="1">
+          <mxGeometry x="570" y="380" width="100" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_embedder" value="Embedder&#10;FastAPI :8100 · open_clip ViT-B/32" style="sketch=0;outlineConnect=0;fontColor=#1B1F27;gradientColor=none;fillColor=#B91C1C;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;fontStyle=1;shape=mxgraph.networks.mainframe;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="150" width="80" height="95" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_hub" value="Model weights&#10;Panavath/fashion-clip-b32" style="sketch=0;outlineConnect=0;fontColor=#1B1F27;gradientColor=none;fillColor=#D97706;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;fontStyle=1;shape=mxgraph.networks.cloud;" vertex="1" parent="1">
+          <mxGeometry x="1015" y="350" width="110" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_r2" value="R2 object storage&#10;source + preview images" style="sketch=0;outlineConnect=0;fontColor=#1B1F27;gradientColor=none;fillColor=#EA580C;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;fontStyle=1;shape=mxgraph.networks.storage;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="580" width="80" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="k1" value="index path (write)" style="text;html=1;fontSize=12;fontColor=#0F766E;fontStyle=1;align=left;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="70" y="770" width="180" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="k2" value="query path (read)" style="text;html=1;fontSize=12;fontColor=#9C4A22;fontStyle=1;align=left;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="240" y="770" width="180" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="k3" value="shared" style="text;html=1;fontSize=12;fontColor=#666666;fontStyle=1;align=left;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="410" y="770" width="120" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_shop_store" value="browses" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;strokeColor=#666666;strokeWidth=1.5;endArrow=block;" edge="1" parent="1" source="n_shopper" target="n_storefront">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_store_server" value="GraphQL /shop-api&#10;image as base64" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;strokeColor=#666666;strokeWidth=1.5;endArrow=block;verticalAlign=bottom;" edge="1" parent="1" source="n_storefront" target="n_server">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_server_pg" value="SQL" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;strokeColor=#666666;strokeWidth=1.5;endArrow=block;" edge="1" parent="1" source="n_server" target="n_pg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_worker_pg" value="polls queue&#10;writes vectors" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;strokeColor=#0F766E;strokeWidth=1.5;endArrow=block;" edge="1" parent="1" source="n_worker" target="n_pg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_server_embed" value="query · 1 image" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;strokeColor=#9C4A22;strokeWidth=1.8;endArrow=block;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_server" target="n_embedder">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="490" y="120" /><mxPoint x="990" y="120" /><mxPoint x="990" y="174" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_worker_embed" value="index · batch of 32" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;strokeColor=#0F766E;strokeWidth=1.8;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_worker" target="n_embedder">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_worker_r2" value="GET source bytes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;strokeColor=#0F766E;strokeWidth=1.8;endArrow=block;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_worker" target="n_r2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="870" y="218" /><mxPoint x="870" y="625" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_store_r2" value="loads product images straight from the bucket" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;strokeColor=#666666;strokeWidth=1.5;endArrow=block;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_storefront" target="n_r2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="270" y="700" /><mxPoint x="960" y="700" /><mxPoint x="960" y="648" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_embed_hub" value="weights on first load" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;strokeColor=#666666;strokeWidth=1.5;endArrow=block;dashed=1;" edge="1" parent="1" source="n_embedder" target="n_hub">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note1" value="Server and worker never talk directly.&#10;The job queue is rows in Postgres." style="text;html=1;fontSize=11;fontColor=#475569;align=left;strokeColor=none;fillColor=none;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="420" y="510" width="300" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

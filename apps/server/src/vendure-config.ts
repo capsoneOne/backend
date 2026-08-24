@@ -109,6 +109,13 @@ export const config: VendureConfig = {
         // the `synchronize` and `migrations` options.
         synchronize: false,
         migrations: [path.join(__dirname, './migrations/*.+(js|ts)')],
+        // src/index.ts calls runMigrations() before bootstrap, but that only applies when
+        // the process is started via dist/index.js. `vendure start all` boots from this
+        // config directly, so on a hosting platform the schema would never be created and
+        // the server would exit against an empty database. Having TypeORM apply pending
+        // migrations on connect makes it entry-point independent; already-applied ones
+        // are no-ops. Safe here because the deployment runs a single instance.
+        migrationsRun: true,
         logging: false,
         database: process.env.DB_NAME,
         schema: process.env.DB_SCHEMA,
@@ -119,6 +126,15 @@ export const config: VendureConfig = {
     },
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
+    },
+    importExportOptions: {
+        // Where `importProducts` resolves the CSV's asset paths from. The default is a
+        // directory inside node_modules, so without this every bulk import silently
+        // creates products with no images.
+        //
+        // The paths in static/a/catalog-import.csv are <category>/<file> relative to
+        // here, because the same filenames repeat across the category folders.
+        importAssetsDir: path.join(__dirname, '../static/a/dataset_clean'),
     },
     // When adding or altering custom field definitions, the database will
     // need to be updated. See the "Migrations" section in README.md.
@@ -164,7 +180,16 @@ export const config: VendureConfig = {
                 : {}),
         }),
         DefaultSchedulerPlugin.init(),
-        DefaultJobQueuePlugin.init({ useDatabaseForBuffer: true }),
+        // concurrency defaults to 1, which serialises every background job. A full
+        // visual-search reindex is thousands of jobs whose cost is dominated by pulling
+        // each source image from object storage — I/O, not CPU — so running a few in
+        // flight overlaps those fetches. Kept modest on purpose: the embedder is a
+        // single worker process and will serialise the inference regardless, so a high
+        // value buys nothing and just queues requests against it.
+        DefaultJobQueuePlugin.init({
+            useDatabaseForBuffer: true,
+            concurrency: positiveInt(process.env.JOB_QUEUE_CONCURRENCY, 4),
+        }),
         DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: true }),
         StripePlugin.init({
             // Stripe payment methods are configured per channel in Vendure. Keeping
@@ -175,6 +200,14 @@ export const config: VendureConfig = {
         }),
         VisualSearchPlugin.init({
             embedderUrl: process.env.EMBEDDER_URL ?? 'http://localhost:8100',
+            // Applies to a single-item request: the user-facing query path, which the
+            // contract budgets at p95 < 800 ms, so this is a backstop and not a target.
+            // Indexing batches scale from it — see EmbedderService.timeoutFor().
+            timeoutMs: positiveInt(process.env.EMBEDDER_TIMEOUT_MS, 30_000),
+            perItemTimeoutMs: positiveInt(process.env.EMBEDDER_PER_ITEM_TIMEOUT_MS, 2_000),
+            // Object storage can go quiet without failing. Four hung reads fill the job
+            // queue's concurrency and stop a reindex dead, with no error to show for it.
+            assetReadTimeoutMs: positiveInt(process.env.ASSET_READ_TIMEOUT_MS, 15_000),
         }),
         ChatAssistantPlugin.init({
             apiKey: process.env.OPENAI_API_KEY,

@@ -15,3 +15,15 @@ export const INDEX_PRODUCT_QUEUE = 'visual-search-index-product';
  * the service refuses to start if they disagree.
  */
 export const EMBEDDING_DIM = 512;
+
+/**
+ * Marker the embedder puts in its revision string when it could not reach the model hub
+ * to resolve a commit sha (services/embedder/app/model_openclip.py).
+ *
+ * Such a revision is safe to *query* with — the vectors are real — but must never be
+ * stamped onto a full index: the next start that does reach the hub resolves the true
+ * sha, and because search filters on revision, every row written under the unpinned
+ * identity becomes invisible in one restart. The two sides agree on this literal by
+ * convention, not by contract, so keep them in step.
+ */
+export const UNPINNED_REVISION_MARKER = '-unpinned-';

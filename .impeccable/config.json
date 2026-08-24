@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "apps/storefront/src/features/visual-search/components/visual-search-client.tsx"
+        ],
+        "createdAt": "2026-08-18T02:01:15.404Z",
+        "reason": "Claude: RETICLE_CORNERS draws four L-shaped viewfinder brackets (two adjacent 2px borders per corner span) on the scan frame, not a side accent bar on a card"
+      },
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "apps/storefront/src/features/visual-search/components/visual-search-client.tsx"
+        ],
+        "createdAt": "2026-08-18T02:01:50.676Z",
+        "reason": "Claude: same RETICLE_CORNERS brackets; the small radius is on each bracket's own outer corner, so there is no border/radius clash"
+      }
+    ]
+  }
+}

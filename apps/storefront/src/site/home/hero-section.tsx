@@ -20,15 +20,18 @@ export async function HeroSection() {
                     <WelcomeBar />
                 </Suspense>
             )}
+            artworkFrame="bleed"
             artwork={(
-                <Image
-                    src="/storyset/ecommerce-web-page-cuate.svg"
-                    alt={t('illustrationAlt')}
-                    width={750}
-                    height={500}
-                    priority
-                    className="h-auto w-full object-contain lg:scale-[1.14]"
-                />
+                <div className="relative aspect-[4/5] w-full lg:aspect-[3/4]">
+                    <Image
+                        src="/hero/marketplace-shopping-bags.jpg"
+                        alt={t('heroImageAlt')}
+                        fill
+                        priority
+                        sizes="(min-width: 1024px) 34rem, 100vw"
+                        className="object-cover object-top"
+                    />
+                </div>
             )}
         >
             <StorefrontHeroHeading

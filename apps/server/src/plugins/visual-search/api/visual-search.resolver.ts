@@ -68,10 +68,19 @@ export class VisualSearchAdminResolver {
         return this.visualSearch.getIndexStatus(ctx);
     }
 
+    @Query()
+    @Allow(Permission.ReadCatalog)
+    async visualSearchEmbedderHealth() {
+        return this.visualSearch.getEmbedderHealth();
+    }
+
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    async reindexVisualSearch(@Ctx() ctx: RequestContext) {
-        return this.visualSearch.reindexAll(ctx);
+    async reindexVisualSearch(
+        @Ctx() ctx: RequestContext,
+        @Args() args: { onlyMissing?: boolean },
+    ) {
+        return this.visualSearch.reindexAll(ctx, args.onlyMissing ?? false);
     }
 }
 
