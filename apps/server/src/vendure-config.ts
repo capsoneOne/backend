@@ -109,6 +109,13 @@ export const config: VendureConfig = {
         // the `synchronize` and `migrations` options.
         synchronize: false,
         migrations: [path.join(__dirname, './migrations/*.+(js|ts)')],
+        // src/index.ts calls runMigrations() before bootstrap, but that only applies when
+        // the process is started via dist/index.js. `vendure start all` boots from this
+        // config directly, so on a hosting platform the schema would never be created and
+        // the server would exit against an empty database. Having TypeORM apply pending
+        // migrations on connect makes it entry-point independent; already-applied ones
+        // are no-ops. Safe here because the deployment runs a single instance.
+        migrationsRun: true,
         logging: false,
         database: process.env.DB_NAME,
         schema: process.env.DB_SCHEMA,
