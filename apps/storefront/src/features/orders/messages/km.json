@@ -23,5 +23,18 @@
     "shippingAddress": "អាសយដ្ឋានដឹកជញ្ជូន",
     "continueShopping": "បន្តទិញទំនិញ",
     "viewOrders": "មើលការបញ្ជាទិញ"
+  },
+  "Delivery": {
+    "title": "ការដឹកជញ្ជូន",
+    "notShippedYet": "ការបញ្ជាទិញនេះមិនទាន់ដឹកជញ្ជូននៅឡើយទេ។ អ្នកនឹងឃើញព័ត៌មានលម្អិតនៅទីនេះ នៅពេលវាចាប់ផ្តើមដឹកជញ្ជូន។",
+    "shipmentNumber": "កញ្ចប់ទី {number}",
+    "method": "វិធីដឹកជញ្ជូន",
+    "trackingCode": "លេខតាមដាន",
+    "states": {
+      "Pending": "កំពុងរៀបចំ",
+      "Shipped": "បានដឹកជញ្ជូន",
+      "Delivered": "បានដល់ដៃ",
+      "Cancelled": "បានបោះបង់"
+    }
   }
 }

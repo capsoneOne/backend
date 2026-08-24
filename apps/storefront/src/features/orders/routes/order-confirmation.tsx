@@ -12,6 +12,7 @@ import {query} from '@/platform/vendure/api';
 import {graphql} from '@/platform/vendure/graphql';
 import {StorefrontPageHeader, StorefrontPageShell} from '@/components/catalogue-page';
 import {PaymentStatusRefresh} from '@/features/orders/payment-status-refresh';
+import {DeliveryStatus} from '@/features/orders/delivery-status';
 
 const CONFIRMED_ORDER_STATES = new Set([
     'PaymentAuthorized',
@@ -56,6 +57,13 @@ const GetOrderByCodeQuery = graphql(`
                 province
                 postalCode
                 country
+            }
+            fulfillments {
+                id
+                state
+                method
+                trackingCode
+                createdAt
             }
         }
     }
@@ -158,6 +166,8 @@ export async function OrderConfirmation({paramsPromise}: OrderConfirmationProps)
                         </div>
                     </CardContent>
                 </Card>
+
+                <DeliveryStatus fulfillments={order.fulfillments} className="mb-6" />
 
                 {order.shippingAddress && (
                     <Card className="mb-8">

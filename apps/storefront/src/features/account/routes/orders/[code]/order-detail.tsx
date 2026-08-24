@@ -8,6 +8,7 @@ import Image from 'next/image';
 import {Link} from '@/platform/i18n/navigation';
 import {Price} from '@/features/pricing/price';
 import {OrderStatusBadge} from '@/features/orders/order-status-badge';
+import {DeliveryStatus} from '@/features/orders/delivery-status';
 import {formatDate} from '@/platform/i18n/format';
 import {useLocale, useTranslations} from 'next-intl';
 import type {ResultOf} from '@/platform/vendure/graphql';
@@ -132,6 +133,11 @@ export function OrderDetail({orderPromise}: OrderDetailProps) {
                 </div>
 
                 <div className="space-y-6">
+                    <DeliveryStatus
+                        fulfillments={order.fulfillments}
+                        className="gap-5 border-border"
+                    />
+
                     {order.shippingAddress && (
                         <Card className="gap-5 border-border">
                             <CardHeader><CardTitle>{t('shippingAddress')}</CardTitle></CardHeader>

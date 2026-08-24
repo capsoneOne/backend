@@ -6,7 +6,7 @@ import {
     LanguageCode,
     VendureConfig,
 } from '@vendure/core';
-import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
+import { EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
 import { json } from 'express';
 import { AssetServerPlugin, configureS3AssetStorage } from '@vendure/asset-server-plugin';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
@@ -18,6 +18,7 @@ import path from 'path';
 import { VisualSearchPlugin } from './plugins/visual-search/visual-search.plugin';
 import { ChatAssistantPlugin } from './plugins/chat-assistant/chat-assistant.plugin';
 import { ContactPlugin } from './plugins/contact/contact.plugin';
+import { emailHandlers, emailLogoCid } from './email/handlers';
 
 const IS_DEV = process.env.APP_ENV === 'dev';
 // PORT wins because hosting platforms inject it into the environment at runtime, and that
@@ -60,6 +61,42 @@ function positiveInt(value: string | undefined, fallback: number): number {
     const parsed = Number(value);
     return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
 }
+
+/**
+ * How email leaves the server.
+ *
+ * Credentials decide the mode rather than a flag: a clone with no mail account
+ * still boots and writes messages to the dev mailbox, while setting SMTP_USER and
+ * SMTP_PASSWORD switches the same build to real delivery. A flag would let the two
+ * disagree — real credentials with devMode still on silently swallows every email.
+ */
+const SMTP_USER = process.env.SMTP_USER;
+const SMTP_PASSWORD = process.env.SMTP_PASSWORD;
+const SMTP_PORT = positiveInt(process.env.SMTP_PORT, 587);
+
+const EMAIL_FROM =
+    process.env.EMAIL_FROM ??
+    (SMTP_USER ? `"Lume" <${SMTP_USER}>` : '"example" <noreply@example.com>');
+
+const emailDelivery =
+    SMTP_USER && SMTP_PASSWORD
+        ? ({
+              transport: {
+                  type: 'smtp',
+                  host: process.env.SMTP_HOST ?? 'smtp.gmail.com',
+                  port: SMTP_PORT,
+                  // 465 is implicit TLS; 587 opens in the clear and upgrades via
+                  // STARTTLS, so declaring it secure makes the handshake fail.
+                  secure: SMTP_PORT === 465,
+                  auth: { user: SMTP_USER, pass: SMTP_PASSWORD },
+              },
+          } as const)
+        : ({
+              devMode: true,
+              outputPath: path.join(__dirname, '../static/email/test-emails'),
+              route: 'mailbox',
+          } as const);
+
 
 export const config: VendureConfig = {
     apiOptions: {
@@ -233,16 +270,21 @@ export const config: VendureConfig = {
             hashSalt: process.env.CONTACT_HASH_SALT ?? process.env.COOKIE_SECRET ?? 'contact-salt',
         }),
         EmailPlugin.init({
-            devMode: true,
-            outputPath: path.join(__dirname, '../static/email/test-emails'),
-            route: 'mailbox',
-            handlers: defaultEmailHandlers,
+            ...emailDelivery,
+            handlers: emailHandlers,
             templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
             globalTemplateVars: {
                 // These must match the actual storefront: it runs on 3001 (not the
                 // scaffold's 8080) and its routes are locale-prefixed, so a link
                 // without /<locale> 404s. STOREFRONT_URL overrides for deploys.
-                fromAddress: '"example" <noreply@example.com>',
+                fromAddress: EMAIL_FROM,
+                // Supplied globally rather than per handler: the plugin merges globals
+                // underneath each handler's own template vars, so every email gets the
+                // logo without any handler restating its variables to receive it.
+                logoCid: emailLogoCid,
+                // Templates link back to the storefront; keeping the locale here means
+                // a template never has to know the routing scheme.
+                storefrontUrl: `${STOREFRONT_URL}/${DEFAULT_LOCALE}`,
                 verifyEmailAddressUrl: `${STOREFRONT_URL}/${DEFAULT_LOCALE}/verify`,
                 passwordResetUrl: `${STOREFRONT_URL}/${DEFAULT_LOCALE}/reset-password`,
                 changeEmailAddressUrl: `${STOREFRONT_URL}/${DEFAULT_LOCALE}/account/verify-email`,

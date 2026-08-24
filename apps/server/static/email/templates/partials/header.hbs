@@ -1,18 +1,44 @@
+{{!--
+    Branding is set in type, not an image.
+
+    Mail clients fetch remote images through their own proxies, so anything served
+    from a host they cannot reach — a dev machine, a private network — renders as a
+    broken icon. A wordmark drawn with text always arrives.
+--}}
 <mjml>
     <mj-head>
         <mj-title>{{ title }}</mj-title>
+        <mj-preview>{{ preview }}</mj-preview>
+        <mj-attributes>
+            <mj-all font-family="Helvetica Neue, Helvetica, Arial, sans-serif" />
+            <mj-text font-size="15px" line-height="1.6" color="#1c2024" />
+            <mj-section padding="20px 24px" />
+        </mj-attributes>
         <mj-style inline="inline">
             h3 {
-                font-size: 18px;
-                color: #555;
-                font-weight: normal;
+                font-size: 15px;
+                color: #1c2024;
+                font-weight: 700;
+                margin: 0 0 8px 0;
             }
+            a { color: #0068D5; }
         </mj-style>
     </mj-head>
 
-    <mj-body>
-        <mj-section background-color="#f0f0f0">
+    <mj-body background-color="#eef2f7">
+        <mj-section background-color="#0068D5" padding="24px">
             <mj-column>
-                <mj-text>[company header]</mj-text>
+                {{#if logoCid}}
+                    {{!-- A white variant of the mark, so it sits on the brand band
+                          without a plate behind it. The name below is set in type so
+                          the branding still lands when images are blocked. --}}
+                    <mj-image src="cid:{{ logoCid }}" alt="Lumé" width="52px" padding="0 0 12px 0" />
+                {{/if}}
+                <mj-text align="center" color="#ffffff" font-size="26px" font-weight="700" letter-spacing="-0.5px" padding="0">
+                    Lumé
+                </mj-text>
+                <mj-text align="center" color="#cfe4ff" font-size="11px" letter-spacing="1.5px" text-transform="uppercase" padding="6px 0 0 0">
+                    One marketplace. Every category.
+                </mj-text>
             </mj-column>
         </mj-section>

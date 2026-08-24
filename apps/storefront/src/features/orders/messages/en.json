@@ -23,5 +23,18 @@
     "shippingAddress": "Shipping Address",
     "continueShopping": "Continue Shopping",
     "viewOrders": "View Orders"
+  },
+  "Delivery": {
+    "title": "Delivery",
+    "notShippedYet": "This order has not shipped yet. You will see shipment details here once it is on its way.",
+    "shipmentNumber": "Shipment {number}",
+    "method": "Method",
+    "trackingCode": "Tracking code",
+    "states": {
+      "Pending": "Preparing",
+      "Shipped": "Shipped",
+      "Delivered": "Delivered",
+      "Cancelled": "Cancelled"
+    }
   }
 }
