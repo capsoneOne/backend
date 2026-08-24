@@ -111,3 +111,32 @@ export const GetProductDetailQuery = graphql(`
         }
     }
 `);
+
+export const HeroMosaicProductFragment = graphql(`
+    fragment HeroMosaicProduct on Product {
+        id
+        name
+        slug
+        featuredAsset {
+            id
+            preview
+            width
+            height
+        }
+        variants {
+            id
+            priceWithTax
+            currencyCode
+        }
+    }
+`);
+
+export const GetHeroMosaicProductsQuery = graphql(`
+    query GetHeroMosaicProducts($options: ProductListOptions) {
+        products(options: $options) {
+            items {
+                ...HeroMosaicProduct
+            }
+        }
+    }
+`, [HeroMosaicProductFragment]);
