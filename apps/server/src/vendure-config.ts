@@ -11,7 +11,6 @@ import { json } from 'express';
 import { AssetServerPlugin, configureS3AssetStorage } from '@vendure/asset-server-plugin';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
-import { StripePlugin } from '@vendure-community/stripe-plugin';
 import 'dotenv/config';
 import path from 'path';
 
@@ -21,6 +20,7 @@ import { GROQ_BASE_URL } from './plugins/chat-assistant/constants';
 import { ContactPlugin } from './plugins/contact/contact.plugin';
 import { emailHandlers, emailLogoCid } from './email/handlers';
 import { TelegramPlugin } from './plugins/telegram/telegram.plugin';
+import { PayWayPlugin } from './plugins/payway/payway.plugin';
 
 const IS_DEV = process.env.APP_ENV === 'dev';
 // PORT wins because hosting platforms inject it into the environment at runtime, and that
@@ -205,9 +205,15 @@ export const config: VendureConfig = {
             assetUploadDir: path.join(__dirname, '../static/assets'),
             // Serve straight from the bucket's public URL rather than proxying every
             // image through Vendure. Trailing slash matters — Vendure concatenates.
+            // Always set, on both paths. Left undefined, the local storage strategy
+            // builds asset URLs from the incoming request — which works for a browser
+            // hitting the API and throws for anything without one. Order confirmation
+            // emails are rendered from an event, not a request, so every settled order
+            // failed to send its email with "Cannot read properties of undefined
+            // (reading 'headers')".
             assetUrlPrefix: R2_ENABLED
                 ? `${process.env.R2_PUBLIC_URL.replace(/\/$/, '')}/`
-                : undefined,
+                : `${(process.env.ASSET_URL_PREFIX ?? `http://localhost:${serverPort}`).replace(/\/$/, '')}/assets/`,
             ...(R2_ENABLED
                 ? {
                       storageStrategyFactory: configureS3AssetStorage({
@@ -237,12 +243,16 @@ export const config: VendureConfig = {
             concurrency: positiveInt(process.env.JOB_QUEUE_CONCURRENCY, 4),
         }),
         DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: true }),
-        StripePlugin.init({
-            // Stripe payment methods are configured per channel in Vendure. Keeping
-            // customer creation disabled avoids adding a schema-level custom field;
-            // the PaymentIntent still carries the Vendure order/channel metadata.
-            storeCustomersInStripe: false,
-            skipPaymentIntentsWithoutExpectedMetadata: true,
+        PayWayPlugin.init({
+            merchantId: process.env.PAYWAY_MERCHANT_ID,
+            apiKey: process.env.PAYWAY_API_KEY,
+            // Sandbox unless production is asked for by name: the two differ only in
+            // whether real money moves, so the default must be the harmless one.
+            environment: process.env.PAYWAY_ENV === 'production' ? 'production' : 'sandbox',
+            // Only set this if the API URL ABA issued differs from the documented host.
+            apiUrl: process.env.PAYWAY_API_URL,
+            callbackBaseUrl: process.env.PAYWAY_CALLBACK_BASE_URL,
+            requestTimeoutMs: positiveInt(process.env.PAYWAY_TIMEOUT_MS, 15_000),
         }),
         VisualSearchPlugin.init({
             embedderUrl: process.env.EMBEDDER_URL ?? 'http://localhost:8100',
@@ -260,9 +270,15 @@ export const config: VendureConfig = {
             // because it is the free option; OPENAI_API_KEY still works if set.
             // Same expression AssetServerPlugin is given above, so chat product
             // images resolve identically to every other asset URL.
+            // Always set, on both paths. Left undefined, the local storage strategy
+            // builds asset URLs from the incoming request — which works for a browser
+            // hitting the API and throws for anything without one. Order confirmation
+            // emails are rendered from an event, not a request, so every settled order
+            // failed to send its email with "Cannot read properties of undefined
+            // (reading 'headers')".
             assetUrlPrefix: R2_ENABLED
                 ? `${process.env.R2_PUBLIC_URL.replace(/\/$/, '')}/`
-                : undefined,
+                : `${(process.env.ASSET_URL_PREFIX ?? `http://localhost:${serverPort}`).replace(/\/$/, '')}/assets/`,
             apiKey: process.env.GROQ_API_KEY ?? process.env.OPENAI_API_KEY,
             baseUrl: process.env.CHAT_BASE_URL ?? (process.env.GROQ_API_KEY ? GROQ_BASE_URL : undefined),
             model: process.env.CHAT_MODEL ?? process.env.OPENAI_CHAT_MODEL,

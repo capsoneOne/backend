@@ -11,7 +11,7 @@ export type CardBrand = 'visa' | 'mastercard' | 'amex' | 'unionpay' | 'unknown';
 export type CardOutcome = 'approved' | 'declined';
 
 /**
- * Documented test numbers, chosen to match the ones Stripe uses so anyone who knows
+ * Documented test numbers for the offline demo handler, kept recognisable so anyone who knows
  * those will reach for the right card here. Every other Luhn-valid number approves,
  * which keeps the demo forgiving without hiding the declined path.
  */

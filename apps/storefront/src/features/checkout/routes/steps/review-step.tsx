@@ -7,9 +7,10 @@ import { useCheckout } from '../checkout-provider';
 import { placeOrder as placeOrderAction } from '../actions';
 import { Price } from '@/features/pricing/price';
 import {useTranslations} from 'next-intl';
-import {StripePayment} from '@/features/checkout/stripe-payment';
-import {STRIPE_PAYMENT_METHOD_CODE, DEMO_CARD_PAYMENT_METHOD_CODE} from '@/features/checkout/payment-methods';
+import {DEMO_CARD_PAYMENT_METHOD_CODE, PAYWAY_PAYMENT_METHOD_CODE, PAYWAY_CARD_PAYMENT_METHOD_CODE} from '@/features/checkout/payment-methods';
 import {DemoCardForm} from '@/features/checkout/demo-card-form';
+import {KhqrPayment} from '@/features/checkout/khqr-payment';
+import {PayWayCardPayment} from '@/features/checkout/payway-card-payment';
 
 interface ReviewStepProps {
   onEditStep: (step: 'contact' | 'shipping' | 'delivery' | 'payment') => void;
@@ -23,8 +24,9 @@ export default function ReviewStep({ onEditStep }: ReviewStepProps) {
   const selectedPaymentMethod = paymentMethods.find(
     (method) => method.code === selectedPaymentMethodCode
   );
-  const isStripe = selectedPaymentMethodCode === STRIPE_PAYMENT_METHOD_CODE;
   const isDemoCard = selectedPaymentMethodCode === DEMO_CARD_PAYMENT_METHOD_CODE;
+  const isKhqr = selectedPaymentMethodCode === PAYWAY_PAYMENT_METHOD_CODE;
+  const isPayWayCard = selectedPaymentMethodCode === PAYWAY_CARD_PAYMENT_METHOD_CODE;
   const readyToPay = Boolean(
     order.shippingAddress && order.shippingLines?.length && selectedPaymentMethodCode,
   );
@@ -167,8 +169,10 @@ export default function ReviewStep({ onEditStep }: ReviewStepProps) {
         </div>
       </div>
 
-      {isStripe ? (
-        <StripePayment />
+      {isKhqr ? (
+        <KhqrPayment disabled={!readyToPay} />
+      ) : isPayWayCard ? (
+        <PayWayCardPayment disabled={!readyToPay} />
       ) : isDemoCard ? (
         <DemoCardForm disabled={!readyToPay} />
       ) : (
