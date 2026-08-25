@@ -13,6 +13,7 @@ export const chatAssistantShopApiExtensions = gql`
         priceWithTax: Int!
         currencyCode: String!
         inStock: Boolean!
+        imageUrl: String
     }
 
     type ChatAssistantSource {
@@ -28,7 +29,7 @@ export const chatAssistantShopApiExtensions = gql`
     }
 
     extend type Mutation {
-        "Ask the grounded StyleMatch shopping assistant."
+        "Ask the grounded Lumé shopping assistant."
         askChatAssistant(
             message: String!
             history: [ChatAssistantHistoryInput!]

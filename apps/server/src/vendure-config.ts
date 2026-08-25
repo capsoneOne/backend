@@ -17,6 +17,7 @@ import path from 'path';
 
 import { VisualSearchPlugin } from './plugins/visual-search/visual-search.plugin';
 import { ChatAssistantPlugin } from './plugins/chat-assistant/chat-assistant.plugin';
+import { GROQ_BASE_URL } from './plugins/chat-assistant/constants';
 import { ContactPlugin } from './plugins/contact/contact.plugin';
 import { emailHandlers, emailLogoCid } from './email/handlers';
 import { TelegramPlugin } from './plugins/telegram/telegram.plugin';
@@ -255,8 +256,16 @@ export const config: VendureConfig = {
             assetReadTimeoutMs: positiveInt(process.env.ASSET_READ_TIMEOUT_MS, 15_000),
         }),
         ChatAssistantPlugin.init({
-            apiKey: process.env.OPENAI_API_KEY,
-            model: process.env.OPENAI_CHAT_MODEL ?? 'gpt-5.6-luna',
+            // Any OpenAI-compatible endpoint works. GROQ_API_KEY is checked first
+            // because it is the free option; OPENAI_API_KEY still works if set.
+            // Same expression AssetServerPlugin is given above, so chat product
+            // images resolve identically to every other asset URL.
+            assetUrlPrefix: R2_ENABLED
+                ? `${process.env.R2_PUBLIC_URL.replace(/\/$/, '')}/`
+                : undefined,
+            apiKey: process.env.GROQ_API_KEY ?? process.env.OPENAI_API_KEY,
+            baseUrl: process.env.CHAT_BASE_URL ?? (process.env.GROQ_API_KEY ? GROQ_BASE_URL : undefined),
+            model: process.env.CHAT_MODEL ?? process.env.OPENAI_CHAT_MODEL,
             maxHistoryMessages: positiveInt(process.env.CHAT_MAX_HISTORY_MESSAGES, 8),
             maxOutputTokens: positiveInt(process.env.CHAT_MAX_OUTPUT_TOKENS, 450),
             anonymousRequestsPerMinute: positiveInt(process.env.CHAT_ANONYMOUS_REQUESTS_PER_MINUTE, 5),

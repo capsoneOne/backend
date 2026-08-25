@@ -14,7 +14,7 @@ const mutation = `
     mutation AskChatAssistant($message: String!, $history: [ChatAssistantHistoryInput!], $clientId: String) {
         askChatAssistant(message: $message, history: $history, clientId: $clientId) {
             answer
-            products { productId name slug priceWithTax currencyCode inStock }
+            products { productId name slug priceWithTax currencyCode inStock imageUrl }
             sources { label path kind }
         }
     }
