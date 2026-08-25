@@ -126,6 +126,13 @@ export const GetOrderDetailQuery = graphql(`
                 country
                 phoneNumber
             }
+            fulfillments {
+                id
+                state
+                method
+                trackingCode
+                createdAt
+            }
             shippingLines {
                 shippingMethod {
                     id

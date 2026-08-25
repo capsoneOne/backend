@@ -44,6 +44,39 @@ Vendure, and run `npm run seed` from the repository root. The seed creates the
 `stripe` payment method only when both secrets are configured. Do not use `sk_live_`
 credentials for this capstone unless it is intentionally converted into a real store.
 
+### Sending real email
+
+Out of the box, email is not delivered anywhere: every message is written to
+`static/email/test-emails` and readable at <http://localhost:3000/mailbox>. That is
+the right default for development, and it is what a fresh clone gets with no
+configuration.
+
+Setting SMTP credentials switches the same build to real delivery — there is no
+separate flag to keep in step, because a flag and a set of credentials can disagree
+and silently swallow every message:
+
+```dotenv
+SMTP_USER=you@gmail.com
+SMTP_PASSWORD=your-16-character-app-password
+```
+
+`SMTP_HOST` defaults to `smtp.gmail.com` and `SMTP_PORT` to `587`. Port 587 opens in
+the clear and upgrades through STARTTLS; port 465 is implicit TLS and is detected
+automatically. Both parts must be present — setting only `SMTP_USER` leaves the
+mailbox in place rather than half-configuring delivery.
+
+For Gmail, the password above is **not** your account password. Enable 2-Step
+Verification on the Google account, then generate an App Password and paste that.
+Gmail rewrites the sender to the authenticated account, so `EMAIL_FROM` defaults to
+that address; set it explicitly to change the display name:
+
+```dotenv
+EMAIL_FROM="Lume" <you@gmail.com>
+```
+
+Any other SMTP provider works the same way — point `SMTP_HOST` at it, for example
+`smtp-relay.brevo.com`. Restart the server after changing any of these.
+
 ## Build
 
 ```

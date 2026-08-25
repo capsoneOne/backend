@@ -7,11 +7,27 @@ import {Button} from '@/components/ui/button';
 import {StorefrontHero, StorefrontHeroHeading} from '@/components/storefront-hero';
 import {Link} from '@/platform/i18n/navigation';
 import {getRouteLocale} from '@/platform/i18n/server';
+import {HeroProductMosaic, HeroProductMosaicSkeleton} from '@/site/home/hero-product-mosaic';
 import {WelcomeBar} from '@/site/home/welcome-bar';
 
 export async function HeroSection() {
     const locale = await getRouteLocale();
     const t = await getTranslations({locale, namespace: 'Hero'});
+
+    // Kept as the fallback for an empty or image-less catalog, so the hero never
+    // renders with a gap where the artwork should be.
+    const heroPhoto = (
+        <div className="relative aspect-[4/5] w-full lg:aspect-[3/4]">
+            <Image
+                src="/hero/marketplace-shopping-bags.jpg"
+                alt={t('heroImageAlt')}
+                fill
+                priority
+                sizes="(min-width: 1024px) 34rem, 100vw"
+                className="rounded-lg object-cover object-top"
+            />
+        </div>
+    );
 
     return (
         <StorefrontHero
@@ -20,18 +36,11 @@ export async function HeroSection() {
                     <WelcomeBar />
                 </Suspense>
             )}
-            artworkFrame="bleed"
+            artworkFrame="padded"
             artwork={(
-                <div className="relative aspect-[4/5] w-full lg:aspect-[3/4]">
-                    <Image
-                        src="/hero/marketplace-shopping-bags.jpg"
-                        alt={t('heroImageAlt')}
-                        fill
-                        priority
-                        sizes="(min-width: 1024px) 34rem, 100vw"
-                        className="object-cover object-top"
-                    />
-                </div>
+                <Suspense fallback={<HeroProductMosaicSkeleton />}>
+                    <HeroProductMosaic fallback={heroPhoto} />
+                </Suspense>
             )}
         >
             <StorefrontHeroHeading

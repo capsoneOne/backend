@@ -14,7 +14,7 @@
     "pageTitle": "Order Confirmation",
     "orderConfirmed": "Order Confirmed!",
     "paymentProcessing": "Confirming your payment…",
-    "paymentProcessingDescription": "Stripe has returned you to the store. We are waiting for its signed webhook before marking this order as paid.",
+    "paymentProcessingDescription": "Your payment is being confirmed with ABA PayWay. This page updates once the order is marked as paid.",
     "thankYou": "Thank you for your order. Your order number is",
     "emailConfirmation": "We'll send you an email with your order details and tracking information.",
     "orderSummary": "Order Summary",
@@ -23,5 +23,18 @@
     "shippingAddress": "Shipping Address",
     "continueShopping": "Continue Shopping",
     "viewOrders": "View Orders"
+  },
+  "Delivery": {
+    "title": "Delivery",
+    "notShippedYet": "This order has not shipped yet. You will see shipment details here once it is on its way.",
+    "shipmentNumber": "Shipment {number}",
+    "method": "Method",
+    "trackingCode": "Tracking code",
+    "states": {
+      "Pending": "Preparing",
+      "Shipped": "Shipped",
+      "Delivered": "Delivered",
+      "Cancelled": "Cancelled"
+    }
   }
 }

@@ -6,17 +6,21 @@ import {
     LanguageCode,
     VendureConfig,
 } from '@vendure/core';
-import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
+import { EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
 import { json } from 'express';
 import { AssetServerPlugin, configureS3AssetStorage } from '@vendure/asset-server-plugin';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
-import { StripePlugin } from '@vendure-community/stripe-plugin';
 import 'dotenv/config';
 import path from 'path';
 
 import { VisualSearchPlugin } from './plugins/visual-search/visual-search.plugin';
 import { ChatAssistantPlugin } from './plugins/chat-assistant/chat-assistant.plugin';
+import { GROQ_BASE_URL } from './plugins/chat-assistant/constants';
+import { ContactPlugin } from './plugins/contact/contact.plugin';
+import { emailHandlers, emailLogoCid } from './email/handlers';
+import { TelegramPlugin } from './plugins/telegram/telegram.plugin';
+import { PayWayPlugin } from './plugins/payway/payway.plugin';
 
 const IS_DEV = process.env.APP_ENV === 'dev';
 // PORT wins because hosting platforms inject it into the environment at runtime, and that
@@ -59,6 +63,48 @@ function positiveInt(value: string | undefined, fallback: number): number {
     const parsed = Number(value);
     return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
 }
+
+function optionalInt(value: string | undefined): number | undefined {
+    if (!value) return undefined;
+    const parsed = Number(value);
+    return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
+}
+
+/**
+ * How email leaves the server.
+ *
+ * Credentials decide the mode rather than a flag: a clone with no mail account
+ * still boots and writes messages to the dev mailbox, while setting SMTP_USER and
+ * SMTP_PASSWORD switches the same build to real delivery. A flag would let the two
+ * disagree — real credentials with devMode still on silently swallows every email.
+ */
+const SMTP_USER = process.env.SMTP_USER;
+const SMTP_PASSWORD = process.env.SMTP_PASSWORD;
+const SMTP_PORT = positiveInt(process.env.SMTP_PORT, 587);
+
+const EMAIL_FROM =
+    process.env.EMAIL_FROM ??
+    (SMTP_USER ? `"Lume" <${SMTP_USER}>` : '"example" <noreply@example.com>');
+
+const emailDelivery =
+    SMTP_USER && SMTP_PASSWORD
+        ? ({
+              transport: {
+                  type: 'smtp',
+                  host: process.env.SMTP_HOST ?? 'smtp.gmail.com',
+                  port: SMTP_PORT,
+                  // 465 is implicit TLS; 587 opens in the clear and upgrades via
+                  // STARTTLS, so declaring it secure makes the handshake fail.
+                  secure: SMTP_PORT === 465,
+                  auth: { user: SMTP_USER, pass: SMTP_PASSWORD },
+              },
+          } as const)
+        : ({
+              devMode: true,
+              outputPath: path.join(__dirname, '../static/email/test-emails'),
+              route: 'mailbox',
+          } as const);
+
 
 export const config: VendureConfig = {
     apiOptions: {
@@ -159,9 +205,15 @@ export const config: VendureConfig = {
             assetUploadDir: path.join(__dirname, '../static/assets'),
             // Serve straight from the bucket's public URL rather than proxying every
             // image through Vendure. Trailing slash matters — Vendure concatenates.
+            // Always set, on both paths. Left undefined, the local storage strategy
+            // builds asset URLs from the incoming request — which works for a browser
+            // hitting the API and throws for anything without one. Order confirmation
+            // emails are rendered from an event, not a request, so every settled order
+            // failed to send its email with "Cannot read properties of undefined
+            // (reading 'headers')".
             assetUrlPrefix: R2_ENABLED
                 ? `${process.env.R2_PUBLIC_URL.replace(/\/$/, '')}/`
-                : undefined,
+                : `${(process.env.ASSET_URL_PREFIX ?? `http://localhost:${serverPort}`).replace(/\/$/, '')}/assets/`,
             ...(R2_ENABLED
                 ? {
                       storageStrategyFactory: configureS3AssetStorage({
@@ -191,12 +243,16 @@ export const config: VendureConfig = {
             concurrency: positiveInt(process.env.JOB_QUEUE_CONCURRENCY, 4),
         }),
         DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: true }),
-        StripePlugin.init({
-            // Stripe payment methods are configured per channel in Vendure. Keeping
-            // customer creation disabled avoids adding a schema-level custom field;
-            // the PaymentIntent still carries the Vendure order/channel metadata.
-            storeCustomersInStripe: false,
-            skipPaymentIntentsWithoutExpectedMetadata: true,
+        PayWayPlugin.init({
+            merchantId: process.env.PAYWAY_MERCHANT_ID,
+            apiKey: process.env.PAYWAY_API_KEY,
+            // Sandbox unless production is asked for by name: the two differ only in
+            // whether real money moves, so the default must be the harmless one.
+            environment: process.env.PAYWAY_ENV === 'production' ? 'production' : 'sandbox',
+            // Only set this if the API URL ABA issued differs from the documented host.
+            apiUrl: process.env.PAYWAY_API_URL,
+            callbackBaseUrl: process.env.PAYWAY_CALLBACK_BASE_URL,
+            requestTimeoutMs: positiveInt(process.env.PAYWAY_TIMEOUT_MS, 15_000),
         }),
         VisualSearchPlugin.init({
             embedderUrl: process.env.EMBEDDER_URL ?? 'http://localhost:8100',
@@ -210,8 +266,22 @@ export const config: VendureConfig = {
             assetReadTimeoutMs: positiveInt(process.env.ASSET_READ_TIMEOUT_MS, 15_000),
         }),
         ChatAssistantPlugin.init({
-            apiKey: process.env.OPENAI_API_KEY,
-            model: process.env.OPENAI_CHAT_MODEL ?? 'gpt-5.6-luna',
+            // Any OpenAI-compatible endpoint works. GROQ_API_KEY is checked first
+            // because it is the free option; OPENAI_API_KEY still works if set.
+            // Same expression AssetServerPlugin is given above, so chat product
+            // images resolve identically to every other asset URL.
+            // Always set, on both paths. Left undefined, the local storage strategy
+            // builds asset URLs from the incoming request — which works for a browser
+            // hitting the API and throws for anything without one. Order confirmation
+            // emails are rendered from an event, not a request, so every settled order
+            // failed to send its email with "Cannot read properties of undefined
+            // (reading 'headers')".
+            assetUrlPrefix: R2_ENABLED
+                ? `${process.env.R2_PUBLIC_URL.replace(/\/$/, '')}/`
+                : `${(process.env.ASSET_URL_PREFIX ?? `http://localhost:${serverPort}`).replace(/\/$/, '')}/assets/`,
+            apiKey: process.env.GROQ_API_KEY ?? process.env.OPENAI_API_KEY,
+            baseUrl: process.env.CHAT_BASE_URL ?? (process.env.GROQ_API_KEY ? GROQ_BASE_URL : undefined),
+            model: process.env.CHAT_MODEL ?? process.env.OPENAI_CHAT_MODEL,
             maxHistoryMessages: positiveInt(process.env.CHAT_MAX_HISTORY_MESSAGES, 8),
             maxOutputTokens: positiveInt(process.env.CHAT_MAX_OUTPUT_TOKENS, 450),
             anonymousRequestsPerMinute: positiveInt(process.env.CHAT_ANONYMOUS_REQUESTS_PER_MINUTE, 5),
@@ -224,17 +294,52 @@ export const config: VendureConfig = {
             maxConcurrentRequests: positiveInt(process.env.CHAT_MAX_CONCURRENT_REQUESTS, 10),
             leaseTtlSeconds: positiveInt(process.env.CHAT_LEASE_TTL_SECONDS, 45),
         }),
+        ContactPlugin.init({
+            maxSubmissionsPerHour: positiveInt(process.env.CONTACT_MAX_SUBMISSIONS_PER_HOUR, 5),
+            maxGlobalSubmissionsPerHour: positiveInt(process.env.CONTACT_MAX_GLOBAL_SUBMISSIONS_PER_HOUR, 100),
+            // Falls back to the cookie secret so the hash is never unsalted, but set
+            // CONTACT_HASH_SALT to rotate it without invalidating sessions.
+            hashSalt: process.env.CONTACT_HASH_SALT ?? process.env.COOKIE_SECRET ?? 'contact-salt',
+        }),
+        TelegramPlugin.init({
+            // Each alert names its own destination, so they can share one forum group
+            // and land in different topics, or go to separate chats entirely. The
+            // topic ids are what put a message under the right tab.
+            payments: {
+                botToken: process.env.TELEGRAM_SALES_BOT_TOKEN,
+                chatId: process.env.TELEGRAM_CHAT_ID,
+                topicId: optionalInt(process.env.TELEGRAM_PAYMENTS_TOPIC_ID),
+            },
+            contact: {
+                botToken: process.env.TELEGRAM_OPS_BOT_TOKEN,
+                chatId: process.env.TELEGRAM_CHAT_ID,
+                topicId: optionalInt(process.env.TELEGRAM_CONTACT_TOPIC_ID),
+            },
+            jobFailures: {
+                botToken: process.env.TELEGRAM_OPS_BOT_TOKEN,
+                chatId: process.env.TELEGRAM_CHAT_ID,
+                topicId: optionalInt(process.env.TELEGRAM_JOB_FAILURES_TOPIC_ID),
+            },
+            requestTimeoutMs: positiveInt(process.env.TELEGRAM_TIMEOUT_MS, 8_000),
+            storefrontUrl: `${STOREFRONT_URL}/${DEFAULT_LOCALE}`,
+            failedJobSchedule: process.env.TELEGRAM_FAILED_JOB_SCHEDULE ?? '*/5 * * * *',
+        }),
         EmailPlugin.init({
-            devMode: true,
-            outputPath: path.join(__dirname, '../static/email/test-emails'),
-            route: 'mailbox',
-            handlers: defaultEmailHandlers,
+            ...emailDelivery,
+            handlers: emailHandlers,
             templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
             globalTemplateVars: {
                 // These must match the actual storefront: it runs on 3001 (not the
                 // scaffold's 8080) and its routes are locale-prefixed, so a link
                 // without /<locale> 404s. STOREFRONT_URL overrides for deploys.
-                fromAddress: '"example" <noreply@example.com>',
+                fromAddress: EMAIL_FROM,
+                // Supplied globally rather than per handler: the plugin merges globals
+                // underneath each handler's own template vars, so every email gets the
+                // logo without any handler restating its variables to receive it.
+                logoCid: emailLogoCid,
+                // Templates link back to the storefront; keeping the locale here means
+                // a template never has to know the routing scheme.
+                storefrontUrl: `${STOREFRONT_URL}/${DEFAULT_LOCALE}`,
                 verifyEmailAddressUrl: `${STOREFRONT_URL}/${DEFAULT_LOCALE}/verify`,
                 passwordResetUrl: `${STOREFRONT_URL}/${DEFAULT_LOCALE}/reset-password`,
                 changeEmailAddressUrl: `${STOREFRONT_URL}/${DEFAULT_LOCALE}/account/verify-email`,

@@ -9,6 +9,10 @@
     "useDefineForClassFields": false,
     "strictPropertyInitialization": false,
     "target": "es2019",
+    // Node 26 has Intl.Segmenter; the es2019 lib does not declare it. Added
+    // narrowly rather than raising the whole lib, which would change type
+    // resolution across the project for one call site.
+    "lib": ["es2019", "es2022.intl"],
     "strict": true,
     "sourceMap": false,
     "skipLibCheck": true,

@@ -273,8 +273,40 @@ export const SetCustomerForOrderMutation = graphql(`
     }
 `);
 
-export const CreateStripePaymentIntentMutation = graphql(`
-    mutation CreateStripePaymentIntent {
-        createStripePaymentIntent
+export const GeneratePayWayQrMutation = graphql(`
+    mutation GeneratePayWayQr {
+        generatePayWayQr {
+            transactionId
+            qrImage
+            qrString
+            abaDeeplink
+            expiresAt
+            orderCode
+            sandbox
+        }
+    }
+`);
+
+export const PayWayPaymentStateQuery = graphql(`
+    query PayWayPaymentState($transactionId: String!) {
+        payWayPaymentState(transactionId: $transactionId) {
+            status
+            settled
+            orderCode
+        }
+    }
+`);
+
+export const CreatePayWayCardCheckoutMutation = graphql(`
+    mutation CreatePayWayCardCheckout {
+        createPayWayCardCheckout {
+            transactionId
+            actionUrl
+            fields {
+                name
+                value
+            }
+            orderCode
+        }
     }
 `);

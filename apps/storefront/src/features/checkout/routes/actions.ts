@@ -1,7 +1,7 @@
 'use server';
 
 import {mutate, query} from '@/platform/vendure/api';
-import {SetOrderShippingAddressMutation, SetOrderBillingAddressMutation, SetOrderShippingMethodMutation, AddPaymentToOrderMutation, TransitionOrderToStateMutation, SetCustomerForOrderMutation, CreateStripePaymentIntentMutation, GetActiveOrderForCheckoutQuery} from '@/features/checkout/graphql';
+import {SetOrderShippingAddressMutation, SetOrderBillingAddressMutation, SetOrderShippingMethodMutation, AddPaymentToOrderMutation, TransitionOrderToStateMutation, SetCustomerForOrderMutation, GetActiveOrderForCheckoutQuery, GeneratePayWayQrMutation, PayWayPaymentStateQuery, CreatePayWayCardCheckoutMutation} from '@/features/checkout/graphql';
 import {CreateCustomerAddressMutation} from '@/features/account/graphql';
 import {revalidatePath, updateTag} from 'next/cache';
 import {redirect} from '@/platform/i18n/navigation';
@@ -85,16 +85,42 @@ export async function transitionToArrangingPayment() {
 
     if (result.data.transitionOrderToState?.__typename === 'OrderStateTransitionError') {
         const errorResult = result.data.transitionOrderToState;
-        throw new Error(
-            `Failed to transition order state: ${errorResult.errorCode} - ${errorResult.message}`
-        );
+
+        // Being there already is not a failure. A declined card leaves the order in
+        // ArrangingPayment, so every retry asks for a transition it has already made
+        // — and treating that as fatal is what made a second card impossible.
+        const {data} = await query(GetActiveOrderForCheckoutQuery, {}, {useAuthToken: true});
+        if (data.activeOrder?.state !== 'ArrangingPayment') {
+            throw new Error(
+                `Failed to transition order state: ${errorResult.errorCode} - ${errorResult.message}`
+            );
+        }
     }
 
     const locale = await getLocale();
     revalidatePath(`/${locale}/checkout`);
 }
 
-export async function placeOrder(paymentMethodCode: string) {
+/**
+ * What the browser reports after validating a card locally.
+ *
+ * Note what is absent: the card number. A real gateway's client library tokenises
+ * in the browser precisely so the number never reaches the merchant's server, and
+ * the demo keeps that boundary — there is no reason for a simulated flow to handle
+ * a PAN when the real one would not.
+ */
+export interface DemoCardPayment {
+    outcome: 'approved' | 'declined';
+    brand: string;
+    last4: string;
+}
+
+export type PlaceOrderResult = { success: false; errorCode: string; message: string };
+
+export async function placeOrder(
+    paymentMethodCode: string,
+    card?: DemoCardPayment,
+): Promise<PlaceOrderResult | void> {
     // First, transition the order to ArrangingPayment state
     await transitionToArrangingPayment();
 
@@ -103,9 +129,16 @@ export async function placeOrder(paymentMethodCode: string) {
 
     // For standard payment, include the required fields
     if (paymentMethodCode === 'standard-payment') {
-        metadata.shouldDecline = false;
+        metadata.shouldDecline = card?.outcome === 'declined';
         metadata.shouldError = false;
         metadata.shouldErrorOnSettle = false;
+        if (card) {
+            // Recorded so the admin sees which card was presented, in the same
+            // shape a real gateway reports it: brand and last four, nothing more.
+            metadata.simulated = true;
+            metadata.cardBrand = card.brand;
+            metadata.cardLast4 = card.last4;
+        }
     }
 
     // Add payment to the order
@@ -122,9 +155,14 @@ export async function placeOrder(paymentMethodCode: string) {
 
     if (result.data.addPaymentToOrder.__typename !== 'Order') {
         const errorResult = result.data.addPaymentToOrder;
-        throw new Error(
-            `Failed to place order: ${errorResult.errorCode} - ${errorResult.message}`
-        );
+        // A declined card is an expected outcome, not a crash. Returning it lets the
+        // form say so and keeps the order in ArrangingPayment so another card can be
+        // tried, which is what throwing here used to prevent.
+        return {
+            success: false,
+            errorCode: errorResult.errorCode,
+            message: errorResult.message,
+        };
     }
 
     const orderCode = result.data.addPaymentToOrder.code;
@@ -137,33 +175,6 @@ export async function placeOrder(paymentMethodCode: string) {
     redirect({href: `/order-confirmation/${orderCode}`, locale});
 }
 
-export type PrepareStripePaymentResult =
-    | {success: true; clientSecret: string; orderCode: string}
-    | {success: false};
-
-export async function prepareStripePayment(): Promise<PrepareStripePaymentResult> {
-    try {
-        const [intentResult, orderResult] = await Promise.all([
-            mutate(CreateStripePaymentIntentMutation, {}, {useAuthToken: true}),
-            query(GetActiveOrderForCheckoutQuery, {}, {useAuthToken: true}),
-        ]);
-        const order = orderResult.data.activeOrder;
-        if (!order) {
-            return {success: false};
-        }
-
-        return {
-            success: true,
-            clientSecret: intentResult.data.createStripePaymentIntent,
-            orderCode: order.code,
-        };
-    } catch (error) {
-        console.error('Failed to prepare Stripe payment', error);
-        return {
-            success: false,
-        };
-    }
-}
 
 interface GuestCustomerInput {
     emailAddress: string;
@@ -206,5 +217,158 @@ export async function setCustomerForOrder(
             return { success: false, errorCode: 'NO_ACTIVE_ORDER', message: response.message };
         default:
             return { success: false, errorCode: 'UNKNOWN', message: 'Unknown error' };
+    }
+}
+
+/**
+ * The shapes the two PayWay operations select, declared here rather than inferred.
+ *
+ * gql.tada types documents against a schema introspected from a running server
+ * (tsconfig's tadaOutputLocation), so anything added to the Shop API is `unknown`
+ * until `next typegen` runs against a server with this build of the plugin loaded.
+ * These match the SDL in the plugin's api-extensions.ts, and the generated types are
+ * assignable to them once regenerated — so this compiles before the first typegen and
+ * keeps its meaning after.
+ */
+interface PayWaySessionPayload {
+    transactionId: string;
+    qrImage: string;
+    qrString: string;
+    abaDeeplink: string | null;
+    expiresAt: string;
+    orderCode: string;
+    sandbox: boolean;
+}
+
+interface PayWayStatePayload {
+    status: string;
+    settled: boolean;
+    orderCode: string | null;
+}
+
+export type PayWayPaymentSession =
+    | {
+          success: true;
+          transactionId: string;
+          /**
+           * ABA's branded KHQR artwork, as the base64 data URI PayWay returned. Kept
+           * as a data URI on purpose: an <img> pointing at a remote copy would tell
+           * whoever serves it that this order is being paid, on every render.
+           */
+          qrImage: string;
+          /** Opens ABA Mobile directly, for a customer paying on the same phone. */
+          abaDeeplink: string | null;
+          expiresAt: string;
+          orderCode: string;
+          /** Sandbox QRs carry a placeholder merchant account and cannot be paid. */
+          sandbox: boolean;
+      }
+    | {success: false; message: string};
+
+export async function generatePayWayQr(): Promise<PayWayPaymentSession> {
+    try {
+        await transitionToArrangingPayment();
+
+        const result = await mutate(GeneratePayWayQrMutation, {}, {useAuthToken: true});
+        const session = result.data.generatePayWayQr as PayWaySessionPayload;
+
+        return {
+            success: true,
+            transactionId: session.transactionId,
+            qrImage: session.qrImage,
+            abaDeeplink: session.abaDeeplink,
+            expiresAt: session.expiresAt,
+            orderCode: session.orderCode,
+            sandbox: session.sandbox,
+        };
+    } catch (error) {
+        console.error('Failed to generate PayWay QR', error);
+        return {
+            success: false,
+            message: error instanceof Error ? error.message : 'Could not start the KHQR payment',
+        };
+    }
+}
+
+export interface PayWayPollResult {
+    status: 'APPROVED' | 'PRE-AUTH' | 'PENDING' | 'DECLINED' | 'REFUNDED' | 'CANCELLED' | 'UNKNOWN';
+    settled: boolean;
+    orderCode: string | null;
+}
+
+/**
+ * Asks the server where the transaction stands. The server is the one talking to
+ * PayWay and the one that settles the order, so nothing the browser reports here is
+ * trusted — this only prompts the check and relays the answer back to the UI.
+ */
+export async function pollPayWayPayment(transactionId: string): Promise<PayWayPollResult> {
+    try {
+        const result = await query(
+            PayWayPaymentStateQuery,
+            {transactionId},
+            {useAuthToken: true, fetch: {cache: 'no-store'}},
+        );
+        const state = result.data.payWayPaymentState as PayWayStatePayload;
+
+        if (state.settled) {
+            updateTag('cart');
+            updateTag('active-order');
+        }
+
+        return {
+            status: state.status as PayWayPollResult['status'],
+            settled: state.settled,
+            orderCode: state.orderCode ?? null,
+        };
+    } catch (error) {
+        // A failed poll is a network blip, not a failed payment. Reporting it as
+        // terminal would abandon a QR the customer may be paying right now.
+        console.error('Failed to poll PayWay payment', error);
+        return {status: 'UNKNOWN', settled: false, orderCode: null};
+    }
+}
+
+interface PayWayCardPayload {
+    transactionId: string;
+    actionUrl: string;
+    fields: Array<{name: string; value: string}>;
+    orderCode: string;
+}
+
+export type PayWayCardCheckout =
+    | {
+          success: true;
+          transactionId: string;
+          /** PayWay's purchase endpoint — the form's action. */
+          actionUrl: string;
+          /**
+           * Pre-signed hidden fields. The signing key stays on the server; the browser
+           * only carries the result across, as PayWay's own integration does.
+           */
+          fields: Array<{name: string; value: string}>;
+          orderCode: string;
+      }
+    | {success: false; message: string};
+
+export async function createPayWayCardCheckout(): Promise<PayWayCardCheckout> {
+    try {
+        await transitionToArrangingPayment();
+
+        const result = await mutate(CreatePayWayCardCheckoutMutation, {}, {useAuthToken: true});
+        const checkout = result.data.createPayWayCardCheckout as PayWayCardPayload;
+
+        return {
+            success: true,
+            transactionId: checkout.transactionId,
+            actionUrl: checkout.actionUrl,
+            fields: checkout.fields,
+            orderCode: checkout.orderCode,
+        };
+    } catch (error) {
+        console.error('Failed to prepare PayWay card checkout', error);
+        return {
+            success: false,
+            message: error instanceof Error ? error.message : 'Could not start the card payment',
+        };
     }
 }

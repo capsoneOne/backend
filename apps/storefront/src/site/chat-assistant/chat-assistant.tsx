@@ -2,6 +2,7 @@
 
 import {FormEvent, KeyboardEvent, PointerEvent as ReactPointerEvent, useEffect, useRef, useState} from 'react';
 import {Bot, Heart, Plus, Send, Sparkles, X} from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import {useLocale, useTranslations} from 'next-intl';
 
@@ -16,6 +17,7 @@ type ChatProduct = {
     priceWithTax: number;
     currencyCode: string;
     inStock: boolean;
+    imageUrl?: string | null;
 };
 type ChatSource = {label: string; path: string; kind: 'policy' | 'product' | 'cart' | 'order'};
 type ChatMessage = {
@@ -341,10 +343,23 @@ export function ChatAssistant() {
                                                 <Link
                                                     key={product.productId}
                                                     href={`/${locale}/product/${product.slug}`}
-                                                    className="flex items-center justify-between gap-3 rounded-xl border border-primary/15 bg-card px-3 py-2 text-xs transition-colors hover:border-primary/35 hover:bg-primary/5"
+                                                    className="flex items-center gap-2.5 rounded-xl border border-primary/15 bg-card p-2 text-xs transition-colors hover:border-primary/35 hover:bg-primary/5"
                                                 >
-                                                    <span className="min-w-0 truncate font-medium">{product.name}</span>
-                                                    <span className="shrink-0 text-muted-foreground">
+                                                    {product.imageUrl ? (
+                                                        <Image
+                                                            src={product.imageUrl}
+                                                            alt=""
+                                                            width={40}
+                                                            height={40}
+                                                            className="size-10 shrink-0 rounded-lg bg-muted object-cover"
+                                                        />
+                                                    ) : (
+                                                        // A fixed-size placeholder, so a product without imagery does
+                                                        // not shunt the text out of line with the cards around it.
+                                                        <span className="size-10 shrink-0 rounded-lg bg-muted" aria-hidden="true" />
+                                                    )}
+                                                    <span className="min-w-0 flex-1 truncate font-medium">{product.name}</span>
+                                                    <span className="shrink-0 pr-1 text-muted-foreground">
                                                         {formatPrice(product.priceWithTax, product.currencyCode, locale)}
                                                     </span>
                                                 </Link>
