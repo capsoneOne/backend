@@ -19,6 +19,7 @@ import { VisualSearchPlugin } from './plugins/visual-search/visual-search.plugin
 import { ChatAssistantPlugin } from './plugins/chat-assistant/chat-assistant.plugin';
 import { ContactPlugin } from './plugins/contact/contact.plugin';
 import { emailHandlers, emailLogoCid } from './email/handlers';
+import { TelegramPlugin } from './plugins/telegram/telegram.plugin';
 
 const IS_DEV = process.env.APP_ENV === 'dev';
 // PORT wins because hosting platforms inject it into the environment at runtime, and that
@@ -60,6 +61,12 @@ if (!R2_ENABLED && !IS_DEV) {
 function positiveInt(value: string | undefined, fallback: number): number {
     const parsed = Number(value);
     return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function optionalInt(value: string | undefined): number | undefined {
+    if (!value) return undefined;
+    const parsed = Number(value);
+    return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
 }
 
 /**
@@ -268,6 +275,29 @@ export const config: VendureConfig = {
             // Falls back to the cookie secret so the hash is never unsalted, but set
             // CONTACT_HASH_SALT to rotate it without invalidating sessions.
             hashSalt: process.env.CONTACT_HASH_SALT ?? process.env.COOKIE_SECRET ?? 'contact-salt',
+        }),
+        TelegramPlugin.init({
+            // Each alert names its own destination, so they can share one forum group
+            // and land in different topics, or go to separate chats entirely. The
+            // topic ids are what put a message under the right tab.
+            payments: {
+                botToken: process.env.TELEGRAM_SALES_BOT_TOKEN,
+                chatId: process.env.TELEGRAM_CHAT_ID,
+                topicId: optionalInt(process.env.TELEGRAM_PAYMENTS_TOPIC_ID),
+            },
+            contact: {
+                botToken: process.env.TELEGRAM_OPS_BOT_TOKEN,
+                chatId: process.env.TELEGRAM_CHAT_ID,
+                topicId: optionalInt(process.env.TELEGRAM_CONTACT_TOPIC_ID),
+            },
+            jobFailures: {
+                botToken: process.env.TELEGRAM_OPS_BOT_TOKEN,
+                chatId: process.env.TELEGRAM_CHAT_ID,
+                topicId: optionalInt(process.env.TELEGRAM_JOB_FAILURES_TOPIC_ID),
+            },
+            requestTimeoutMs: positiveInt(process.env.TELEGRAM_TIMEOUT_MS, 8_000),
+            storefrontUrl: `${STOREFRONT_URL}/${DEFAULT_LOCALE}`,
+            failedJobSchedule: process.env.TELEGRAM_FAILED_JOB_SCHEDULE ?? '*/5 * * * *',
         }),
         EmailPlugin.init({
             ...emailDelivery,

@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { Inject, Injectable } from '@nestjs/common';
 import {
     CustomerService,
+    EventBus,
     ID,
     RequestContext,
     TransactionalConnection,
@@ -18,6 +19,7 @@ import {
     MAX_NAME_LENGTH,
     MAX_ORDER_CODE_LENGTH,
 } from '../constants';
+import { ContactMessageReceivedEvent } from '../contact-message.event';
 import { ContactMessage, ContactMessageStatus } from '../entities/contact-message.entity';
 import { ContactPluginOptions } from '../types';
 
@@ -42,6 +44,7 @@ export class ContactService {
     constructor(
         private connection: TransactionalConnection,
         private customerService: CustomerService,
+        private eventBus: EventBus,
         @Inject(CONTACT_PLUGIN_OPTIONS) private options: ContactPluginOptions,
     ) {}
 
@@ -85,7 +88,7 @@ export class ContactService {
             return { success: false, errorCode: 'RATE_LIMITED' };
         }
 
-        await this.connection.getRepository(ctx, ContactMessage).save(
+        const saved = await this.connection.getRepository(ctx, ContactMessage).save(
             new ContactMessage({
                 name,
                 email,
@@ -95,6 +98,19 @@ export class ContactService {
                 customerId,
                 status: 'new',
                 submitterHash,
+            }),
+        );
+
+        // Published after the row exists, so a subscriber can never be told about a
+        // message that failed to save. Notification is a nudge; the row is the record.
+        await this.eventBus.publish(
+            new ContactMessageReceivedEvent(ctx, {
+                id: saved.id,
+                name,
+                email,
+                topic,
+                orderCode,
+                body: message,
             }),
         );
 
