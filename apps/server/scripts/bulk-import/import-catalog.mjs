@@ -50,6 +50,16 @@ const limit = args.limit == null ? Infinity : positiveInt(args.limit, 0);
 const dryRun = args['dry-run'] === true;
 const reindexAfter = args['no-reindex'] !== true;
 const setupFirst = args['skip-setup'] !== true;
+/**
+ * Abort once a batch reports this many row errors, unless --allow-errors is passed.
+ *
+ * `importProducts` reports a failed asset as a per-row error and then creates the product
+ * anyway, with no images. That is close to the worst outcome available: the run "succeeds",
+ * the counts look right, and the catalog is silently blank. Losing R2 mid-import once
+ * produced 12,543 such errors and left 97% of products imageless, so the default is now to
+ * stop at the first batch that looks systemically broken rather than plough on.
+ */
+const maxBatchErrors = args['allow-errors'] === true ? Infinity : positiveInt(args['max-errors'], 5);
 
 const csvText = await readFile(csvFile, 'utf8').catch(() => {
     fail(
@@ -143,6 +153,16 @@ for (let offset = done; offset < selected.length; offset += batchSize) {
         console.warn(`\nbatch ${label}: ${info.errors.length} error(s), first: ${info.errors[0]}`);
     }
     await writeState(offset + batch.length, fingerprint);
+
+    if (info.errors?.length > maxBatchErrors) {
+        console.error(
+            `\nbatch ${label} reported ${info.errors.length} errors, over the --max-errors limit of ${maxBatchErrors}.\n` +
+                'Products are created even when their assets fail, so continuing would import a\n' +
+                'catalog with missing images. Fix the cause and re-run to resume from here, or\n' +
+                'pass --allow-errors if these errors are genuinely expected.',
+        );
+        process.exit(1);
+    }
 
     const elapsed = (Date.now() - startedAt) / 1000;
     const rate = (offset + batch.length - done) / elapsed;
