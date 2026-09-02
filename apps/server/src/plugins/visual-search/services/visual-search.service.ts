@@ -45,6 +45,22 @@ export interface VisualSearchHit {
 const INDEX_BATCH_SIZE = 32;
 
 /**
+ * How many asset rows to pull from the ANN index before collapsing to products.
+ *
+ * The index grain is (product, asset), so `take` products can need many more than
+ * `take` asset rows — a product with four photos can occupy four of them. The query
+ * therefore over-fetches assets, collapses to one row per product, then trims.
+ *
+ * Deliberately generous against the observed catalogue (mean 1.46 assets/product,
+ * max 4). Under-fetching silently returns fewer products than asked for, which is a
+ * correctness bug; over-fetching costs a millisecond or two inside a scan that
+ * already completes in single-digit ms.
+ */
+const ANN_OVERFETCH_FACTOR = 8;
+const ANN_MIN_OVERFETCH = 100;
+const ANN_MAX_OVERFETCH = 500;
+
+/**
  * Accepts the batch shape and the pre-batch single-product shape jobs may still hold.
  *
  * `revision` is the embedder identity the job was queued against. A full reindex runs
@@ -444,30 +460,72 @@ export class VisualSearchService implements OnModuleInit {
         }
         const revision = await this.embedder.getRevision();
         const literal = `[${vector.join(',')}]`;
+        const overFetch = Math.min(
+            ANN_MAX_OVERFETCH,
+            Math.max(ANN_MIN_OVERFETCH, take * ANN_OVERFETCH_FACTOR),
+        );
 
-        // One row per product: its best-matching asset. DISTINCT ON is evaluated
-        // before the outer ORDER BY, so the inner ordering picks the winning asset
-        // per product and the outer ordering ranks products against each other.
+        // Two stages, and the split is load-bearing rather than stylistic.
+        //
+        // The inner query is the ONLY shape pgvector's HNSW index can serve: order
+        // directly by the distance expression, with a LIMIT. The previous single-stage
+        // version wrapped this in DISTINCT ON (productId), which forces Postgres to
+        // sort by productId before it can dedupe — and an HNSW scan emits rows in
+        // *distance* order, so the two orderings are incompatible and the planner
+        // silently fell back to a sequential scan over every row. Nothing errored and
+        // the results stayed correct; it just did O(N) work forever. Measured on a
+        // 4,295-vector index: 385 ms sequential scan vs 6.6 ms via the index.
+        //
+        // Confirm with EXPLAIN after any edit here — the failure mode is invisible
+        // otherwise. `eval/compare-hnsw.sh` checks that this returns the same products
+        // as an exact scan (100/100 queries, identical sets, at the time of writing).
+        //
+        // The product join stays in the OUTER stage on purpose: joining inside the ANN
+        // subquery also prevents the index scan. The cost is that disabled or deleted
+        // products consume over-fetch slots, which the generous factor absorbs.
         const rows: Array<{ productId: string; assetId: string; distance: string }> =
-            await this.connection.rawConnection.query(
-                `
-                SELECT * FROM (
-                    SELECT DISTINCT ON (e."productId")
-                        e."productId",
-                        e."assetId",
-                        (e.embedding <=> $1::vector) AS distance
-                    FROM product_asset_embedding e
-                    INNER JOIN product p ON p.id = e."productId"
-                    WHERE e.revision = $2
-                      AND p."deletedAt" IS NULL
-                      AND p.enabled = true
-                    ORDER BY e."productId", distance ASC
-                ) best
-                ORDER BY best.distance ASC
-                LIMIT $3
-                `,
-                [literal, revision, take],
-            );
+            await this.connection.rawConnection.transaction(async manager => {
+                // hnsw.ef_search caps how many rows a single index scan can return,
+                // and pgvector's default is 40 — so `LIMIT 100` silently yields 40
+                // rows unless this is raised. Set to the over-fetch so the LIMIT means
+                // what it says. It is also the recall/latency dial: more candidates
+                // tracked during the graph walk, less chance of stopping in a local
+                // minimum.
+                //
+                // SET LOCAL so it reverts at COMMIT rather than leaking into whatever
+                // this pooled connection serves next, and interpolated because Postgres
+                // does not accept bind parameters on SET. `overFetch` is derived from
+                // Math.min/Math.max over numbers, so it is always an integer.
+                await manager.query(`SET LOCAL hnsw.ef_search = ${overFetch}`);
+                return manager.query(
+                    `
+                    SELECT best."productId", best."assetId", best.distance
+                    FROM (
+                        SELECT DISTINCT ON (c."productId")
+                            c."productId",
+                            c."assetId",
+                            c.distance
+                        FROM (
+                            SELECT
+                                e."productId",
+                                e."assetId",
+                                (e.embedding <=> $1::vector) AS distance
+                            FROM product_asset_embedding e
+                            WHERE e.revision = $2
+                            ORDER BY e.embedding <=> $1::vector
+                            LIMIT $3
+                        ) c
+                        INNER JOIN product p ON p.id = c."productId"
+                        WHERE p."deletedAt" IS NULL
+                          AND p.enabled = true
+                        ORDER BY c."productId", c.distance ASC
+                    ) best
+                    ORDER BY best.distance ASC
+                    LIMIT $4
+                    `,
+                    [literal, revision, overFetch, take],
+                );
+            });
 
         if (rows.length === 0) {
             return [];
